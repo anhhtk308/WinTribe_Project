@@ -20,6 +20,7 @@ class man1 extends Phaser.Scene {
         this.next_text.on("pointerdown", () => {
             //this.socket.disconnect();
             console.log("destroy " + this.socket.id);
+
             this.scene.start("man2");
         });
 
