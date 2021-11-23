@@ -17,7 +17,6 @@ class man1 extends Phaser.Scene {
         const map = this.add.tilemap("SeaMapDemo23114");
         const natural_tile = map.addTilesetImage("tiles");
         // const autumn_tile = map.addTilesetImage("nature-tileset-autumn");
-         
         const ObjectLayer = map.createLayer("sea_bg", [natural_tile]);
         const worldLayer = map.createLayer("island", [natural_tile]);
         // const img = this.add.image(0,0,'tiles');
