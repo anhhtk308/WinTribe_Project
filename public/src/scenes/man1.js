@@ -8,10 +8,7 @@ class man1 extends Phaser.Scene {
     preload() {
 
     }
-    create() {
-
-    }
-
+    create() {}
 
     update() {}
 }
