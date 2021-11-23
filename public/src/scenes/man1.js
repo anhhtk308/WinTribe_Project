@@ -1,33 +1,45 @@
-// export default man1;
-
 class man1 extends Phaser.Scene {
     constructor() {
         super("man1");
     }
 
     preload() {
-        // this.load.image("tiles", "assets/nature_tile.png");
+        this.load.image("ship", "assets/Ship.png");
         this.load.image("tiles", "assets/tiles.png");
         this.load.tilemapTiledJSON("SeaMapDemo23114", "assets/SeaMapDemo23114.json");
-
-
     }
     create() {
 
         const map = this.add.tilemap("SeaMapDemo23114");
         const natural_tile = map.addTilesetImage("tiles");
-        // const autumn_tile = map.addTilesetImage("nature-tileset-autumn");
-         
-        const ObjectLayer = map.createLayer("sea_bg", [natural_tile]);
-        const worldLayer = map.createLayer("island", [natural_tile]);
-        // const img = this.add.image(0,0,'tiles');
+        const SeaLayer = map.createLayer("sea_bg", [natural_tile]);
+        const IslandLayer = map.createLayer("island", [natural_tile]);
 
-        // const map = this.make.tilemap({ key: 'map'});
-        // const tileset = map.addTilesetImage('nature-tile', 'tiles');
-
-        // const belowLayer = map.createStaticLayer('sea_background', tileset, 0, 0);
-        // const islandLayer = map.createStaticLayer('Island', tileset, 0,0);
+        this.ship = this.physics.add.image(500, 500, 'ship').setScale(0.2);
+        this.ship.setCollideWorldBounds(true);
+        this.ship.setDrag(100);
+        this.ship.setAngularDrag(100);
+        this.ship.setMaxVelocity(200);
     }
 
-    update() {}
+    update() {
+        this.cursors = this.input.keyboard.createCursorKeys();
+        if (this.ship) {
+            if (this.cursors.left.isDown) {
+                this.ship.setAngularVelocity(-150);
+            } else if (this.cursors.right.isDown) {
+                this.ship.setAngularVelocity(150);
+            } else {
+                this.ship.setAngularVelocity(0);
+            }
+
+            if (this.cursors.up.isDown) {
+                this.physics.velocityFromRotation(this.ship.rotation + 1.5, 100, this.ship.body.acceleration);
+            } else {
+                this.ship.setAcceleration(0);
+            }
+
+            this.physics.world.wrap(this.ship, 5);
+        }
+    }
 }
