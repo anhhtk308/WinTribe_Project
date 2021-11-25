@@ -58,10 +58,12 @@ class man2 extends Phaser.Scene {
         var textEntry = this.add.text(210, 230, '', { font: '32px Courier', fill: '#000' }).setVisible(false);
         this.btn_next = this.add.text(460, 400, 'Next', { font: '32px Courier', fill: '#000' }).setVisible(false);
         ///
+        //clone list
+        this.lstQuestion = questions.slice();
 
         this.start.setInteractive();
         this.btn_next.setInteractive();
-        var currentQuestion = this.randomQuestion(questions);
+        var currentQuestion = this.randomQuestion(this.lstQuestion);
         this.start.on("pointerdown", () => {
             // this.socket.on('startGame2', function(questions) {
             //     console.log("start");
@@ -96,11 +98,15 @@ class man2 extends Phaser.Scene {
         this.btn_next.on("pointerdown", () => {
             if (this.checkAnswer(textEntry.text, currentQuestion.answer)) {
                 alert("oki");
+                //xóa question đã random để k trùng
+                this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
+                this.questionDisplay.setVisible(false);
                 //handle
-                //currentQuestion = this.randomQuestion(questions);
-                //this.questionDisplay = this.add.text(210, 170, currentQuestion.question, { fontSize: 20, color: "#000" })
+                currentQuestion = this.randomQuestion(this.lstQuestion);
+                this.questionDisplay = this.add.text(210, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
+
             } else {
-                alert("Try again " + currentQuestion.question + " " + textEntry.text);
+                alert("Try again");
             }
         });
 
