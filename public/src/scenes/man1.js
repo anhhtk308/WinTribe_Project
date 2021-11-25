@@ -15,11 +15,14 @@ class man1 extends Phaser.Scene {
         const SeaLayer = map.createLayer("sea_bg", [natural_tile]);
         const IslandLayer = map.createLayer("island", [natural_tile]);
 
-        this.ship = this.physics.add.image(500, 500, 'ship').setScale(0.2);
+        this.ship = this.physics.add.sprite(500, 500, 'ship').setScale(0.2);
         this.ship.setCollideWorldBounds(true);
         this.ship.setDrag(100);
         this.ship.setAngularDrag(100);
         this.ship.setMaxVelocity(200);
+        // set va chạm với biến platform
+
+        this.physics.add.collider(this.ship, IslandLayer);
     }
 
     update() {

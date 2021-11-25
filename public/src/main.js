@@ -15,14 +15,17 @@ window.addEventListener('load', function() {
         scale: {
             mode: Phaser.Scale.FIT,
             autoCenter: Phaser.Scale.CENTER_BOTH
-        }
+        },
+        scene: [
+            man2, man1
+        ]
     });
 
-    game.scene.add("Preload", Preload);
-    game.scene.add("Level", Level);
-    game.scene.add("Boot", Boot);
-    game.scene.add("man1", man1, true);
-    game.scene.add("man2", man2);
+    // game.scene.add("Preload", Preload);
+    // game.scene.add("Level", Level);
+    // game.scene.add("Boot", Boot);
+    // game.scene.add("man1", man1);
+    // game.scene.add("man2", man2, true);
 });
 
 class Boot extends Phaser.Scene {
