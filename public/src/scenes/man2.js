@@ -111,9 +111,10 @@ class man2 extends Phaser.Scene {
             this.btn_next.setVisible(true);
             this.btn_check.setVisible(true);
             this.scoreText.setVisible(true);
+
             //time
             this.textTime.setVisible(true);
-            this.timeStart(this.handleTimeFinished.bind(this), 5000);
+            this.timeStart(this.handleTimeFinished.bind(this), 60000 * 5);
 
             //question
             this.frame_question.setVisible(true);
@@ -135,6 +136,10 @@ class man2 extends Phaser.Scene {
             currentQuestion = this.randomQuestion(this.lstQuestion);
             this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
             textEntry.text = "";
+            if (this.score >= 2) {
+                this.score -= 2;
+                this.scoreText.setText("Score: " + this.score);
+            }
         });
 
         //check
@@ -172,8 +177,8 @@ class man2 extends Phaser.Scene {
         }
         const elapsed = this.timeEvent.getElapsed();
         const remaining = this.duration - elapsed;
-        const seconds = remaining / 1000;
-        this.textTime.text = "Time: " + seconds.toFixed(2) + "s";
+        const seconds = remaining / 60000;
+        this.textTime.text = "Time: " + seconds.toFixed(2) + "m";
     }
     typewriteText(text) {
         const length = text.length
@@ -203,7 +208,7 @@ class man2 extends Phaser.Scene {
         var y = Math.sin(_angle) * speed;
         return { x: x, y: y };
     }
-    timeStart(callback, duration = 60000) {
+    timeStart(callback, duration = 60000 * 5) {
         this.timeStop();
         this.duration = duration;
         this.finishedCallback = callback;
@@ -222,7 +227,14 @@ class man2 extends Phaser.Scene {
         }
     }
     handleTimeFinished() {
-        this.add.text(350, 300, 'Hết giờ', { fontSize: 20, color: '#000' });
+        this.add.text(320, 250, 'Hết giờ\nScore: ' + this.score, { fontSize: 35, color: 'red' });
+        //this.frame_question.setVisible(false);
+        this.textTime.setVisible(false);
+        this.questionDisplay.setVisible(false);
+        this.textEnterAnswer.setVisible(false);
+        this.btn_next.setVisible(false);
+        this.btn_check.setVisible(false);
+        this.scoreText.setVisible(false);
     }
 
     randomQuestion(lstQuestion) {
