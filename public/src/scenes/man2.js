@@ -64,6 +64,13 @@ class man2 extends Phaser.Scene {
         this.start.setInteractive();
         this.btn_next.setInteractive();
         var currentQuestion = this.randomQuestion(this.lstQuestion);
+        this.input.keyboard.on('keydown', function(event) {
+            if (event.keyCode === 8 && textEntry.text.length > 0) {
+                textEntry.text = textEntry.text.substr(0, textEntry.text.length - 1);
+            } else if (event.keyCode === 32 || (event.keyCode >= 48 && event.keyCode < 90)) {
+                textEntry.text += event.key;
+            }
+        });
         this.start.on("pointerdown", () => {
             // this.socket.on('startGame2', function(questions) {
             //     console.log("start");
@@ -85,13 +92,6 @@ class man2 extends Phaser.Scene {
             //enter answer
             this.textEnterAnswer.setVisible(true);
             textEntry.setVisible(true);
-            this.input.keyboard.on('keydown', function(event) {
-                if (event.keyCode === 8 && textEntry.text.length > 0) {
-                    textEntry.text = textEntry.text.substr(0, textEntry.text.length - 1);
-                } else if (event.keyCode === 32 || (event.keyCode >= 48 && event.keyCode < 90)) {
-                    textEntry.text += event.key;
-                }
-            });
         });
 
         //next
@@ -102,6 +102,9 @@ class man2 extends Phaser.Scene {
                 this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
                 this.questionDisplay.setVisible(false);
                 //handle
+                if (this.lstQuestion.length === 0) {
+                    this.lstQuestion = questions.slice();
+                }
                 currentQuestion = this.randomQuestion(this.lstQuestion);
                 this.questionDisplay = this.add.text(210, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
 
@@ -177,12 +180,12 @@ class man2 extends Phaser.Scene {
     }
 
     randomQuestion(lstQuestion) {
-        let randomQes = Math.floor(Math.random() * lstQuestion.length) + 1;
+        let randomQes = Math.floor(Math.random() * lstQuestion.length);
         return lstQuestion[randomQes];
     }
 
     checkAnswer(input, answer) {
-        if (input === answer) {
+        if (input.toLowerCase() === answer.toLowerCase()) {
             return true;
         } else {
             return false;
