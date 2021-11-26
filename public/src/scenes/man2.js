@@ -8,13 +8,18 @@ class man2 extends Phaser.Scene {
         this.load.image("bg", "assets/bg_question_1.jpg");
         this.load.image("popup", "assets/popup.png");
         this.load.image("frame_question", "assets/game_frame.png");
-
+        this.load.audio("true_sound", "assets/true_sound.mp3");
+        this.load.audio("false_sound", "assets/false_sound.mp3");
 
     }
     create() {
         // this.socket = io();
         // console.log(this.socket);
         this.background = this.add.image(0, 0, "bg").setOrigin(0, 0).setScale(0.38);
+        //sound
+        this.true_sound = this.sound.add("true_sound", { loop: false });
+        this.false_sound = this.sound.add("false_sound", { loop: false });
+        //data
         var questions = [{
                 id: 1,
                 question: "c/ư/b/ậ/t/v/ợ",
@@ -64,7 +69,8 @@ class man2 extends Phaser.Scene {
         this.frame_question = this.add.image(395, 270, 'frame_question').setScale(1.4).setVisible(false);
         this.textPopup = this.add.text(400, 130, '').setWordWrapWidth(300);
         this.textTime = this.add.text(230, 120, 'Time: 45s', { fontSize: 20, color: '#000' }).setVisible(false);
-        this.score = this.add.text(460, 120, 'Score: 0', { fontSize: 20, color: '#000' }).setVisible(false);
+        this.score = 0;
+        this.scoreText = this.add.text(460, 120, 'Score: 0', { fontSize: 20, color: '#000' }).setVisible(false);
         this.textTitle = this.add.text(460, 76, "Trò chơi ghép chữ");
         this.typewriteTextWrapped('Hello, Chào mừng bạn đã đến với trò chơi ghép chữ, phí là 5 đồng, bạn có thời gian là 5ph để trả lời các câu hỏi, mỗi câu đúng sẽ được 4 đồng, bấm nút start để bắt đầu chơi nào!');
 
@@ -104,7 +110,7 @@ class man2 extends Phaser.Scene {
             this.popup.setVisible(false);
             this.btn_next.setVisible(true);
             this.btn_check.setVisible(true);
-            this.score.setVisible(true);
+            this.scoreText.setVisible(true);
             //time
             this.textTime.setVisible(true);
             this.timeStart(this.handleTimeFinished.bind(this), 5000);
@@ -120,16 +126,36 @@ class man2 extends Phaser.Scene {
 
         //next
         this.btn_next.on("pointerdown", () => {
-            this.renderNewQuestion(currentQuestion, textEntry, questions);
+            this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
+            this.questionDisplay.setVisible(false);
+            //handle
+            if (this.lstQuestion.length === 0) {
+                this.lstQuestion = questions.slice();
+            }
+            currentQuestion = this.randomQuestion(this.lstQuestion);
+            this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
+            textEntry.text = "";
         });
 
         //check
         this.btn_check.on("pointerdown", () => {
             if (this.checkAnswer(textEntry.text, currentQuestion.answer)) {
-                alert("oki");
-                this.renderNewQuestion(currentQuestion, textEntry, questions);
+                //alert("oki");
+                this.true_sound.play();
+                this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
+                this.questionDisplay.setVisible(false);
+                //handle
+                if (this.lstQuestion.length === 0) {
+                    this.lstQuestion = questions.slice();
+                }
+                currentQuestion = this.randomQuestion(this.lstQuestion);
+                this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
+                textEntry.text = "";
+                this.score += 4;
+                this.scoreText.setText("Score: " + this.score);
             } else {
-                alert("Try again");
+                this.false_sound.play();
+                //alert("Try again " + textEntry.text + " " + currentQuestion.answer);
             }
         });
 
@@ -212,17 +238,17 @@ class man2 extends Phaser.Scene {
         }
     }
 
-    renderNewQuestion(currentQuestion, textEntry, questions) {
-        //xóa question đã random để k trùng
-        this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
-        this.questionDisplay.setVisible(false);
-        //handle
-        if (this.lstQuestion.length === 0) {
-            this.lstQuestion = questions.slice();
-        }
-        currentQuestion = this.randomQuestion(this.lstQuestion);
-        this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
-        textEntry.text = "";
-    }
+    // renderNewQuestion(currentQuestion, textEntry, questions) {
+    //     //xóa question đã random để k trùng
+    //     this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
+    //     this.questionDisplay.setVisible(false);
+    //     //handle
+    //     if (this.lstQuestion.length === 0) {
+    //         this.lstQuestion = questions.slice();
+    //     }
+    //     currentQuestion = this.randomQuestion(this.lstQuestion);
+    //     this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
+    //     textEntry.text = "";
+    // }
 
 }
