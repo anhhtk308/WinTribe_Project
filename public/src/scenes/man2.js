@@ -17,25 +17,45 @@ class man2 extends Phaser.Scene {
         this.background = this.add.image(0, 0, "bg").setOrigin(0, 0).setScale(0.38);
         var questions = [{
                 id: 1,
-                question: "1abc",
-                answer: "1abc"
+                question: "c/ư/b/ậ/t/v/ợ",
+                answer: "Vuot bac"
             },
             {
                 id: 2,
-                question: "2abc",
-                answer: "2abc"
+                question: "a/c/c/o/u/n",
+                answer: "Con cua"
             }, {
                 id: 3,
-                question: "3abc",
-                answer: "3abc"
+                question: "c/í/ố/t/v",
+                answer: "Oc vit"
             }, {
                 id: 4,
-                question: "4abc",
-                answer: "4abc"
+                question: "ề/h/c/h/a/ú",
+                answer: "Chua he"
             }, {
                 id: 5,
-                question: "5abc",
-                answer: "5abc"
+                question: "o/ã/h/ò/n/h/a",
+                answer: "Hoa hoan"
+            }, {
+                id: 6,
+                question: "b/y/l/a/i",
+                answer: "Ly bia"
+            }, {
+                id: 7,
+                question: "s/ú/c/c/ố",
+                answer: "Cu soc"
+            }, {
+                id: 8,
+                question: "c/Đ/c/á/ố",
+                answer: "Da coc"
+            }, {
+                id: 9,
+                question: "t/u/y/ệ/h/ế/n/ị",
+                answer: "Nhiet huyet"
+            }, {
+                id: 10,
+                question: "c/C/y/a/a/h/u",
+                answer: "Chua cay"
             }
         ];
 
@@ -56,13 +76,16 @@ class man2 extends Phaser.Scene {
         //
         this.textEnterAnswer = this.add.text(210, 190, '\nEnter your answer:', { font: '20px Courier', fill: '#000' }).setVisible(false);
         var textEntry = this.add.text(210, 230, '', { font: '32px Courier', fill: '#000' }).setVisible(false);
-        this.btn_next = this.add.text(460, 400, 'Next', { font: '32px Courier', fill: '#000' }).setVisible(false);
+        this.btn_next = this.add.text(460, 400, 'Skip', { font: '32px Courier', fill: '#000' }).setVisible(false);
+        this.btn_check = this.add.text(210, 400, 'Check', { font: '32px Courier', fill: '#000' }).setVisible(false);
         ///
         //clone list
         this.lstQuestion = questions.slice();
 
         this.start.setInteractive();
         this.btn_next.setInteractive();
+        this.btn_check.setInteractive();
+
         var currentQuestion = this.randomQuestion(this.lstQuestion);
         this.input.keyboard.on('keydown', function(event) {
             if (event.keyCode === 8 && textEntry.text.length > 0) {
@@ -80,6 +103,7 @@ class man2 extends Phaser.Scene {
             this.textPopup.setVisible(false);
             this.popup.setVisible(false);
             this.btn_next.setVisible(true);
+            this.btn_check.setVisible(true);
             this.score.setVisible(true);
             //time
             this.textTime.setVisible(true);
@@ -87,7 +111,7 @@ class man2 extends Phaser.Scene {
 
             //question
             this.frame_question.setVisible(true);
-            this.questionDisplay = this.add.text(210, 170, currentQuestion.question, { fontSize: 20, color: "#000" })
+            this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" })
 
             //enter answer
             this.textEnterAnswer.setVisible(true);
@@ -96,18 +120,14 @@ class man2 extends Phaser.Scene {
 
         //next
         this.btn_next.on("pointerdown", () => {
+            this.renderNewQuestion(currentQuestion, textEntry, questions);
+        });
+
+        //check
+        this.btn_check.on("pointerdown", () => {
             if (this.checkAnswer(textEntry.text, currentQuestion.answer)) {
                 alert("oki");
-                //xóa question đã random để k trùng
-                this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
-                this.questionDisplay.setVisible(false);
-                //handle
-                if (this.lstQuestion.length === 0) {
-                    this.lstQuestion = questions.slice();
-                }
-                currentQuestion = this.randomQuestion(this.lstQuestion);
-                this.questionDisplay = this.add.text(210, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
-
+                this.renderNewQuestion(currentQuestion, textEntry, questions);
             } else {
                 alert("Try again");
             }
@@ -192,8 +212,17 @@ class man2 extends Phaser.Scene {
         }
     }
 
-    showQuestion() {
-
+    renderNewQuestion(currentQuestion, textEntry, questions) {
+        //xóa question đã random để k trùng
+        this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
+        this.questionDisplay.setVisible(false);
+        //handle
+        if (this.lstQuestion.length === 0) {
+            this.lstQuestion = questions.slice();
+        }
+        currentQuestion = this.randomQuestion(this.lstQuestion);
+        this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
+        textEntry.text = "";
     }
 
 }
