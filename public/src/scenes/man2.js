@@ -8,17 +8,26 @@ class man2 extends Phaser.Scene {
         this.load.image("bg", "assets/bg_question_1.jpg");
         this.load.image("popup", "assets/popup.png");
         this.load.image("frame_question", "assets/game_frame.png");
+        this.load.image("logo", "assets/enemyBlack5.png", { frameWidth: 97, frameHeight: 84 });
+
         this.load.audio("true_sound", "assets/true_sound.mp3");
         this.load.audio("false_sound", "assets/false_sound.mp3");
+        this.load.audio("button_sound", "assets/audio-button.mp3");
+
 
     }
     create() {
         // this.socket = io();
         // console.log(this.socket);
         this.background = this.add.image(0, 0, "bg").setOrigin(0, 0).setScale(0.38);
+        this.logo = this.add.sprite(400, 50, 'logo');
+        this.logo.setOrigin(0.5);
+        this.tweens.add({ targets: this.logo, angle: this.logo.angle - 2, duration: 1000, ease: 'Sine.easeInOut' });
+        this.tweens.add({ targets: this.logo, angle: this.logo.angle + 4, duration: 2000, ease: 'Sine.easeInOut', yoyo: 1, loop: -1, delay: 1000 });
         //sound
         this.true_sound = this.sound.add("true_sound", { loop: false });
         this.false_sound = this.sound.add("false_sound", { loop: false });
+        this.button_sound = this.sound.add("button_sound", { loop: false });
         //data
         var questions = [{
                 id: 1,
@@ -64,26 +73,29 @@ class man2 extends Phaser.Scene {
             }
         ];
 
-        //popup and text
-        this.popup = this.add.image(540, 200, 'popup').setScale(1.2);
+        //time and score
         this.frame_question = this.add.image(395, 270, 'frame_question').setScale(1.4).setVisible(false);
-        this.textPopup = this.add.text(400, 130, '').setWordWrapWidth(300);
         this.textTime = this.add.text(230, 120, 'Time: 45s', { fontSize: 20, color: '#000' }).setVisible(false);
         this.score = 0;
         this.scoreText = this.add.text(460, 120, 'Score: 0', { fontSize: 20, color: '#000' }).setVisible(false);
-        this.textTitle = this.add.text(460, 76, "Trò chơi ghép chữ");
-        this.typewriteTextWrapped('Hello, Chào mừng bạn đã đến với trò chơi ghép chữ, phí là 5 đồng, bạn có thời gian là 5ph để trả lời các câu hỏi, mỗi câu đúng sẽ được 4 đồng, bấm nút start để bắt đầu chơi nào!');
 
         //btn start shadow
-        this.start = this.add.text(425, 450, " Start ", { fontSize: 70, fontWeight: "bold", fontFamily: "Arial Black", color: "red" });
+        this.start = this.add.text(600, 450, " Start ", { fontSize: 70, fontWeight: "bold", fontFamily: "Arial Black", color: "red" });
         this.start.fill = '#ec008c';
         this.start.setShadow(0, 0, 'rgba(0, 0, 0, 0.5)', 0);
+        this.tweens.add({ targets: this.start, x: 425, duration: 500, ease: 'Back' });
 
+        //Guid
+        this.guide = this.add.text(0, 450, " Guide ", { fontSize: 70, fontWeight: "bold", fontFamily: "Arial Black", color: "red" });
+        this.guide.fill = '#ec008c';
+        this.guide.setShadow(0, 0, 'rgba(0, 0, 0, 0.5)', 0);
+        this.tweens.add({ targets: this.guide, x: 100, duration: 500, ease: 'Back' });
         //
         this.textEnterAnswer = this.add.text(210, 190, '\nEnter your answer:', { font: '20px Courier', fill: '#000' }).setVisible(false);
         var textEntry = this.add.text(210, 230, '', { font: '32px Courier', fill: '#000' }).setVisible(false);
         this.btn_next = this.add.text(460, 400, 'Skip', { font: '32px Courier', fill: '#000' }).setVisible(false);
         this.btn_check = this.add.text(210, 400, 'Check', { font: '32px Courier', fill: '#000' }).setVisible(false);
+        // this.btn_test = this.add.text(210, 400, 'Check', { font: '32px Courier', fill: '#000' }).setVisible(true);
         ///
         //clone list
         this.lstQuestion = questions.slice();
@@ -91,6 +103,9 @@ class man2 extends Phaser.Scene {
         this.start.setInteractive();
         this.btn_next.setInteractive();
         this.btn_check.setInteractive();
+        this.guide.setInteractive();
+
+        //this.btn_test.setInteractive();
 
         var currentQuestion = this.randomQuestion(this.lstQuestion);
         this.input.keyboard.on('keydown', function(event) {
@@ -105,12 +120,11 @@ class man2 extends Phaser.Scene {
             //     console.log("start");
             // });
             this.start.setVisible(false);
-            this.textTitle.setVisible(false);
-            this.textPopup.setVisible(false);
-            this.popup.setVisible(false);
+            this.showHideGuid(false);
             this.btn_next.setVisible(true);
             this.btn_check.setVisible(true);
             this.scoreText.setVisible(true);
+            this.guide.setVisible(false);
 
             //time
             this.textTime.setVisible(true);
@@ -127,18 +141,20 @@ class man2 extends Phaser.Scene {
 
         //next
         this.btn_next.on("pointerdown", () => {
-            this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
-            this.questionDisplay.setVisible(false);
-            //handle
-            if (this.lstQuestion.length === 0) {
-                this.lstQuestion = questions.slice();
-            }
-            currentQuestion = this.randomQuestion(this.lstQuestion);
-            this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
-            textEntry.text = "";
-            if (this.score >= 2) {
+            if (this.score > 0) {
+                this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
+                this.questionDisplay.setVisible(false);
+                //handle
+                if (this.lstQuestion.length === 0) {
+                    this.lstQuestion = questions.slice();
+                }
+                currentQuestion = this.randomQuestion(this.lstQuestion);
+                this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
+                textEntry.text = "";
                 this.score -= 2;
                 this.scoreText.setText("Score: " + this.score);
+            } else {
+                alert("k đủ xiền");
             }
         });
 
@@ -163,6 +179,44 @@ class man2 extends Phaser.Scene {
                 //alert("Try again " + textEntry.text + " " + currentQuestion.answer);
             }
         });
+        // this.btn_test.on('pointerdown', function() {
+        //     this.cameras.main.fade(250);
+        //     this.time.delayedCall(250, function() {
+        //         this.button_sound.play();
+        //         this.scene.start('man1');
+        //     }, [], this);
+        // }, this);
+        //enter
+        this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+        this.keyEnter.on('down', function(key, event) {
+            if (this.checkAnswer(textEntry.text, currentQuestion.answer)) {
+                //alert("oki");
+                this.true_sound.play();
+                this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
+                this.questionDisplay.setVisible(false);
+                //handle
+                if (this.lstQuestion.length === 0) {
+                    this.lstQuestion = questions.slice();
+                }
+                currentQuestion = this.randomQuestion(this.lstQuestion);
+                this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
+                textEntry.text = "";
+                this.score += 4;
+                this.scoreText.setText("Score: " + this.score);
+            } else {
+                this.false_sound.play();
+                //alert("Try again " + textEntry.text + " " + currentQuestion.answer);
+            }
+        }, this);
+
+        //guide
+        this.popup = this.add.image(540, 200, 'popup').setScale(1.2).setVisible(false);
+        this.textPopup = this.add.text(400, 130, '').setWordWrapWidth(300).setVisible(false);
+        this.textTitle = this.add.text(460, 76, "Trò chơi ghép chữ").setVisible(false);
+        this.typewriteTextWrapped('Hello, Chào mừng bạn đã đến với trò chơi ghép chữ, phí là 5 đồng, bạn có thời gian là 5ph để trả lời các câu hỏi, mỗi câu đúng sẽ được 4 đồng, bấm nút start để bắt đầu chơi nào!');
+        this.guide.on("pointerdown", () => {
+            this.showHideGuid(true);
+        });
 
     }
 
@@ -170,6 +224,10 @@ class man2 extends Phaser.Scene {
         //btn start shadow
         var offset = this.moveToXY(this.input.activePointer, this.start.x, this.start.y, 8);
         this.start.setShadow(offset.x, offset.y, 'rgba(0, 0, 0, 0.5)', this.distanceToPointer(this.start, this.input.activePointer) / 30);
+
+        //btn guid shadow
+        var offset = this.moveToXY(this.input.activePointer, this.guide.x, this.guide.y, 8);
+        this.guide.setShadow(offset.x, offset.y, 'rgba(0, 0, 0, 0.5)', this.distanceToPointer(this.guide, this.input.activePointer) / 30);
 
         //time
         if (!this.timeEvent || this.duration <= 0) {
@@ -228,7 +286,6 @@ class man2 extends Phaser.Scene {
     }
     handleTimeFinished() {
         this.add.text(320, 250, 'Hết giờ\nScore: ' + this.score, { fontSize: 35, color: 'red' });
-        //this.frame_question.setVisible(false);
         this.textTime.setVisible(false);
         this.questionDisplay.setVisible(false);
         this.textEnterAnswer.setVisible(false);
@@ -250,17 +307,10 @@ class man2 extends Phaser.Scene {
         }
     }
 
-    // renderNewQuestion(currentQuestion, textEntry, questions) {
-    //     //xóa question đã random để k trùng
-    //     this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
-    //     this.questionDisplay.setVisible(false);
-    //     //handle
-    //     if (this.lstQuestion.length === 0) {
-    //         this.lstQuestion = questions.slice();
-    //     }
-    //     currentQuestion = this.randomQuestion(this.lstQuestion);
-    //     this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
-    //     textEntry.text = "";
-    // }
+    showHideGuid(show) {
+        this.textPopup.setVisible(show);
+        this.textTitle.setVisible(show);
+        this.popup.setVisible(show);
+    }
 
 }
