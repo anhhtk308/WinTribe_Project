@@ -7,7 +7,13 @@ class man2 extends Phaser.Scene {
     preload() {
         this.load.image("bg", "assets/bg_question_1.jpg");
         this.load.image("popup", "assets/popup.png");
-        this.load.image("frame_question", "assets/game_frame.png");
+        //this.load.image("frame_question", "assets/game_frame.png");
+        this.load.image("frame_question", "assets/1.png");
+        this.load.image("skip_btn_frame_1", "assets/12300n.png");
+        this.load.image("skip_btn_frame_2", "assets/22222n.png");
+
+
+
         this.load.image("logo", "assets/enemyBlack5.png", { frameWidth: 97, frameHeight: 84 });
 
         this.load.audio("true_sound", "assets/true_sound.mp3");
@@ -74,10 +80,11 @@ class man2 extends Phaser.Scene {
         ];
 
         //time and score
-        this.frame_question = this.add.image(395, 270, 'frame_question').setScale(1.4).setVisible(false);
-        this.textTime = this.add.text(230, 120, 'Time: 45s', { fontSize: 20, color: '#000' }).setVisible(false);
+        // this.frame_question = this.add.image(395, 270, 'frame_question').setScale(1.4).setVisible(false);
+        this.frame_question = this.add.image(400, 300, 'frame_question').setVisible(false);
+        this.textTime = this.add.text(100, 73, 'Time: 45s', { fontSize: 25, color: '#fff' }).setVisible(false);
         this.score = 0;
-        this.scoreText = this.add.text(460, 120, 'Score: 0', { fontSize: 20, color: '#000' }).setVisible(false);
+        this.scoreText = this.add.text(540, 73, 'Score: 0', { fontSize: 25, color: '#fff' }).setVisible(false);
 
         //btn start shadow
         this.start = this.add.text(600, 450, " Start ", { fontSize: 70, fontWeight: "bold", fontFamily: "Arial Black", color: "red" });
@@ -91,10 +98,13 @@ class man2 extends Phaser.Scene {
         this.guide.setShadow(0, 0, 'rgba(0, 0, 0, 0.5)', 0);
         this.tweens.add({ targets: this.guide, x: 100, duration: 500, ease: 'Back' });
         //
-        this.textEnterAnswer = this.add.text(210, 190, '\nEnter your answer:', { font: '20px Courier', fill: '#000' }).setVisible(false);
-        var textEntry = this.add.text(210, 230, '', { font: '32px Courier', fill: '#000' }).setVisible(false);
-        this.btn_next = this.add.text(460, 400, 'Skip', { font: '32px Courier', fill: '#000' }).setVisible(false);
-        this.btn_check = this.add.text(210, 400, 'Check', { font: '32px Courier', fill: '#000' }).setVisible(false);
+        this.textEnterAnswer = this.add.text(210, 250, '\nEnter your answer:', { font: '20px Courier', fill: '#fff' }).setVisible(false);
+        var textEntry = this.add.text(210, 300, '', { font: '25px Courier', fill: '#fff', align: 'center', wordWrap: { width: 400, useAdvancedWrap: true } }).setVisible(false);
+        this.btn_next = this.add.text(500, 400, 'Skip', { font: '32px Courier', fill: '#fff' }).setVisible(false);
+        this.skip_Frame_1 = this.add.image(800, 418, 'skip_btn_frame_1').setScale(0.5).setVisible(false);
+        this.skip_Frame_2 = this.add.image(0, 418, 'skip_btn_frame_2').setScale(0.5).setVisible(true);
+
+        this.btn_check = this.add.text(210, 400, 'Check', { font: '32px Courier', fill: '#fff' }).setVisible(false);
         // this.btn_test = this.add.text(210, 400, 'Check', { font: '32px Courier', fill: '#000' }).setVisible(true);
         ///
         //clone list
@@ -111,8 +121,16 @@ class man2 extends Phaser.Scene {
         this.input.keyboard.on('keydown', function(event) {
             if (event.keyCode === 8 && textEntry.text.length > 0) {
                 textEntry.text = textEntry.text.substr(0, textEntry.text.length - 1);
-            } else if (event.keyCode === 32 || (event.keyCode >= 48 && event.keyCode < 90)) {
+                //alert(event.keyCode);
+                console.log(event.key);
+            } else
+            //if (event.keyCode === 32 || (event.keyCode >= 48 && event.keyCode < 90)) 
+            {
+                //textEntry.text += event.key;
                 textEntry.text += event.key;
+                console.log(event.key);
+
+
             }
         });
         this.start.on("pointerdown", () => {
@@ -125,6 +143,11 @@ class man2 extends Phaser.Scene {
             this.btn_check.setVisible(true);
             this.scoreText.setVisible(true);
             this.guide.setVisible(false);
+            this.skip_Frame_1.setVisible(true);
+            this.skip_Frame_2.setVisible(true);
+            this.tweens.add({ targets: this.skip_Frame_1, x: 540, duration: 500, ease: 'Back' });
+            this.tweens.add({ targets: this.skip_Frame_2, x: 260, duration: 500, ease: 'Back' });
+
 
             //time
             this.textTime.setVisible(true);
@@ -132,7 +155,9 @@ class man2 extends Phaser.Scene {
 
             //question
             this.frame_question.setVisible(true);
-            this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" })
+            this.questionDisplay = this.add.text(330, 200, currentQuestion.question, { font: '30px Helvetica', color: "#fff" });
+            //this.questionDisplay.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
+            //this.setGradientText(this.questionDisplay);
 
             //enter answer
             this.textEnterAnswer.setVisible(true);
@@ -149,7 +174,7 @@ class man2 extends Phaser.Scene {
                     this.lstQuestion = questions.slice();
                 }
                 currentQuestion = this.randomQuestion(this.lstQuestion);
-                this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
+                this.questionDisplay = this.add.text(330, 200, currentQuestion.question, { font: '30px Helvetica', color: "#fff" }).setVisible(true);
                 textEntry.text = "";
                 this.score -= 2;
                 this.scoreText.setText("Score: " + this.score);
@@ -199,7 +224,7 @@ class man2 extends Phaser.Scene {
                     this.lstQuestion = questions.slice();
                 }
                 currentQuestion = this.randomQuestion(this.lstQuestion);
-                this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
+                this.questionDisplay = this.add.text(330, 200, currentQuestion.question, { font: '30px Helvetica', color: "#fff" }).setVisible(true);
                 textEntry.text = "";
                 this.score += 4;
                 this.scoreText.setText("Score: " + this.score);
@@ -311,6 +336,18 @@ class man2 extends Phaser.Scene {
         this.textPopup.setVisible(show);
         this.textTitle.setVisible(show);
         this.popup.setVisible(show);
+    }
+
+    setGradientText(text) {
+        //  Apply the gradient fill.
+        const gradient = text.context.createLinearGradient(0, 0, 0, text.height);
+        gradient.addColorStop(1, '#2F195A');
+        gradient.addColorStop(0.5, '#A72A7B');
+
+
+        gradient.addColorStop(0, '#F5BBE7');
+
+        text.setFill(gradient);
     }
 
 }

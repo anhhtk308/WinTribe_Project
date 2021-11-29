@@ -33,12 +33,12 @@ class man1 extends Phaser.Scene {
         this.btn_test = this.add.text(210, 400, 'Check', { font: '32px Courier', fill: '#000' }).setVisible(true);
         this.btn_test.setInteractive();
         this.btn_test.on('pointerdown', function() {
-            //this.cameras.main.fade(250);
-            this.cameras.main.flash();
-            //this.time.delayedCall(250, function() {
-            this.button_sound.play();
-            this.scene.start('man2');
-            // }, [], this);
+            this.cameras.main.fade(250);
+            // this.cameras.main.flash();
+            this.time.delayedCall(250, function() {
+                this.button_sound.play();
+                this.scene.start('man2');
+            }, [], this);
         }, this);
     }
 
