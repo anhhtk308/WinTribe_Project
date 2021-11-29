@@ -5,6 +5,10 @@ window.addEventListener('load', function() {
         height: 600,
         type: Phaser.AUTO,
         backgroundColor: "#242424",
+        parent: 'tribe',
+        dom: {
+            createContainer: true
+        },
         physics: {
             default: 'arcade',
             arcade: {

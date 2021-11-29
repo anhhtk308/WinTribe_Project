@@ -5,16 +5,20 @@ class man2 extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image("bg", "assets/bg_question_1.jpg");
+        //load form input
+        this.load.html('answerform', 'assets/answerForm/answerForm.html');
+        this.load.css('answerCss', 'assets/answerForm/answerForm.css');
+
+        this.load.image("bg", "assets/background_start_quiz.jpg");
         this.load.image("popup", "assets/popup.png");
-        //this.load.image("frame_question", "assets/game_frame.png");
         this.load.image("frame_question", "assets/1.png");
-        this.load.image("skip_btn_frame_1", "assets/12300n.png");
-        this.load.image("skip_btn_frame_2", "assets/22222n.png");
+        this.load.image("check_btn", "assets/check_btn.png");
+        this.load.image("skip_btn", "assets/skip_btn.png");
+        this.load.image("start_btn", "assets/start_btn.png");
+        this.load.image("quit_btn", "assets/quit_btn.png");
+        this.load.image("popup_gold", "assets/popup_check_gold.png");
 
-
-
-        this.load.image("logo", "assets/enemyBlack5.png", { frameWidth: 97, frameHeight: 84 });
+        this.load.image("logo", "assets/logo_quiz.png", { frameWidth: 97, frameHeight: 84 });
 
         this.load.audio("true_sound", "assets/true_sound.mp3");
         this.load.audio("false_sound", "assets/false_sound.mp3");
@@ -23,13 +27,14 @@ class man2 extends Phaser.Scene {
 
     }
     create() {
+        var element = this.add.dom(400, 340).createFromCache('answerform').setVisible(false);
+        element.addListener('keydown');
+        element.on('keydown', () => {
+            element.getChildByName('nameField').style.border = '1px solid black';
+        });
         // this.socket = io();
         // console.log(this.socket);
-        this.background = this.add.image(0, 0, "bg").setOrigin(0, 0).setScale(0.38);
-        this.logo = this.add.sprite(400, 50, 'logo');
-        this.logo.setOrigin(0.5);
-        this.tweens.add({ targets: this.logo, angle: this.logo.angle - 2, duration: 1000, ease: 'Sine.easeInOut' });
-        this.tweens.add({ targets: this.logo, angle: this.logo.angle + 4, duration: 2000, ease: 'Sine.easeInOut', yoyo: 1, loop: -1, delay: 1000 });
+        this.background = this.add.image(0, 0, "bg").setOrigin(0, 0).setScale(1);
         //sound
         this.true_sound = this.sound.add("true_sound", { loop: false });
         this.false_sound = this.sound.add("false_sound", { loop: false });
@@ -38,7 +43,7 @@ class man2 extends Phaser.Scene {
         var questions = [{
                 id: 1,
                 question: "c/ư/b/ậ/t/v/ợ",
-                answer: "Vuot bac"
+                answer: "Vượt bậc"
             },
             {
                 id: 2,
@@ -47,15 +52,15 @@ class man2 extends Phaser.Scene {
             }, {
                 id: 3,
                 question: "c/í/ố/t/v",
-                answer: "Oc vit"
+                answer: "Ốc vít"
             }, {
                 id: 4,
                 question: "ề/h/c/h/a/ú",
-                answer: "Chua he"
+                answer: "Chúa hề"
             }, {
                 id: 5,
                 question: "o/ã/h/ò/n/h/a",
-                answer: "Hoa hoan"
+                answer: "Hòa hoãn"
             }, {
                 id: 6,
                 question: "b/y/l/a/i",
@@ -63,15 +68,15 @@ class man2 extends Phaser.Scene {
             }, {
                 id: 7,
                 question: "s/ú/c/c/ố",
-                answer: "Cu soc"
+                answer: "Cú sốc"
             }, {
                 id: 8,
-                question: "c/Đ/c/á/ố",
-                answer: "Da coc"
+                question: "c/đ/c/á/ố",
+                answer: "Đá cốc"
             }, {
                 id: 9,
                 question: "t/u/y/ệ/h/ế/n/ị",
-                answer: "Nhiet huyet"
+                answer: "Nhiệt huyết"
             }, {
                 id: 10,
                 question: "c/C/y/a/a/h/u",
@@ -80,73 +85,51 @@ class man2 extends Phaser.Scene {
         ];
 
         //time and score
-        // this.frame_question = this.add.image(395, 270, 'frame_question').setScale(1.4).setVisible(false);
         this.frame_question = this.add.image(400, 300, 'frame_question').setVisible(false);
         this.textTime = this.add.text(100, 73, 'Time: 45s', { fontSize: 25, color: '#fff' }).setVisible(false);
-        this.score = 0;
-        this.scoreText = this.add.text(540, 73, 'Score: 0', { fontSize: 25, color: '#fff' }).setVisible(false);
+        this.score = 10;
+        this.scoreText = this.add.text(540, 73, 'Score: ' + this.score, { fontSize: 25, color: '#fff' }).setVisible(false);
 
-        //btn start shadow
-        this.start = this.add.text(600, 450, " Start ", { fontSize: 70, fontWeight: "bold", fontFamily: "Arial Black", color: "red" });
-        this.start.fill = '#ec008c';
-        this.start.setShadow(0, 0, 'rgba(0, 0, 0, 0.5)', 0);
-        this.tweens.add({ targets: this.start, x: 425, duration: 500, ease: 'Back' });
-
-        //Guid
-        this.guide = this.add.text(0, 450, " Guide ", { fontSize: 70, fontWeight: "bold", fontFamily: "Arial Black", color: "red" });
-        this.guide.fill = '#ec008c';
-        this.guide.setShadow(0, 0, 'rgba(0, 0, 0, 0.5)', 0);
-        this.tweens.add({ targets: this.guide, x: 100, duration: 500, ease: 'Back' });
-        //
         this.textEnterAnswer = this.add.text(210, 250, '\nEnter your answer:', { font: '20px Courier', fill: '#fff' }).setVisible(false);
-        var textEntry = this.add.text(210, 300, '', { font: '25px Courier', fill: '#fff', align: 'center', wordWrap: { width: 400, useAdvancedWrap: true } }).setVisible(false);
-        this.btn_next = this.add.text(500, 400, 'Skip', { font: '32px Courier', fill: '#fff' }).setVisible(false);
-        this.skip_Frame_1 = this.add.image(800, 418, 'skip_btn_frame_1').setScale(0.5).setVisible(false);
-        this.skip_Frame_2 = this.add.image(0, 418, 'skip_btn_frame_2').setScale(0.5).setVisible(true);
+        this.skipBtn = this.add.sprite(800, 418, 'skip_btn').setScale(0.5).setVisible(false);
+        this.checkBtn = this.add.sprite(0, 418, 'check_btn').setScale(0.5).setVisible(false);
+        //quit,start
+        this.startBtn = this.add.sprite(675, 600, 'start_btn').setScale(0.8);
+        this.tweens.add({ targets: this.startBtn, y: 500, duration: 500, ease: 'Back' });
+        this.quitBtn = this.add.sprite(485, 600, 'quit_btn').setScale(0.8);
+        this.tweens.add({ targets: this.quitBtn, y: 500, duration: 500, ease: 'Back' });
 
-        this.btn_check = this.add.text(210, 400, 'Check', { font: '32px Courier', fill: '#fff' }).setVisible(false);
-        // this.btn_test = this.add.text(210, 400, 'Check', { font: '32px Courier', fill: '#000' }).setVisible(true);
-        ///
+        this.checkBtn.setInteractive();
+        this.skipBtn.setInteractive();
+        this.startBtn.setInteractive();
+        this.quitBtn.setInteractive();
+
         //clone list
         this.lstQuestion = questions.slice();
 
-        this.start.setInteractive();
-        this.btn_next.setInteractive();
-        this.btn_check.setInteractive();
-        this.guide.setInteractive();
-
         //this.btn_test.setInteractive();
-
         var currentQuestion = this.randomQuestion(this.lstQuestion);
-        this.input.keyboard.on('keydown', function(event) {
-            if (event.keyCode === 8 && textEntry.text.length > 0) {
-                textEntry.text = textEntry.text.substr(0, textEntry.text.length - 1);
-                //alert(event.keyCode);
-                console.log(event.key);
-            } else
-            //if (event.keyCode === 32 || (event.keyCode >= 48 && event.keyCode < 90)) 
-            {
-                //textEntry.text += event.key;
-                textEntry.text += event.key;
-                console.log(event.key);
 
-
-            }
-        });
-        this.start.on("pointerdown", () => {
+        this.startBtn.on("pointerdown", () => {
             // this.socket.on('startGame2', function(questions) {
             //     console.log("start");
             // });
-            this.start.setVisible(false);
-            this.showHideGuid(false);
-            this.btn_next.setVisible(true);
-            this.btn_check.setVisible(true);
+            this.startBtn.setVisible(false);
+            this.quitBtn.setVisible(false);
+            this.textPopup.setVisible(false);
             this.scoreText.setVisible(true);
-            this.guide.setVisible(false);
-            this.skip_Frame_1.setVisible(true);
-            this.skip_Frame_2.setVisible(true);
-            this.tweens.add({ targets: this.skip_Frame_1, x: 540, duration: 500, ease: 'Back' });
-            this.tweens.add({ targets: this.skip_Frame_2, x: 260, duration: 500, ease: 'Back' });
+            this.skipBtn.setVisible(true);
+            this.checkBtn.setVisible(true);
+            this.quitBtn.setVisible(false);
+            this.tweens.add({ targets: this.skipBtn, x: 540, duration: 500, ease: 'Back' });
+            this.tweens.add({ targets: this.checkBtn, x: 260, duration: 500, ease: 'Back' });
+            element.setVisible(true);
+
+            //logo
+            this.logo = this.add.sprite(395, 550, 'logo').setScale(0.3).setVisible(true);
+            this.logo.setOrigin(0.5);
+            this.tweens.add({ targets: this.logo, angle: this.logo.angle - 2, duration: 1000, ease: 'Sine.easeInOut' });
+            this.tweens.add({ targets: this.logo, angle: this.logo.angle + 4, duration: 2000, ease: 'Sine.easeInOut', yoyo: 1, loop: -1, delay: 1000 });
 
 
             //time
@@ -161,12 +144,20 @@ class man2 extends Phaser.Scene {
 
             //enter answer
             this.textEnterAnswer.setVisible(true);
-            textEntry.setVisible(true);
+            //fade
+            this.cameras.main.fadeIn(250);
+            this.time.delayedCall(250, function() {
+                this.button_sound.play();
+            }, [], this);
         });
 
+        //pop gold
+        this.popupGold = this.add.image(400, 0, 'popup_gold').setScale(0.4).setVisible(false);
+
         //next
-        this.btn_next.on("pointerdown", () => {
-            if (this.score > 0) {
+        this.skipBtn.on("pointerdown", () => {
+            this.button_sound.play();
+            if (this.score >= 2) {
                 this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
                 this.questionDisplay.setVisible(false);
                 //handle
@@ -175,18 +166,19 @@ class man2 extends Phaser.Scene {
                 }
                 currentQuestion = this.randomQuestion(this.lstQuestion);
                 this.questionDisplay = this.add.text(330, 200, currentQuestion.question, { font: '30px Helvetica', color: "#fff" }).setVisible(true);
-                textEntry.text = "";
+                element.getChildByName('nameField').value = "";
                 this.score -= 2;
                 this.scoreText.setText("Score: " + this.score);
             } else {
-                alert("k đủ xiền");
+                //alert("k đủ xiền");
+                this.popupGold.setVisible(true);
+                this.tweens.add({ targets: this.popupGold, y: 123, duration: 500, ease: 'Back' });
             }
         });
 
         //check
-        this.btn_check.on("pointerdown", () => {
-            if (this.checkAnswer(textEntry.text, currentQuestion.answer)) {
-                //alert("oki");
+        this.checkBtn.on("pointerdown", () => {
+            if (this.checkAnswer(element.getChildByName('nameField').value, currentQuestion.answer)) {
                 this.true_sound.play();
                 this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
                 this.questionDisplay.setVisible(false);
@@ -195,13 +187,13 @@ class man2 extends Phaser.Scene {
                     this.lstQuestion = questions.slice();
                 }
                 currentQuestion = this.randomQuestion(this.lstQuestion);
-                this.questionDisplay = this.add.text(330, 170, currentQuestion.question, { fontSize: 20, color: "#000" }).setVisible(true);
-                textEntry.text = "";
+                this.questionDisplay = this.add.text(330, 200, currentQuestion.question, { font: '30px Helvetica', color: "#fff" }).setVisible(true);
+                element.getChildByName('nameField').value = "";
                 this.score += 4;
                 this.scoreText.setText("Score: " + this.score);
             } else {
                 this.false_sound.play();
-                //alert("Try again " + textEntry.text + " " + currentQuestion.answer);
+                element.getChildByName('nameField').style.border = '2px solid red';
             }
         });
         // this.btn_test.on('pointerdown', function() {
@@ -214,8 +206,7 @@ class man2 extends Phaser.Scene {
         //enter
         this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         this.keyEnter.on('down', function(key, event) {
-            if (this.checkAnswer(textEntry.text, currentQuestion.answer)) {
-                //alert("oki");
+            if (this.checkAnswer(element.getChildByName('nameField').value, currentQuestion.answer)) {
                 this.true_sound.play();
                 this.lstQuestion.splice(this.lstQuestion.indexOf(currentQuestion), 1);
                 this.questionDisplay.setVisible(false);
@@ -225,35 +216,23 @@ class man2 extends Phaser.Scene {
                 }
                 currentQuestion = this.randomQuestion(this.lstQuestion);
                 this.questionDisplay = this.add.text(330, 200, currentQuestion.question, { font: '30px Helvetica', color: "#fff" }).setVisible(true);
-                textEntry.text = "";
+                element.getChildByName('nameField').value = "";
                 this.score += 4;
                 this.scoreText.setText("Score: " + this.score);
             } else {
                 this.false_sound.play();
-                //alert("Try again " + textEntry.text + " " + currentQuestion.answer);
+                element.getChildByName('nameField').style.border = '2px solid red';
             }
         }, this);
 
         //guide
-        this.popup = this.add.image(540, 200, 'popup').setScale(1.2).setVisible(false);
-        this.textPopup = this.add.text(400, 130, '').setWordWrapWidth(300).setVisible(false);
-        this.textTitle = this.add.text(460, 76, "Trò chơi ghép chữ").setVisible(false);
+        this.textPopup = this.add.text(415, 220, '').setWordWrapWidth(350).setVisible(false);
         this.typewriteTextWrapped('Hello, Chào mừng bạn đã đến với trò chơi ghép chữ, phí là 5 đồng, bạn có thời gian là 5ph để trả lời các câu hỏi, mỗi câu đúng sẽ được 4 đồng, bấm nút start để bắt đầu chơi nào!');
-        this.guide.on("pointerdown", () => {
-            this.showHideGuid(true);
-        });
+        this.textPopup.setVisible(true);
 
     }
 
     update() {
-        //btn start shadow
-        var offset = this.moveToXY(this.input.activePointer, this.start.x, this.start.y, 8);
-        this.start.setShadow(offset.x, offset.y, 'rgba(0, 0, 0, 0.5)', this.distanceToPointer(this.start, this.input.activePointer) / 30);
-
-        //btn guid shadow
-        var offset = this.moveToXY(this.input.activePointer, this.guide.x, this.guide.y, 8);
-        this.guide.setShadow(offset.x, offset.y, 'rgba(0, 0, 0, 0.5)', this.distanceToPointer(this.guide, this.input.activePointer) / 30);
-
         //time
         if (!this.timeEvent || this.duration <= 0) {
             return
@@ -262,6 +241,7 @@ class man2 extends Phaser.Scene {
         const remaining = this.duration - elapsed;
         const seconds = remaining / 60000;
         this.textTime.text = "Time: " + seconds.toFixed(2) + "m";
+
     }
     typewriteText(text) {
         const length = text.length
@@ -332,21 +312,12 @@ class man2 extends Phaser.Scene {
         }
     }
 
-    showHideGuid(show) {
-        this.textPopup.setVisible(show);
-        this.textTitle.setVisible(show);
-        this.popup.setVisible(show);
-    }
-
     setGradientText(text) {
         //  Apply the gradient fill.
         const gradient = text.context.createLinearGradient(0, 0, 0, text.height);
         gradient.addColorStop(1, '#2F195A');
         gradient.addColorStop(0.5, '#A72A7B');
-
-
         gradient.addColorStop(0, '#F5BBE7');
-
         text.setFill(gradient);
     }
 
