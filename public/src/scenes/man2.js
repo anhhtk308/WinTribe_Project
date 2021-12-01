@@ -102,6 +102,8 @@ class man2 extends Phaser.Scene {
         this.close_gift = this.add.image(400, -100, 'close_gift').setScale(0.24).setVisible(false);
         this.iconReplay = this.add.image(800, 500, 'icon_replay').setScale(0.76).setVisible(false);
         this.iconHome = this.add.image(0, 506, 'icon_home').setScale(0.8).setVisible(false);
+        this.textGameOver = this.add.text(280, 70, 'Game Over', { fontSize: 40, fill: "#000", stroke: 'yellow', strokeThickness: 5 }).setVisible(false);
+        this.result = this.add.text(280, 150, 'Gold: ', { fontSize: 40, fill: "#000", stroke: 'yellow', strokeThickness: 5 }).setVisible(false);
         this.iconHome.setInteractive();
         this.iconReplay.setInteractive();
 
@@ -135,6 +137,7 @@ class man2 extends Phaser.Scene {
             // this.socket.on('startGame2', function(questions) {
             //     console.log("start");
             // });
+
             currentQuestion = this.startGame(this.randomQuestion(this.lstQuestion));
             this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
             this.keyEnter.on('down', function(key, event) {
@@ -193,6 +196,10 @@ class man2 extends Phaser.Scene {
         //replay
         this.iconReplay.on("pointerdown", () => {
             currentQuestion = this.startGame(this.randomQuestion(this.lstQuestion));
+            this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+            this.keyEnter.on('down', function(key, event) {
+                currentQuestion = this.checkBtnHandle(currentQuestion);
+            }, this);
         });
     }
 
@@ -224,17 +231,6 @@ class man2 extends Phaser.Scene {
         const wrappedText = lines.join('\n\n')
         this.typewriteText(wrappedText)
     }
-    distanceToPointer(displayObject, pointer) {
-        this._dx = displayObject.x - pointer.x;
-        this._dy = displayObject.y - pointer.y;
-        return Math.sqrt(this._dx * this._dx + this._dy * this._dy);
-    }
-    moveToXY(displayObject, x, y, speed) {
-        var _angle = Math.atan2(y - displayObject.y, x - displayObject.x);
-        var x = Math.cos(_angle) * speed;
-        var y = Math.sin(_angle) * speed;
-        return { x: x, y: y };
-    }
     timeStart(callback, duration = 60000 * 5) {
         this.timeStop();
         this.duration = duration;
@@ -254,24 +250,19 @@ class man2 extends Phaser.Scene {
         }
     }
     handleTimeFinished() {
-        this.keyEnter.removeListener('down');
-        this.result = this.add.text(320, 150, 'Time out\nGold: ', { fontSize: 35, color: '#fff' });
-        this.textTime.setVisible(false);
+        this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+        this.showHideResult(true);
+        this.showHideQuestion(false);
+        this.open_gift.setVisible(false);
         this.questionDisplay.setVisible(false);
         this.textEnterAnswer.setVisible(false);
-        this.skipBtn.setVisible(false);
-        this.checkBtn.setVisible(false);
         this.logo.setVisible(false);
-        this.frame_question.setVisible(false);
-        this.frame_result.setVisible(true);
-        this.iconClose.setVisible(false);
         this.scoreText.setVisible(false);
         this.ele.setVisible(false);
-        this.iconReplay.setVisible(true);
         this.tweens.add({ targets: this.iconReplay, x: 550, duration: 500, ease: 'Back' });
-        this.iconHome.setVisible(true);
         this.tweens.add({ targets: this.iconHome, x: 250, duration: 500, ease: 'Back' });
         this.close_gift.setInteractive();
+        this.textGameOver.setVisible(true);
         //fade
         this.cameras.main.fadeIn(250);
         this.time.delayedCall(250, function() {
@@ -281,6 +272,8 @@ class man2 extends Phaser.Scene {
         if (this.score > 0) {
             this.tweens.add({ targets: this.close_gift, y: 300, duration: 500, delay: 250, ease: 'Back' });
             this.close_gift.setVisible(true);
+            this.tweens.add({ targets: this.close_gift, angle: this.close_gift.angle - 2, duration: 1000, ease: 'Sine.easeInOut' });
+            this.tweens.add({ targets: this.close_gift, angle: this.close_gift.angle + 4, duration: 2000, ease: 'Sine.easeInOut', yoyo: 1, loop: -1, delay: 1000 });
             this.close_gift.on("pointerdown", () => {
                 this.close_gift.setVisible(false);
                 this.open_gift.setVisible(true);
@@ -291,12 +284,10 @@ class man2 extends Phaser.Scene {
             this.close_gift.setVisible(true);
         }
     }
-
     randomQuestion(lstQuestion) {
         let randomQes = Math.floor(Math.random() * lstQuestion.length);
         return lstQuestion[randomQes];
     }
-
     checkAnswer(input, answer) {
         if (input.toLowerCase() === answer.toLowerCase()) {
             return true;
@@ -324,7 +315,7 @@ class man2 extends Phaser.Scene {
                 onUpdateScope: this,
                 onCompleteScope: this,
                 onUpdate: function() {
-                    this.result.setText('Time out\nGold: ' + Math.floor(this.pointsTween.getValue()));
+                    this.result.setText('Gold: ' + Math.floor(this.pointsTween.getValue()));
                 },
                 onComplete: function() {
                     var emitter = this.add.particles('particle').setScale(1).createEmitter({
@@ -379,14 +370,16 @@ class man2 extends Phaser.Scene {
 
     startGame(currentQuestion) {
         if (this.score >= 5) {
+            //result
+            this.ele.getChildByName('nameField').style.border = '1px solid black';
+            this.showHideResult(false);
+            this.showHideQuestion(true);
+
             this.startBtn.setVisible(false);
             this.quitBtn.setVisible(false);
             this.textPopup.setVisible(false);
             this.score -= 5;
             this.scoreText = this.add.text(540, 73, 'Gold: ' + this.score, { fontSize: 25, color: '#fff' }).setVisible(true);
-            this.skipBtn.setVisible(true);
-            this.iconClose.setVisible(true);
-            this.checkBtn.setVisible(true);
             this.quitBtn.setVisible(false);
             this.tweens.add({ targets: this.skipBtn, x: 540, duration: 500, ease: 'Back' });
             this.tweens.add({ targets: this.checkBtn, x: 260, duration: 500, ease: 'Back' });
@@ -399,11 +392,9 @@ class man2 extends Phaser.Scene {
             this.tweens.add({ targets: this.logo, angle: this.logo.angle + 4, duration: 2000, ease: 'Sine.easeInOut', yoyo: 1, loop: -1, delay: 1000 });
 
             //time
-            this.textTime.setVisible(true);
             this.timeStart(this.handleTimeFinished.bind(this), 60000 * 5);
 
             //question
-            this.frame_question.setVisible(true);
             this.questionDisplay = this.add.text(330, 200, currentQuestion.question, { font: '30px Helvetica', color: "#fff" });
             //this.questionDisplay.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
             //this.setGradientText(this.questionDisplay);
@@ -433,6 +424,24 @@ class man2 extends Phaser.Scene {
         gradient.addColorStop(0.5, '#A72A7B');
         gradient.addColorStop(0, '#F5BBE7');
         text.setFill(gradient);
+    }
+
+    showHideResult(show) {
+        this.frame_result.setVisible(show);
+        this.iconReplay.setVisible(show);
+        this.iconHome.setVisible(show);
+        this.close_gift.setVisible(show);
+        this.open_gift.setVisible(show);
+        this.result.setVisible(show);
+        this.textGameOver.setVisible(show);
+    }
+
+    showHideQuestion(show) {
+        this.frame_question.setVisible(show);
+        this.iconClose.setVisible(show);
+        this.skipBtn.setVisible(show);
+        this.checkBtn.setVisible(show);
+        this.textTime.setVisible(show);
     }
 
 }
