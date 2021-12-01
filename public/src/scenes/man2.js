@@ -99,9 +99,9 @@ class man2 extends Phaser.Scene {
         //frameresult, gift
         this.frame_result = this.add.image(400, 300, 'frame_result').setVisible(false);
         this.open_gift = this.add.image(400, 300, 'open_gift').setScale(0.3).setVisible(false);
-        this.close_gift = this.add.image(400, 0, 'close_gift').setScale(0.24).setVisible(false);
-        this.iconReplay = this.add.image(550, 500, 'icon_replay').setScale(0.77).setVisible(false);
-        this.iconHome = this.add.image(250, 501, 'icon_home').setScale(0.8).setVisible(false);
+        this.close_gift = this.add.image(400, -100, 'close_gift').setScale(0.24).setVisible(false);
+        this.iconReplay = this.add.image(800, 500, 'icon_replay').setScale(0.76).setVisible(false);
+        this.iconHome = this.add.image(0, 506, 'icon_home').setScale(0.8).setVisible(false);
         this.iconHome.setInteractive();
         this.iconReplay.setInteractive();
 
@@ -333,7 +333,7 @@ class man2 extends Phaser.Scene {
         }
     }
     handleTimeFinished() {
-        this.result = this.add.text(320, 150, 'Time out\nGold: 0', { fontSize: 35, color: '#fff' });
+        this.result = this.add.text(320, 150, 'Time out\nGold: ', { fontSize: 35, color: '#fff' });
         this.textTime.setVisible(false);
         this.questionDisplay.setVisible(false);
         this.textEnterAnswer.setVisible(false);
@@ -346,7 +346,9 @@ class man2 extends Phaser.Scene {
         this.scoreText.setVisible(false);
         this.ele.setVisible(false);
         this.iconReplay.setVisible(true);
+        this.tweens.add({ targets: this.iconReplay, x: 550, duration: 500, ease: 'Back' });
         this.iconHome.setVisible(true);
+        this.tweens.add({ targets: this.iconHome, x: 250, duration: 500, ease: 'Back' });
         this.close_gift.setInteractive();
         //fade
         this.cameras.main.fadeIn(250);
@@ -355,7 +357,7 @@ class man2 extends Phaser.Scene {
         }, [], this);
 
         if (this.score > 0) {
-            this.tweens.add({ targets: this.close_gift, y: 300, duration: 500, ease: 'Back' });
+            this.tweens.add({ targets: this.close_gift, y: 300, duration: 500, delay: 250, ease: 'Back' });
             this.close_gift.setVisible(true);
             this.close_gift.on("pointerdown", () => {
                 this.close_gift.setVisible(false);
