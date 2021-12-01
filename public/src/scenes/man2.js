@@ -18,6 +18,13 @@ class man2 extends Phaser.Scene {
         this.load.image("quit_btn", "assets/matchingGame/quit_btn.png");
         this.load.image("message", "assets/matchingGame/message.png");
         this.load.image("logo", "assets/matchingGame/logo_quiz.png");
+        this.load.image("icon_close", "assets/matchingGame/icon_close_1.png");
+        this.load.image("frame_result", "assets/matchingGame/background.png");
+        this.load.image("close_gift", "assets/matchingGame/close_gift.png");
+        this.load.image("open_gift", "assets/matchingGame/open_gift.png");
+        this.load.image("particle", "assets/matchingGame/particle.png");
+        this.load.image("icon_replay", "assets/matchingGame/icon_replay.png");
+        this.load.image("icon_home", "assets/matchingGame/icon_home.png");
 
         //audio
         this.load.audio("true_sound", "assets/matchingGame/true_sound.mp3");
@@ -27,6 +34,7 @@ class man2 extends Phaser.Scene {
     }
     create() {
         var element = this.add.dom(400, 340).createFromCache('answerform').setVisible(false);
+        this.ele = element;
         element.addListener('keydown');
         element.on('keydown', () => {
             element.getChildByName('nameField').style.border = '1px solid black';
@@ -86,9 +94,23 @@ class man2 extends Phaser.Scene {
         //time and score
         this.frame_question = this.add.image(400, 300, 'frame_question').setVisible(false);
         this.textTime = this.add.text(100, 73, 'Time: 45s', { fontSize: 25, color: '#fff' }).setVisible(false);
-        this.score = 10;
+        this.score = 25;
+
+        //frameresult, gift
+        this.frame_result = this.add.image(400, 300, 'frame_result').setVisible(false);
+        this.open_gift = this.add.image(400, 300, 'open_gift').setScale(0.3).setVisible(false);
+        this.close_gift = this.add.image(400, 0, 'close_gift').setScale(0.24).setVisible(false);
+        this.iconReplay = this.add.image(550, 500, 'icon_replay').setScale(0.77).setVisible(false);
+        this.iconHome = this.add.image(250, 501, 'icon_home').setScale(0.8).setVisible(false);
+        this.iconHome.setInteractive();
+        this.iconReplay.setInteractive();
+
+
+
         //text in game
         this.textEnterAnswer = this.add.text(210, 250, '\nEnter your answer:', { font: '20px Courier', fill: '#fff' }).setVisible(false);
+        this.iconClose = this.add.image(720, 150, 'icon_close').setScale(0.4).setVisible(false);
+        this.iconClose.setInteractive();
         this.skipBtn = this.add.sprite(800, 418, 'skip_btn').setScale(0.5).setVisible(false);
         this.checkBtn = this.add.sprite(0, 418, 'check_btn').setScale(0.5).setVisible(false);
         //quit,start
@@ -105,7 +127,6 @@ class man2 extends Phaser.Scene {
         //clone list
         this.lstQuestion = questions.slice();
 
-        //this.btn_test.setInteractive();
         var currentQuestion = this.randomQuestion(this.lstQuestion);
 
         this.startBtn.on("pointerdown", () => {
@@ -134,6 +155,11 @@ class man2 extends Phaser.Scene {
                 //time
                 this.textTime.setVisible(true);
                 this.timeStart(this.handleTimeFinished.bind(this), 60000 * 5);
+
+                //icon_close
+                this.iconClose.setVisible(true);
+                // this.iconClose = this.add.image(720, 150, 'icon_close').setScale(0.4);
+                // this.iconClose.setInteractive();
 
                 //question
                 this.frame_question.setVisible(true);
@@ -174,6 +200,7 @@ class man2 extends Phaser.Scene {
                 element.getChildByName('nameField').value = "";
                 this.score -= 2;
                 this.scoreText.setText("Gold: " + this.score);
+                this.animationAddSubScore('-2', '#3ff235');
             } else {
                 //alert("k đủ xiền");
                 this.tweens.add({ targets: this.message, y: 73, duration: 500, ease: 'Back' });
@@ -198,18 +225,13 @@ class man2 extends Phaser.Scene {
                 element.getChildByName('nameField').value = "";
                 this.score += 4;
                 this.scoreText.setText("Gold: " + this.score);
+                this.animationAddSubScore('+4', '#ffde00');
             } else {
                 this.false_sound.play();
                 element.getChildByName('nameField').style.border = '2px solid red';
             }
         });
-        // this.btn_test.on('pointerdown', function() {
-        //     this.cameras.main.fade(250);
-        //     this.time.delayedCall(250, function() {
-        //         this.button_sound.play();
-        //         this.scene.start('man1');
-        //     }, [], this);
-        // }, this);
+
         //enter
         this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         this.keyEnter.on('down', function(key, event) {
@@ -226,6 +248,7 @@ class man2 extends Phaser.Scene {
                 element.getChildByName('nameField').value = "";
                 this.score += 4;
                 this.scoreText.setText("Gold: " + this.score);
+                this.animationAddSubScore('+4', '#ffde00');
             } else {
                 this.false_sound.play();
                 element.getChildByName('nameField').style.border = '2px solid red';
@@ -237,13 +260,18 @@ class man2 extends Phaser.Scene {
         this.typewriteTextWrapped('Hello, Chào mừng bạn đã đến với trò chơi ghép chữ, phí là 5 đồng, bạn có thời gian là 5ph để trả lời các câu hỏi, mỗi câu đúng sẽ được 4 đồng, bấm nút start để bắt đầu chơi nào!');
         this.textPopup.setVisible(true);
 
+        //iconClose
+        this.iconClose.on("pointerdown", () => {
+            this.handleTimeFinished();
+        });
+
         //quitBtn
         this.quitBtn.on("pointerdown", () => {
-            this.cameras.main.fade(250);
-            this.time.delayedCall(250, function() {
-                this.button_sound.play();
-                this.scene.start('man1');
-            }, [], this);
+            this.fadeOutScene();
+        });
+        //home
+        this.iconHome.on("pointerdown", () => {
+            this.fadeOutScene();
         });
     }
 
@@ -305,13 +333,39 @@ class man2 extends Phaser.Scene {
         }
     }
     handleTimeFinished() {
-        this.add.text(320, 250, 'Hết giờ\nGold: ' + this.score, { fontSize: 35, color: 'red' });
+        this.result = this.add.text(320, 150, 'Time out\nGold: 0', { fontSize: 35, color: '#fff' });
         this.textTime.setVisible(false);
         this.questionDisplay.setVisible(false);
         this.textEnterAnswer.setVisible(false);
-        this.btn_next.setVisible(false);
-        this.btn_check.setVisible(false);
+        this.skipBtn.setVisible(false);
+        this.checkBtn.setVisible(false);
+        this.logo.setVisible(false);
+        this.frame_question.setVisible(false);
+        this.frame_result.setVisible(true);
+        this.iconClose.setVisible(false);
         this.scoreText.setVisible(false);
+        this.ele.setVisible(false);
+        this.iconReplay.setVisible(true);
+        this.iconHome.setVisible(true);
+        this.close_gift.setInteractive();
+        //fade
+        this.cameras.main.fadeIn(250);
+        this.time.delayedCall(250, function() {
+            this.button_sound.play();
+        }, [], this);
+
+        if (this.score > 0) {
+            this.tweens.add({ targets: this.close_gift, y: 300, duration: 500, ease: 'Back' });
+            this.close_gift.setVisible(true);
+            this.close_gift.on("pointerdown", () => {
+                this.close_gift.setVisible(false);
+                this.open_gift.setVisible(true);
+                this.gameOverScoreTween();
+            });
+        } else {
+            this.close_gift.y = 300;
+            this.close_gift.setVisible(true);
+        }
     }
 
     randomQuestion(lstQuestion) {
@@ -325,6 +379,58 @@ class man2 extends Phaser.Scene {
         } else {
             return false;
         }
+    }
+
+    animationAddSubScore(text, color) {
+        var randX = Phaser.Math.Between(200, 600);
+        var randY = Phaser.Math.Between(200, 400);
+        var pointsAdded = this.add.text(randX, randY, text, { font: '30px ', fill: color, stroke: '#fff', strokeThickness: 10 });
+        pointsAdded.setOrigin(0.5, 0.5);
+        this.tweens.add({ targets: pointsAdded, alpha: 0, y: randY - 50, duration: 1000, ease: 'Linear' });
+        this.cameras.main.shake(100, 0.01, true);
+    }
+
+    gameOverScoreTween() {
+        if (this.score) {
+            this.pointsTween = this.tweens.addCounter({
+                from: 0,
+                to: this.score,
+                duration: 800,
+                delay: 250,
+                onUpdateScope: this,
+                onCompleteScope: this,
+                onUpdate: function() {
+                    this.result.setText('Time out\nGold: ' + Math.floor(this.pointsTween.getValue()));
+                },
+                onComplete: function() {
+                    var emitter = this.add.particles('particle').setScale(1).createEmitter({
+                        x: this.result.x + 30,
+                        y: this.result.y,
+                        speed: { min: -600, max: 600 },
+                        angle: { min: 0, max: 360 },
+                        scale: { start: 0.5, end: 3 },
+                        blendMode: 'ADD',
+                        active: true,
+                        lifespan: 2000,
+                        gravityY: 1000,
+                        quantity: 250
+                    });
+                    emitter.explode();
+                }
+            });
+        }
+    }
+
+    fadeOutScene() {
+        this.cameras.main.fade(250);
+        this.time.delayedCall(250, function() {
+            this.button_sound.play();
+            this.scene.start('man1');
+        }, [], this);
+    }
+
+    startGame() {
+
     }
 
     setGradientText(text) {
