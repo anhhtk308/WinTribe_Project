@@ -16,7 +16,7 @@ class man2 extends Phaser.Scene {
         this.load.image("skip_btn", "assets/matchingGame/skip_btn.png");
         this.load.image("start_btn", "assets/matchingGame/start_btn.png");
         this.load.image("quit_btn", "assets/matchingGame/quit_btn.png");
-        this.load.image("message", "assets/matchingGame/message.png");
+        this.load.image("message", "assets/matchingGame/frame2.png");
         this.load.image("logo", "assets/matchingGame/logo_quiz.png");
         this.load.image("icon_close", "assets/matchingGame/icon_close_1.png");
         this.load.image("frame_result", "assets/matchingGame/background.png");
@@ -94,7 +94,9 @@ class man2 extends Phaser.Scene {
         //time and score
         this.frame_question = this.add.image(400, 300, 'frame_question').setVisible(false);
         this.textTime = this.add.text(100, 73, 'Time: 45s', { fontSize: 25, color: '#fff' }).setVisible(false);
-        this.score = 25;
+        this.score = 5;
+        this.scoreText = this.add.text(540, 73, 'Gold: ' + this.score, { fontSize: 25, color: '#fff' }).setVisible(false);
+
 
         //frameresult, gift
         this.frame_result = this.add.image(400, 300, 'frame_result').setVisible(false);
@@ -146,7 +148,7 @@ class man2 extends Phaser.Scene {
         });
 
         //message
-        this.message = this.add.image(400, -100, 'message').setScale(1);
+        this.message = this.add.image(400, -150, 'message').setScale(0.7);
 
         //skip
         this.skipBtn.on("pointerdown", () => {
@@ -166,10 +168,12 @@ class man2 extends Phaser.Scene {
                 this.animationAddSubScore('-2', '#3ff235');
             } else {
                 //alert("k đủ xiền");
-                this.tweens.add({ targets: this.message, y: 73, duration: 500, ease: 'Back' });
+                this.tweens.add({ targets: this.message, y: 105, duration: 500, ease: 'Back' });
                 this.time.delayedCall(2000, function() {
-                    this.tweens.add({ targets: this.message, y: -100, duration: 500, ease: 'Back' });
+                    this.tweens.add({ targets: this.message, y: -150, duration: 500, ease: 'Back' });
+                    //this.message.setVisible(false);
                 }, [], this);
+
             }
         });
 
@@ -378,7 +382,9 @@ class man2 extends Phaser.Scene {
             this.quitBtn.setVisible(false);
             this.textPopup.setVisible(false);
             this.score -= 5;
-            this.scoreText = this.add.text(540, 73, 'Gold: ' + this.score, { fontSize: 25, color: '#fff' }).setVisible(true);
+            // this.scoreText = this.add.text(540, 73, 'Gold: ' + this.score, { fontSize: 25, color: '#fff' }).setVisible(true);
+            this.scoreText.setVisible(true);
+            this.scoreText.setText('Gold: ' + this.score);
             this.quitBtn.setVisible(false);
             this.tweens.add({ targets: this.skipBtn, x: 540, duration: 500, ease: 'Back' });
             this.tweens.add({ targets: this.checkBtn, x: 260, duration: 500, ease: 'Back' });
@@ -408,9 +414,9 @@ class man2 extends Phaser.Scene {
 
             return currentQuestion;
         } else {
-            this.tweens.add({ targets: this.message, y: 73, duration: 500, ease: 'Back' });
+            this.tweens.add({ targets: this.message, y: 105, duration: 500, ease: 'Back' });
             this.time.delayedCall(2000, function() {
-                this.tweens.add({ targets: this.message, y: -100, duration: 500, ease: 'Back' });
+                this.tweens.add({ targets: this.message, y: -150, duration: 500, ease: 'Back' });
             }, [], this);
         }
         return currentQuestion;

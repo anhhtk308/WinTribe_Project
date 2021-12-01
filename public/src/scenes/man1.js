@@ -2,10 +2,13 @@ class man1 extends Phaser.Scene {
     constructor() {
         super("man1");
     }
-
+    init(data) {
+        this.name = data.name;
+    }
     preload() {
-        // this.load.html('answerform', 'assets/answerForm.html');
-        // this.load.css('answerCss', 'assets/answerForm.css');
+        this.load.html('chatForm', 'assets/chatForm/chatForm.html');
+        this.load.html('nameForm', 'assets/matchingGame/answerForm/answerForm.html');
+        this.load.css('answerCss', 'assets/matchingGame/answerForm/answerForm.css');
         this.load.image("ship", "assets/Ship.png");
         this.load.image("tiles", "assets/tiles.png");
         this.load.tilemapTiledJSON("SeaMapDemo23114", "assets/SeaMapDemo23114.json");
@@ -44,10 +47,22 @@ class man1 extends Phaser.Scene {
             }, [], this);
         }, this);
 
-        var text = this.add.text(300, 10, 'Please enter your name', { color: 'white', fontSize: '20px ' });
-        text.setInteractive();
-        // var element = this.add.dom(400, 100).createFromCache('answerform');
-        // element.addListener('keydown');
+
+        //chat
+        alert(this.name);
+        this.elementChat = this.add.dom(175, 550).createFromCache('chatForm');
+        var socket = io();
+        var self = this;
+        socket.on('addToChat', function(data) {
+            self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
+        });
+
+        this.elementChat.getChildByID("chat-form").onsubmit = function(e) {
+                e.preventDefault();
+                socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
+                self.elementChat.getChildByID("chat-input").value = '';
+            }
+            // element.addListener('keydown');
 
         // element.on('keydown', function(event) {
         //     if (event.keyCode == 13) {
