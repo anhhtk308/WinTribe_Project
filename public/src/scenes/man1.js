@@ -4,14 +4,14 @@ class man1 extends Phaser.Scene {
     }
 
     preload() {
-        this.load.html('answerform', 'assets/answerForm.html');
-        this.load.css('answerCss', 'assets/answerForm.css');
+        // this.load.html('answerform', 'assets/answerForm.html');
+        // this.load.css('answerCss', 'assets/answerForm.css');
         this.load.image("ship", "assets/Ship.png");
         this.load.image("tiles", "assets/tiles.png");
         this.load.tilemapTiledJSON("SeaMapDemo23114", "assets/SeaMapDemo23114.json");
 
         // set
-        this.load.audio("button_sound", "assets/audio-button.mp3");
+        this.load.audio("button_sound", "assets/matchingGame/audio-button.mp3");
     }
     create() {
 
@@ -46,45 +46,45 @@ class man1 extends Phaser.Scene {
 
         var text = this.add.text(300, 10, 'Please enter your name', { color: 'white', fontSize: '20px ' });
         text.setInteractive();
-        var element = this.add.dom(400, 100).createFromCache('answerform');
-        element.addListener('keydown');
+        // var element = this.add.dom(400, 100).createFromCache('answerform');
+        // element.addListener('keydown');
 
-        element.on('keydown', function(event) {
-            if (event.keyCode == 13) {
-                var inputText = this.getChildByName('nameField');
-                console.log(inputText.value);
-            }
-            //if (event.target.name === 'nameField') {
-            // var inputText = this.getChildByName('nameField');
+        // element.on('keydown', function(event) {
+        //     if (event.keyCode == 13) {
+        //         var inputText = this.getChildByName('nameField');
+        //         console.log(inputText.value);
+        //     }
+        //if (event.target.name === 'nameField') {
+        // var inputText = this.getChildByName('nameField');
 
-            // //  Have they entered anything?
-            // if (inputText.value !== '') {
-            //     //  Turn off the click events
-            //     this.removeListener('keydown');
+        // //  Have they entered anything?
+        // if (inputText.value !== '') {
+        //     //  Turn off the click events
+        //     this.removeListener('keydown');
 
-            //     //  Hide the login element
-            //     this.setVisible(false);
+        //     //  Hide the login element
+        //     this.setVisible(false);
 
-            //     //  Populate the text with whatever they typed in
-            //     text.setText('Welcome ' + inputText.value);
-            //     console.log(inputText.value);
-            // } else {
-            //     //  Flash the prompt
-            //     this.scene.tweens.add({
-            //         targets: text,
-            //         alpha: 0.2,
-            //         duration: 250,
-            //         ease: 'Power3',
-            //         yoyo: true
-            //     });
-            // }
-            //}
+        //     //  Populate the text with whatever they typed in
+        //     text.setText('Welcome ' + inputText.value);
+        //     console.log(inputText.value);
+        // } else {
+        //     //  Flash the prompt
+        //     this.scene.tweens.add({
+        //         targets: text,
+        //         alpha: 0.2,
+        //         duration: 250,
+        //         ease: 'Power3',
+        //         yoyo: true
+        //     });
+        // }
+        //}
 
-        });
+        //});
 
-        text.on("pointerdown", () => {
-            element.getChildByName('nameField').value = "";
-        });
+        // text.on("pointerdown", () => {
+        //     element.getChildByName('nameField').value = "";
+        // });
     }
 
     update() {

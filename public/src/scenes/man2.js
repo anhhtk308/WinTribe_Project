@@ -6,24 +6,23 @@ class man2 extends Phaser.Scene {
 
     preload() {
         //load form input
-        this.load.html('answerform', 'assets/answerForm/answerForm.html');
-        this.load.css('answerCss', 'assets/answerForm/answerForm.css');
+        this.load.html('answerform', 'assets/matchingGame/answerForm/answerForm.html');
+        this.load.css('answerCss', 'assets/matchingGame/answerForm/answerForm.css');
 
-        this.load.image("bg", "assets/background_start_quiz.jpg");
-        this.load.image("popup", "assets/popup.png");
-        this.load.image("frame_question", "assets/1.png");
-        this.load.image("check_btn", "assets/check_btn.png");
-        this.load.image("skip_btn", "assets/skip_btn.png");
-        this.load.image("start_btn", "assets/start_btn.png");
-        this.load.image("quit_btn", "assets/quit_btn.png");
-        this.load.image("popup_gold", "assets/popup_check_gold.png");
+        //image
+        this.load.image("bg", "assets/matchingGame/background_start_quiz.jpg");
+        this.load.image("frame_question", "assets/matchingGame/1.png");
+        this.load.image("check_btn", "assets/matchingGame/check_btn.png");
+        this.load.image("skip_btn", "assets/matchingGame/skip_btn.png");
+        this.load.image("start_btn", "assets/matchingGame/start_btn.png");
+        this.load.image("quit_btn", "assets/matchingGame/quit_btn.png");
+        this.load.image("message", "assets/matchingGame/message.png");
+        this.load.image("logo", "assets/matchingGame/logo_quiz.png");
 
-        this.load.image("logo", "assets/logo_quiz.png", { frameWidth: 97, frameHeight: 84 });
-
-        this.load.audio("true_sound", "assets/true_sound.mp3");
-        this.load.audio("false_sound", "assets/false_sound.mp3");
-        this.load.audio("button_sound", "assets/audio-button.mp3");
-
+        //audio
+        this.load.audio("true_sound", "assets/matchingGame/true_sound.mp3");
+        this.load.audio("false_sound", "assets/matchingGame/false_sound.mp3");
+        this.load.audio("button_sound", "assets/matchingGame/audio-button.mp3");
 
     }
     create() {
@@ -88,8 +87,7 @@ class man2 extends Phaser.Scene {
         this.frame_question = this.add.image(400, 300, 'frame_question').setVisible(false);
         this.textTime = this.add.text(100, 73, 'Time: 45s', { fontSize: 25, color: '#fff' }).setVisible(false);
         this.score = 10;
-        this.scoreText = this.add.text(540, 73, 'Score: ' + this.score, { fontSize: 25, color: '#fff' }).setVisible(false);
-
+        //text in game
         this.textEnterAnswer = this.add.text(210, 250, '\nEnter your answer:', { font: '20px Courier', fill: '#fff' }).setVisible(false);
         this.skipBtn = this.add.sprite(800, 418, 'skip_btn').setScale(0.5).setVisible(false);
         this.checkBtn = this.add.sprite(0, 418, 'check_btn').setScale(0.5).setVisible(false);
@@ -114,45 +112,52 @@ class man2 extends Phaser.Scene {
             // this.socket.on('startGame2', function(questions) {
             //     console.log("start");
             // });
-            this.startBtn.setVisible(false);
-            this.quitBtn.setVisible(false);
-            this.textPopup.setVisible(false);
-            this.scoreText.setVisible(true);
-            this.skipBtn.setVisible(true);
-            this.checkBtn.setVisible(true);
-            this.quitBtn.setVisible(false);
-            this.tweens.add({ targets: this.skipBtn, x: 540, duration: 500, ease: 'Back' });
-            this.tweens.add({ targets: this.checkBtn, x: 260, duration: 500, ease: 'Back' });
-            element.setVisible(true);
+            if (this.score >= 5) {
+                this.startBtn.setVisible(false);
+                this.quitBtn.setVisible(false);
+                this.textPopup.setVisible(false);
+                this.score -= 5;
+                this.scoreText = this.add.text(540, 73, 'Gold: ' + this.score, { fontSize: 25, color: '#fff' }).setVisible(true);
+                this.skipBtn.setVisible(true);
+                this.checkBtn.setVisible(true);
+                this.quitBtn.setVisible(false);
+                this.tweens.add({ targets: this.skipBtn, x: 540, duration: 500, ease: 'Back' });
+                this.tweens.add({ targets: this.checkBtn, x: 260, duration: 500, ease: 'Back' });
+                element.setVisible(true);
 
-            //logo
-            this.logo = this.add.sprite(395, 550, 'logo').setScale(0.3).setVisible(true);
-            this.logo.setOrigin(0.5);
-            this.tweens.add({ targets: this.logo, angle: this.logo.angle - 2, duration: 1000, ease: 'Sine.easeInOut' });
-            this.tweens.add({ targets: this.logo, angle: this.logo.angle + 4, duration: 2000, ease: 'Sine.easeInOut', yoyo: 1, loop: -1, delay: 1000 });
+                //logo
+                this.logo = this.add.sprite(395, 550, 'logo').setScale(0.3).setVisible(true);
+                this.logo.setOrigin(0.5);
+                this.tweens.add({ targets: this.logo, angle: this.logo.angle - 2, duration: 1000, ease: 'Sine.easeInOut' });
+                this.tweens.add({ targets: this.logo, angle: this.logo.angle + 4, duration: 2000, ease: 'Sine.easeInOut', yoyo: 1, loop: -1, delay: 1000 });
 
+                //time
+                this.textTime.setVisible(true);
+                this.timeStart(this.handleTimeFinished.bind(this), 60000 * 5);
 
-            //time
-            this.textTime.setVisible(true);
-            this.timeStart(this.handleTimeFinished.bind(this), 60000 * 5);
+                //question
+                this.frame_question.setVisible(true);
+                this.questionDisplay = this.add.text(330, 200, currentQuestion.question, { font: '30px Helvetica', color: "#fff" });
+                //this.questionDisplay.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
+                //this.setGradientText(this.questionDisplay);
 
-            //question
-            this.frame_question.setVisible(true);
-            this.questionDisplay = this.add.text(330, 200, currentQuestion.question, { font: '30px Helvetica', color: "#fff" });
-            //this.questionDisplay.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
-            //this.setGradientText(this.questionDisplay);
-
-            //enter answer
-            this.textEnterAnswer.setVisible(true);
-            //fade
-            this.cameras.main.fadeIn(250);
-            this.time.delayedCall(250, function() {
-                this.button_sound.play();
-            }, [], this);
+                //enter answer
+                this.textEnterAnswer.setVisible(true);
+                //fade
+                this.cameras.main.fadeIn(250);
+                this.time.delayedCall(250, function() {
+                    this.button_sound.play();
+                }, [], this);
+            } else {
+                this.tweens.add({ targets: this.message, y: 73, duration: 500, ease: 'Back' });
+                this.time.delayedCall(2000, function() {
+                    this.tweens.add({ targets: this.message, y: -100, duration: 500, ease: 'Back' });
+                }, [], this);
+            }
         });
 
-        //pop gold
-        this.popupGold = this.add.image(400, 0, 'popup_gold').setScale(0.4).setVisible(false);
+        //message
+        this.message = this.add.image(400, -100, 'message').setScale(1);
 
         //next
         this.skipBtn.on("pointerdown", () => {
@@ -168,11 +173,13 @@ class man2 extends Phaser.Scene {
                 this.questionDisplay = this.add.text(330, 200, currentQuestion.question, { font: '30px Helvetica', color: "#fff" }).setVisible(true);
                 element.getChildByName('nameField').value = "";
                 this.score -= 2;
-                this.scoreText.setText("Score: " + this.score);
+                this.scoreText.setText("Gold: " + this.score);
             } else {
                 //alert("k đủ xiền");
-                this.popupGold.setVisible(true);
-                this.tweens.add({ targets: this.popupGold, y: 123, duration: 500, ease: 'Back' });
+                this.tweens.add({ targets: this.message, y: 73, duration: 500, ease: 'Back' });
+                this.time.delayedCall(2000, function() {
+                    this.tweens.add({ targets: this.message, y: -100, duration: 500, ease: 'Back' });
+                }, [], this);
             }
         });
 
@@ -190,7 +197,7 @@ class man2 extends Phaser.Scene {
                 this.questionDisplay = this.add.text(330, 200, currentQuestion.question, { font: '30px Helvetica', color: "#fff" }).setVisible(true);
                 element.getChildByName('nameField').value = "";
                 this.score += 4;
-                this.scoreText.setText("Score: " + this.score);
+                this.scoreText.setText("Gold: " + this.score);
             } else {
                 this.false_sound.play();
                 element.getChildByName('nameField').style.border = '2px solid red';
@@ -218,7 +225,7 @@ class man2 extends Phaser.Scene {
                 this.questionDisplay = this.add.text(330, 200, currentQuestion.question, { font: '30px Helvetica', color: "#fff" }).setVisible(true);
                 element.getChildByName('nameField').value = "";
                 this.score += 4;
-                this.scoreText.setText("Score: " + this.score);
+                this.scoreText.setText("Gold: " + this.score);
             } else {
                 this.false_sound.play();
                 element.getChildByName('nameField').style.border = '2px solid red';
@@ -230,6 +237,14 @@ class man2 extends Phaser.Scene {
         this.typewriteTextWrapped('Hello, Chào mừng bạn đã đến với trò chơi ghép chữ, phí là 5 đồng, bạn có thời gian là 5ph để trả lời các câu hỏi, mỗi câu đúng sẽ được 4 đồng, bấm nút start để bắt đầu chơi nào!');
         this.textPopup.setVisible(true);
 
+        //quitBtn
+        this.quitBtn.on("pointerdown", () => {
+            this.cameras.main.fade(250);
+            this.time.delayedCall(250, function() {
+                this.button_sound.play();
+                this.scene.start('man1');
+            }, [], this);
+        });
     }
 
     update() {
@@ -290,7 +305,7 @@ class man2 extends Phaser.Scene {
         }
     }
     handleTimeFinished() {
-        this.add.text(320, 250, 'Hết giờ\nScore: ' + this.score, { fontSize: 35, color: 'red' });
+        this.add.text(320, 250, 'Hết giờ\nGold: ' + this.score, { fontSize: 35, color: 'red' });
         this.textTime.setVisible(false);
         this.questionDisplay.setVisible(false);
         this.textEnterAnswer.setVisible(false);
