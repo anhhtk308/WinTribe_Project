@@ -210,9 +210,8 @@ class man2 extends Phaser.Scene {
         }
         const elapsed = this.timeEvent.getElapsed();
         const remaining = this.duration - elapsed;
-        const seconds = remaining / 60000;
-        this.textTime.text = "Time: " + seconds.toFixed(2) + "m";
-
+        const minutes = remaining / 60000;
+        this.textTime.text = "Time: " + minutes.toFixed(2) + "m";
     }
     typewriteText(text) {
         const length = text.length
@@ -392,7 +391,7 @@ class man2 extends Phaser.Scene {
             this.tweens.add({ targets: this.logo, angle: this.logo.angle + 4, duration: 2000, ease: 'Sine.easeInOut', yoyo: 1, loop: -1, delay: 1000 });
 
             //time
-            this.timeStart(this.handleTimeFinished.bind(this), 60000 * 5);
+            this.timeStart(this.handleTimeFinished.bind(this), 60000 * 2);
 
             //question
             this.questionDisplay = this.add.text(330, 200, currentQuestion.question, { font: '30px Helvetica', color: "#fff" });
