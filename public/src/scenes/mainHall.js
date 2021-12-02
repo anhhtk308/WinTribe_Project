@@ -81,7 +81,14 @@ class mainHall extends Phaser.Scene {
         this.physics.add.collider(this.player,this.optionArenaLayer);
         this.physics.add.collider(this.player,this.optionShopLayer);
         this.physics.add.collider(this.player,this.optionGameQuizLayer);
-
+        //this.backGroundLayerr.setCollisionBetween(0, 10000);
+        this.backGroundLayer.setCollisionBetween(0,10000);
+        this.streetLayer.setCollisionBetween(0,10000);
+        this.volcanoAndTreeLayer.setCollisionBetween(0,1000);
+        this.optionArenaLayer.setCollisionBetween(0,10000);
+        this.optionGameFishingLayer.setCollisionBetween(0,10000);
+        this.optionGameQuizLayer.setCollisionBetween(0);
+         //this.optionGameQuizLayer.setCollisionBetween(5581,7000);
         this.cursors = this.input.keyboard.createCursorKeys();
 //         this.physics.startSystem(Phaser.Physics.P2JS);
 //         this.physics.p2.enable(this.player);
