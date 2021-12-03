@@ -82,9 +82,9 @@ class man1 extends Phaser.Scene {
             }, [], this);
         }, this);
 
-        this.btn_test_2 = this.add.text(510, 400, 'Matching Game', { font: '32px Courier', fill: '#000' }).setVisible(true);
-        this.btn_test_2.setInteractive();
-        this.btn_test_2.on('pointerdown', function() {
+        this.man2 = this.add.text(510, 400, 'Matching game', { font: '32px Courier', fill: '#000' }).setVisible(true);
+        this.man2.setInteractive();
+        this.man2.on('pointerdown', function() {
             this.cameras.main.fade(250);
             // this.cameras.main.flash();
             this.time.delayedCall(250, function() {
