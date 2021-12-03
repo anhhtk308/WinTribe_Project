@@ -21,16 +21,16 @@ class shopScene extends Phaser.Scene {
     }
     create() {
         this.background = this.add.image(400, 300, "background").setScale(1);
-        this.speedImg = this.add.image(400, 200, "speedImg").setVisible(false);
-        this.tripleBullets = this.add.image(400, 200, "tripleBullets").setVisible(false);
-        this.hp = this.add.image(400, 200, "hp").setVisible(false);
-        this.iceBom = this.add.image(400, 200, "iceBom").setVisible(false);
-        this.dame = this.add.image(400, 200, "dame").setVisible(false);
-        this.strong = this.add.image(400, 200, "strong").setVisible(false);
-        this.doubleBullets = this.add.image(400, 200, "doubleBullets").setVisible(false);
-        this.shipRotationSpeed = this.add.image(400, 200, "shipRotationSpeed").setVisible(false);
-        this.fireBom = this.add.image(400, 200, "fireBom").setVisible(false);
-        this.speedBullet = this.add.image(400, 200, "speedBullet").setVisible(false);
+        this.speedImg = "speedImg";
+        this.tripleBullets = "tripleBullets";
+        this.hp = "hp";
+        this.iceBom ="iceBom";
+        this.dame = "dame";
+        this.strong = "strong";
+        this.doubleBullets = "doubleBullets";
+        this.shipRotationSpeed = "shipRotationSpeed";
+        this.fireBom = "fireBom";
+        this.speedBullet = "speedBullet";
         this.background.setInteractive();
         this.po_x = 0;
         this.po_y = 0;
@@ -62,9 +62,18 @@ class shopScene extends Phaser.Scene {
                 this.po_y >= Y_min &&
                 this.po_y <= Y_max
               ) {
-                item.setVisible(true);
+                this.animationAddItem(item);
+                // this.item.setVisible
               }
         })
+    }
+
+    animationAddItem(item, color) {
+        var randX = Phaser.Math.Between(200, 600);
+        var randY = Phaser.Math.Between(200, 400);
+        var pointsAdded = this.add.image(randX, randY, item);
+        pointsAdded.setOrigin(0.3, 0.3);
+        this.tweens.add({ targets: pointsAdded, alpha: 0, y: randY - 50, duration: 1000, ease: 'Linear' });
     }
 
 
