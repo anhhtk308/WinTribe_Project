@@ -121,7 +121,7 @@ class mainHall extends Phaser.Scene {
 
         //player
         this.otherPlayers = this.physics.add.group();
-        socket.on('currentPlayers', function(players) {
+        socket.on('currentPlayersMain', function(players) {
             Object.keys(players).forEach(function(id) {
                 if (players[id].playersID === socket.id) {
                     self.addPlayer(self, players[id]);
@@ -130,7 +130,7 @@ class mainHall extends Phaser.Scene {
                 }
             });
         });
-        socket.on('newPlayer', function(playerInfo) {
+        socket.on('newPlayerMain', function(playerInfo) {
             self.addOtherPlayers(self, playerInfo);
         });
 
@@ -160,13 +160,13 @@ class mainHall extends Phaser.Scene {
     }
 
     addPlayer(self, data) {
-        self.ship = self.physics.add.image(data.x, data.y, 'ship').setScale(0.2);
-        self.text_ship = self.add.text(data.x, data.y - 50, data.name, { fontSize: 10, color: "#000" });
+        self.ship = self.physics.add.image(data.x, data.y, 'player');
+        self.text_ship = self.add.text(data.x, data.y - 50, data.name, { fontSize: 20, color: "#000" });
     }
 
     addOtherPlayers(self, data) {
-        const otherPlayer = self.add.sprite(data.x, data.y, 'ship').setScale(0.2);
-        self.add.text(data.x, data.y - 50, data.name, { fontSize: 10, color: "#000" });
+        const otherPlayer = self.add.sprite(data.x, data.y, 'player');
+        self.add.text(data.x, data.y - 50, data.name, { fontSize: 20, color: "#000" });
         otherPlayer.playerId = data.playersID;
         self.otherPlayers.add(otherPlayer);
     }

@@ -42,9 +42,9 @@ io.on('connection', function(socket) {
     socket.on('startMainHall', function(data) {
         players[socket.id].name = data.name;
         // send the players object to the new players
-        socket.emit('currentPlayers', players);
+        socket.emit('currentPlayersMain', players);
         // update all other players of the new player
-        socket.broadcast.emit('newPlayer', players[socket.id]);
+        socket.broadcast.emit('newPlayerMain', players[socket.id]);
     });
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -54,25 +54,6 @@ io.on('connection', function(socket) {
         delete players[socket.id];
         // emit a message to all players to remove this player
         io.emit('disconnected', socket.id);
-    });
-    socket.on('forceDisconnect', function() {
-        console.log('user disconnected: ', socket.id);
-
-        delete players[socket.id];
-        io.emit('disconnected', socket.id);
-        socket.disconnect();
-    });
-    socket.on('destroy', function() {
-        // console.log(players[socket.id]);
-        socket.broadcast.emit('destroy_ship', players[socket.id]);
-    })
-    socket.on('movement', function(data) {
-        players[socket.id].x = data.x;
-        players[socket.id].y = data.y;
-        players[socket.id].rotation = data.z;
-
-        socket.broadcast.emit('moved', players[socket.id]);
-        //onsole.log("movejlkj");
     });
 
 
