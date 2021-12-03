@@ -49,9 +49,15 @@ class startScene extends Phaser.Scene {
         this.text.setInteractive();
         this.elementName = this.add.dom(400, 300).createFromCache('nameForm');
 
+        // var socket = io();
+        // var self = this;
+
         this.text.on("pointerdown", () => {
             if ((this.elementName.getChildByName('nameField').value).trim().length > 0) {
                 this.cameras.main.fade(250);
+
+
+
                 this.time.delayedCall(250, function() {
                     this.button_sound.play();
                     this.scene.start('man1', { name: this.elementName.getChildByName('nameField').value });
@@ -71,9 +77,13 @@ class startScene extends Phaser.Scene {
         //     this.elementChat.getChildByID("chat-input").value = '';
         // }
 
+
+
     }
 
     update() {
 
     }
+
+
 }
