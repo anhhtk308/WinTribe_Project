@@ -6,7 +6,8 @@ class man2 extends Phaser.Scene {
 
     preload() {}
     create() {
-        //var socket=io();
+        
+        this.socket=io();
         var textEntry = this.add.text(210, 230, 'aaa', { font: '32px Courier', fill: '#FFFFFF' }).setVisible(false);
         this.input.keyboard.on('keydown', function(event) {
             if (event.keyCode === 8 && textEntry.text.length > 0) {
@@ -21,18 +22,13 @@ class man2 extends Phaser.Scene {
         });
         this.next_text.setInteractive();
         this.next_text.on("pointerdown", () => {
-            this.scene.start("man1",{name:"aaaaa"});
-           // socket.emit('inputed',textEntry.text);
+            this.scene.start("game_main",{socket:this.socket});
         });
         this.next_text1 = this.add.text(50, 50, "NEXT", {
             fontSize: 54,
             color: "#FFFFFF",
         });
-        this.next_text1.on("pointerdown", () => {
-            this.scene.start("man1",{name:"aaaaa"});
-           // socket.emit('inputed',textEntry.text);
-        });
-        //var input= document.createElement("<input type='text'>");
+       
     }
     update() {}
 }

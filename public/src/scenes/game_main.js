@@ -1,6 +1,6 @@
-class man1 extends Phaser.Scene {
+class game_main extends Phaser.Scene {
     constructor() {
-        super("man1");
+        super("game_main");
     }
     init(data){
         //this.socket_init=io();
