@@ -5,8 +5,8 @@ class startScene extends Phaser.Scene {
 
     preload() {
         //this.load.html('chatForm', 'assets/chatForm/chatForm.html');
-        this.load.html('nameForm', 'assets/matchingGame/answerForm/answerForm.html');
-        this.load.css('answerCss', 'assets/matchingGame/answerForm/answerForm.css');
+        this.load.html('nameForm', 'assets/nameForm/nameForm.html');
+        this.load.css('answerCss', 'assets/nameForm/nameForm.css');
         this.load.image("ship", "assets/Ship.png");
         this.load.image("tiles", "assets/tiles.png");
         this.load.tilemapTiledJSON("SeaMapDemo23114", "assets/SeaMapDemo23114.json");

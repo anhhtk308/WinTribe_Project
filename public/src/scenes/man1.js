@@ -7,8 +7,10 @@ class man1 extends Phaser.Scene {
     }
     preload() {
         this.load.html('chatForm', 'assets/chatForm/chatForm.html');
-        this.load.html('nameForm', 'assets/matchingGame/answerForm/answerForm.html');
-        this.load.css('answerCss', 'assets/matchingGame/answerForm/answerForm.css');
+        this.load.css('chatFormCss', 'assets/chatForm/chatForm.css');
+
+        // this.load.html('nameForm', 'assets/matchingGame/answerForm/answerForm.html');
+        // this.load.css('answerCss', 'assets/matchingGame/answerForm/answerForm.css');
         this.load.image("ship", "assets/Ship.png");
         this.load.image("tiles", "assets/tiles.png");
         this.load.tilemapTiledJSON("SeaMapDemo23114", "assets/SeaMapDemo23114.json");
@@ -40,7 +42,7 @@ class man1 extends Phaser.Scene {
 
         //chat
         //alert(this.name);
-        this.elementChat = this.add.dom(175, 550).createFromCache('chatForm');
+        this.elementChat = this.add.dom(175, 542).createFromCache('chatForm');
         //test
         var socket = io();
         var self = this;
