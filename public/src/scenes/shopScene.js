@@ -33,22 +33,34 @@ class shopScene extends Phaser.Scene {
         this.shipRotationSpeed = "shipRotationSpeed";
         this.fireBom = "fireBom";
         this.speedBullet = "speedBullet";
-        //number of golds
+        //golds
         this.numberOfGolds = 2000;
         this.textOfGolds = this.add.text(229, 112, this.numberOfGolds, { fontSize: 25, color: '#fff' });
+        //number of item at begin
+        this.speedNum = 0;
+        this.tripleBulletsNum = 0;
+        this.hpNum = 2;
+        this.iceBomNum = 0;
+        this.dameNum = 0;
+        this.strongNum = 0;
+        this.doubleBulletsNum = 0;
+        this.shipRotationSpeedNum = 0;
+        this.fireBomNum = 0;
+        this.speedBulletNum = 0;
+        //define location of item 
         this.background.setInteractive();
         this.po_x = 0;
         this.po_y = 0;
-        this.chooseItem(this.speedImg, 120, 210, 200, 320);
-        this.chooseItem(this.tripleBullets, 220, 210, 340, 333);
-        this.chooseItem(this.hp, 360, 200, 460, 326);
-        this.chooseItem(this.iceBom, 480, 190, 580, 330);
-        this.chooseItem(this.dame, 590, 190, 704, 320);
-        this.chooseItem(this.strong, 100, 350, 222, 480);
-        this.chooseItem(this.doubleBullets, 233, 350, 340, 488);
-        this.chooseItem(this.shipRotationSpeed, 350, 350, 464, 506);
-        this.chooseItem(this.fireBom, 470, 350, 586, 501);
-        this.chooseItem(this.speedBullet, 601, 360, 696, 496);
+        this.chooseItem(this.speedImg, this.speedNum, 120, 210, 200, 320);
+        this.chooseItem(this.tripleBullets, this.tripleBulletsNum, 220, 210, 340, 333);
+        this.chooseItem(this.hp, this.hpNum, 360, 200, 460, 326);
+        this.chooseItem(this.iceBom, this.iceBomNum, 480, 190, 580, 330);
+        this.chooseItem(this.dame, this.dameNum, 590, 190, 704, 320);
+        this.chooseItem(this.strong, this.strongNum, 100, 350, 222, 480);
+        this.chooseItem(this.doubleBullets, this.doubleBulletsNum, 233, 350, 340, 488);
+        this.chooseItem(this.shipRotationSpeed, this.shipRotationSpeedNum, 350, 350, 464, 506);
+        this.chooseItem(this.fireBom, this.fireBomNum, 470, 350, 586, 501);
+        this.chooseItem(this.speedBullet, this.speedBulletNum, 601, 360, 696, 496);
     }
 
     update() {
@@ -56,7 +68,7 @@ class shopScene extends Phaser.Scene {
 
     }
 
-    chooseItem(item, X_min, Y_min, X_max, Y_max) {
+    chooseItem(item, itemNum, X_min, Y_min, X_max, Y_max) {
         this.background.on("pointerdown", () => {
             this.po_x = this.game.input.mousePointer.x;
             this.po_y = this.game.input.mousePointer.y;
@@ -65,16 +77,18 @@ class shopScene extends Phaser.Scene {
                 this.po_y >= Y_min &&
                 this.po_y <= Y_max
             ) {
-                this.animationAddItem(item);
+                this.animationAddItem(itemNum);
                 this.updateGolds();
+                this.updateNumberOfItem(itemNum, '#ffde00')
             }
         })
     }
 
-    animationAddItem(item) {
+    animationAddItem(item, color) {
         var randX = Phaser.Math.Between(200, 600);
         var randY = Phaser.Math.Between(200, 400);
-        var pointsAdded = this.add.image(randX, randY, item);
+        // var pointsAdded = this.add.image(randX, randY, item);
+        var pointsAdded = this.add.text(randX, randY, '+' + item, { font: '30px ', fill: color, stroke: '#fff', strokeThickness: 10 });
         pointsAdded.setOrigin(0.3, 0.3);
         this.tweens.add({ targets: pointsAdded, alpha: 0, y: randY - 50, duration: 1000, ease: 'Linear' });
     }
@@ -82,12 +96,11 @@ class shopScene extends Phaser.Scene {
     updateGolds() {
         this.numberOfGolds -= 10;
         this.textOfGolds.setText(this.numberOfGolds);
+        console.log(this.speedBulletNum);
     }
 
-
-
-
-
-
+    updateNumberOfItem(item) {
+        item += 1;
+    }
 
 }
