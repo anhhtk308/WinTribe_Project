@@ -42,8 +42,32 @@ class mainHall extends Phaser.Scene {
             socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
             self.elementChat.getChildByID("chat-input").value = '';
         }
+        
+        socket.on("currentPlayersMain",function(player){
+            Object.key(player).forEach(function(id){
+                if(player[id].playersID==self.socket.id){
+                    addPlayer(self,player[id]);
+                } else {
+                    addOtherPlayers(self,player[id]);
+                }
+            });
+        });
+       
+        this.socket.on('newPlayerMain', function (playerInfo) {
+            
+            addOtherPlayer(self, playerInfo);
+        })
+
+        function addPlayer(sefl,playerInfo){
+           self.player=self.physics.add.sprite(playerInfo.x,playerInfo.y,"player");
+           self.player.setCollideWorldBounds(true);
 
 
+        }
+
+        function addOtherPlayers(self,playerInfo){
+
+        }
         //map
 
         this.cameras.main.setBounds(0, 0, 1922, 1200);
@@ -67,11 +91,11 @@ class mainHall extends Phaser.Scene {
         this.backGroundLayer = map.createLayer("background", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
         this.streetLayer = map.createLayer("street", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
         this.volcanoAndTreeLayer = map.createLayer("volcanoAndTree", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.volcanoAndTreeLayer = map.createLayer("pedestal", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
+        this.pedestal = map.createLayer("pedestal", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
         this.optionGameFishingLayer = map.createLayer("optionGameFishing", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
         this.optionArenaLayer = map.createLayer("optionArena", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
         this.optionShopLayer = map.createLayer("optionShop", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.optionShopLayer = map.createLayer("optionShop", shop_tile, 0, 0);
+        //this.optionShopLayer = map.createLayer("optionShop", shop_tile, 0, 0);
 
         this.optionGameQuizLayer = map.createLayer("optionGameQuiz", [base_out_atlas_tile, waterfall_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
         this.roadLayer = map.createLayer("road", base_out_atlas_tile, 0, 0);
@@ -84,40 +108,49 @@ class mainHall extends Phaser.Scene {
 
         //map
 
-        // this.player = this.physics.add.sprite(821, 775, 'player').setBounce(0.2);
-        // this.physics.add.collider(this.player, this.backGroundLayer);
-        // this.physics.add.collider(this.player, this.streetLayer);
-        // this.physics.add.collider(this.player, this.volcanoAndTreeLayer);
-        // this.physics.add.collider(this.player, this.optionGameFishingLayer);
-        // this.physics.add.collider(this.player, this.optionArenaLayer);
-        // this.physics.add.collider(this.player, this.optionShopLayer);
-        // this.physics.add.collider(this.player, this.optionGameQuizLayer);
-        // this.backGroundLayer.setCollisionBetween(0, 10000);
-        // this.volcanoAndTreeLayer.setCollisionBetween(0, 10000);
-        // this.cursors = this.input.keyboard.createCursorKeys();
-        // this.player.setCollideWorldBounds(true);
-        // this.anims.create({
-        //     key: 'left',
-        //     frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
-        //     frameRate: 10,
-        //     repeat: -1
-        // });
+        this.player = this.physics.add.sprite(821, 775, 'player').setBounce(0.2);
+        this.player_1 = this.physics.add.sprite(1000, 775, 'player').setBounce(0.2);
+        this.physics.add.collider(this.player, this.backGroundLayer);
+        this.physics.add.collider(this.player, this.streetLayer);
+        this.physics.add.collider(this.player, this.volcanoAndTreeLayer);
+        this.physics.add.collider(this.player, this.optionGameFishingLayer);
+        this.physics.add.collider(this.player, this.optionArenaLayer);
+        this.physics.add.collider(this.player, this.optionShopLayer);
+        this.physics.add.collider(this.player, this.optionGameQuizLayer);
+        this.backGroundLayer.setCollisionBetween(0, 10000);
+        this.volcanoAndTreeLayer.setCollisionBetween(0, 10000);
+        this.optionGameFishingLayer.setCollisionBetween(0,10000);
+        this.optionArenaLayer.setCollisionBetween(0,10000);
+        this.optionShopLayer.setCollisionBetween(0,10000);
+        this.optionGameQuizLayer.setCollisionBetween(0,10000);
+        this.streetLayer.setCollisionBetween(0,10000);
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.player.setCollideWorldBounds(true);
+        this.anims.create({
+            key: 'left',
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: -1
+        });
 
-        // this.anims.create({
-        //     key: 'turn',
-        //     frames: [{ key: 'player', frame: 4 }],
-        //     frameRate: 20
-        // });
+        this.anims.create({
+            key: 'turn',
+            frames: [{ key: 'player', frame: 4 }],
+            frameRate: 20
+        });
 
-        // this.anims.create({
-        //     key: 'right',
-        //     frames: this.anims.generateFrameNumbers('player', { start: 5, end: 8 }),
-        //     frameRate: 10,
-        //     repeat: -1
-        // });
-        // //camera follow
-        // this.cameras.main.startFollow(this.player);
-        // this.cameras.main.followOffset.set(-50, 0);
+        this.anims.create({
+            key: 'right',
+            frames: this.anims.generateFrameNumbers('player', { start: 5, end: 8 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        //camera follow
+        this.cameras.main.startFollow(this.player);
+        this.cameras.main.followOffset.set(-50, 0);
+
+        //text
+        this.text_layer = this.add.text(this.player.x,this.player.y-50,this.name,{fontSize:32,color:"#FF0000"});
 
         //player
         this.otherPlayers = this.physics.add.group();
@@ -138,24 +171,26 @@ class mainHall extends Phaser.Scene {
     }
 
     update() {
-        // if (this.cursors.left.isDown) {
+        if (this.cursors.left.isDown) {
 
-        //     this.player.setVelocityX(-150);
-        //     this.player.anims.play("left", true);
+            this.player.setVelocityX(-150);
+            this.player.anims.play("left", true);
 
-        // } else if (this.cursors.right.isDown) {
-        //     this.player.setVelocityX(150);
-        //     this.player.anims.play("right", true);
-        // } else if (this.cursors.up.isDown) {
-        //     this.player.setVelocityY(-150);
-        //     this.player.anims.play("turn", true);
-        // } else if (this.cursors.down.isDown) {
-        //     this.player.setVelocityY(150);
-        // } else {
-        //     this.player.setVelocityY(0);
-        //     this.player.setVelocityX(0);
-        //     this.player.anims.play("turn", true);
-        // }
+        } else if (this.cursors.right.isDown) {
+            this.player.setVelocityX(150);
+            this.player.anims.play("right", true);
+        } else if (this.cursors.up.isDown) {
+            this.player.setVelocityY(-150);
+            this.player.anims.play("turn", true);
+        } else if (this.cursors.down.isDown) {
+            this.player.setVelocityY(150);
+        } else {
+            this.player.setVelocityY(0);
+            this.player.setVelocityX(0);
+            this.player.anims.play("turn", true);
+        }
+        this.text_layer.x=this.player.x;
+        this.text_layer.y=this.player.y-50;
 
     }
 
