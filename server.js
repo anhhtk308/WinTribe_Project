@@ -27,6 +27,8 @@ app.get('/', function(req, res) {
 // });
 io.on('connection', function(socket) {
     console.log('a user connected: ', socket.id);
+   
+    
     players[socket.id]={
         playersID:socket.id,
         x: Math.floor(Math.random() * 700) + 50,
@@ -41,15 +43,12 @@ io.on('connection', function(socket) {
         x:0,
         y:0,
         rotation:0
-    }
+    };
+    socket.on("play",function(){
+
     socket.emit('currentPlayers',players);
     socket.broadcast.emit('newPlayer',players[socket.id]);
-    socket.on('disconnect', function() {
-        console.log('user disconnected: ', socket.id);
-        delete players[socket.id];
-        // emit a message to all players to remove this player
-        io.emit('disconnected', socket.id);
-    });
+   
     socket.on('forceDisconnect', function(){
         console.log('user disconnected: ', socket.id);
         
@@ -87,6 +86,12 @@ io.on('connection', function(socket) {
         players[socket.id].health-=10;
         socket.broadcast.emit('damed',players[socket.id]);
     })
+});
+socket.on('disconnect', function() {
+    console.log('user disconnected: ', socket.id);
+    delete players[socket.id];
+    io.emit('disconnected', socket.id);
+});
 
 });
 
