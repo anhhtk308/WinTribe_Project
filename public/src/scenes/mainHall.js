@@ -30,48 +30,99 @@ class mainHall extends Phaser.Scene {
 
         //chatting
         this.elementChat = this.add.dom(175, 540).createFromCache('chatForm').setScrollFactor(0);
-        var socket = io();
         var self = this;
-        socket.emit('startMainHall', { name: self.name });
-        socket.on('addToChat', function(data) {
+        this.socket = io();
+        
+        this.otherPlayers = this.physics.add.group();
+        this.otherPlayers_name = this.add.group();
+        this.socket.emit('startMainHall', { name: self.name });
+        this.socket.on('addToChat', function (data) {
             self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
         });
 
-        this.elementChat.getChildByID("chat-form").onsubmit = function(e) {
+        this.elementChat.getChildByID("chat-form").onsubmit = function (e) {
             e.preventDefault();
-            socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
+            self.socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
             self.elementChat.getChildByID("chat-input").value = '';
         }
-        
-        socket.on("currentPlayersMain",function(player){
-            Object.key(player).forEach(function(id){
-                if(player[id].playersID==self.socket.id){
-                    addPlayer(self,player[id]);
+
+
+        this.socket.on('currentPlayersMain', function (players) {
+            Object.keys(players).forEach(function (id) {
+                if (players[id].playersID === self.socket.id) {
+                    self.addPlayer(self, players[id]);
                 } else {
-                    addOtherPlayers(self,player[id]);
+                    self.addOtherPlayer(self, players[id]);
                 }
             });
         });
-       
+
+
         this.socket.on('newPlayerMain', function (playerInfo) {
-            
-            addOtherPlayer(self, playerInfo);
-        })
+            self.addOtherPlayer(self, playerInfo);
+        });
 
-        function addPlayer(sefl,playerInfo){
-           self.player=self.physics.add.sprite(playerInfo.x,playerInfo.y,"player");
-           self.player.setCollideWorldBounds(true);
 
+        function addPlayer(self, playerInfo) {
+
+            self.player = self.physics.add.sprite(playerInfo.x, playerInfo.y, 'player').setScale(0.2);
+             self.player.setCollideWorldBounds(true);
+             self.player_name = self.add.text(playerInfo.x - 20, playerInfo.y - 50,playerInfo.name, { fontSize: 54, color: "#800000" });
+             self.cameras.main.startFollow(self.player);
 
         }
 
-        function addOtherPlayers(self,playerInfo){
-
+        function addOtherPlayer(self, playerInfo) {
+            const other = self.otherPlayers.create(playerInfo.x, playerInfo.y, "player");
+            other.playersID = playerInfo.playersID;
+            const other_name = self.otherPlayers_name.create(playerInfo.x - 20, playerInfo.y - 50, playerInfo.name, { fontSize: 32, color: "#800000" });
         }
         //map
 
-        this.cameras.main.setBounds(0, 0, 1922, 1200);
-        this.physics.world.setBounds(0, 0, 1922, 1200);
+        this.anims.create({
+            key: 'left',
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'turn',
+            frames: [{ key: 'player', frame: 4 }],
+            frameRate: 20
+        });
+
+        this.anims.create({
+            key: 'right',
+            frames: this.anims.generateFrameNumbers('player', { start: 5, end: 8 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.socket.on("player_moved",function(playerInfo){
+            self.otherPlayers.getChildren().forEach(function (other) {
+                if (playerInfo.playersID == other.playersID) {
+                    other.setPosition(playerInfo.x, playerInfo.y);
+                    other.anims.play(playerInfo.status);
+                }
+            });
+            self.otherPlayers_name.getChildren().forEach(function (other) {
+                if (playerInfo.playersID == other.playersID) {
+                    other.setPosition(playerInfo.x-30, playerInfo.y-50);
+                    //other.setRotation(playerInfo.rotation);
+                }
+            });
+        })
+
+        // this.socket.on("player_not_change",function(playerInfo){
+        //     self.otherPlayers.getChildren().forEach(function (other) {
+        //         if (playerInfo.playersID == other.playersID) {
+        //             other.anims.play(playerInfo.status);
+        //         }
+        //     });
+        // })
+
+       
 
         const map = this.add.tilemap("MainHallMap");
 
@@ -108,101 +159,84 @@ class mainHall extends Phaser.Scene {
 
         //map
 
-        this.player = this.physics.add.sprite(821, 775, 'player').setBounce(0.2);
-        this.player_1 = this.physics.add.sprite(1000, 775, 'player').setBounce(0.2);
-        this.physics.add.collider(this.player, this.backGroundLayer);
-        this.physics.add.collider(this.player, this.streetLayer);
-        this.physics.add.collider(this.player, this.volcanoAndTreeLayer);
-        this.physics.add.collider(this.player, this.optionGameFishingLayer);
-        this.physics.add.collider(this.player, this.optionArenaLayer);
-        this.physics.add.collider(this.player, this.optionShopLayer);
-        this.physics.add.collider(this.player, this.optionGameQuizLayer);
+
+        
         this.backGroundLayer.setCollisionBetween(0, 10000);
         this.volcanoAndTreeLayer.setCollisionBetween(0, 10000);
-        this.optionGameFishingLayer.setCollisionBetween(0,10000);
-        this.optionArenaLayer.setCollisionBetween(0,10000);
-        this.optionShopLayer.setCollisionBetween(0,10000);
-        this.optionGameQuizLayer.setCollisionBetween(0,10000);
-        this.streetLayer.setCollisionBetween(0,10000);
+        this.optionGameFishingLayer.setCollisionBetween(0, 10000);
+        this.optionArenaLayer.setCollisionBetween(0, 10000);
+        this.optionShopLayer.setCollisionBetween(0, 10000);
+        this.optionGameQuizLayer.setCollisionBetween(0, 10000);
+        this.streetLayer.setCollisionBetween(0, 10000);
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.player.setCollideWorldBounds(true);
-        this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
-            frameRate: 10,
-            repeat: -1
-        });
-
-        this.anims.create({
-            key: 'turn',
-            frames: [{ key: 'player', frame: 4 }],
-            frameRate: 20
-        });
-
-        this.anims.create({
-            key: 'right',
-            frames: this.anims.generateFrameNumbers('player', { start: 5, end: 8 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        //camera follow
-        this.cameras.main.startFollow(this.player);
-        this.cameras.main.followOffset.set(-50, 0);
-
-        //text
-        this.text_layer = this.add.text(this.player.x,this.player.y-50,this.name,{fontSize:32,color:"#FF0000"});
-
-        //player
-        this.otherPlayers = this.physics.add.group();
-        socket.on('currentPlayersMain', function(players) {
-            Object.keys(players).forEach(function(id) {
-                if (players[id].playersID === socket.id) {
-                    self.addPlayer(self, players[id]);
-                } else {
-                    self.addOtherPlayers(self, players[id]);
-                }
-            });
-        });
-        socket.on('newPlayerMain', function(playerInfo) {
-            self.addOtherPlayers(self, playerInfo);
-        });
-
-
+        
+       
+        
     }
 
     update() {
-        if (this.cursors.left.isDown) {
+        
+        if (this.player&&this.player_name) {
+            var status;
+            if (this.cursors.left.isDown) {
 
-            this.player.setVelocityX(-150);
-            this.player.anims.play("left", true);
+                this.player.setVelocityX(-150);
+                this.player.anims.play("left", true);
+                status="left";
 
-        } else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(150);
-            this.player.anims.play("right", true);
-        } else if (this.cursors.up.isDown) {
-            this.player.setVelocityY(-150);
-            this.player.anims.play("turn", true);
-        } else if (this.cursors.down.isDown) {
-            this.player.setVelocityY(150);
-        } else {
-            this.player.setVelocityY(0);
-            this.player.setVelocityX(0);
-            this.player.anims.play("turn", true);
+            } else if (this.cursors.right.isDown) {
+                this.player.setVelocityX(150);
+                this.player.anims.play("right", true);
+                status="right";
+            } else if (this.cursors.up.isDown) {
+                this.player.setVelocityY(-150);
+                this.player.anims.play("turn", true);
+                status="turn";
+            } else if (this.cursors.down.isDown) {
+                this.player.setVelocityY(150);
+            } else {
+                this.player.setVelocityY(0);
+                this.player.setVelocityX(0);
+                this.player.anims.play("turn", true);
+                status="turn";
+            }
+             this.player_name.x = this.player.x-20;
+             this.player_name.y = this.player.y - 50;
+
+             var x = this.player.x;
+             var y = this.player.y;
+             
+             //var z = this.ship.rotation;
+             this.socket.emit("movement_player", { x: this.player.x, y: this.player.y,status:status});
+            
+             this.player.oldposition = {
+                 x: this.player.x,
+                 y: this.player.y,
+                
+             }
+
         }
-        this.text_layer.x=this.player.x;
-        this.text_layer.y=this.player.y-50;
-
     }
 
     addPlayer(self, data) {
-        self.ship = self.physics.add.image(data.x, data.y, 'player');
-        self.text_ship = self.add.text(data.x, data.y - 50, data.name, { fontSize: 20, color: "#000" });
+        self.player = self.physics.add.sprite(data.x, data.y, 'player');
+        self.player_name = self.add.text(data.x, data.y - 50, data.name, { fontSize: 20, color: "#800000" });
+        self.physics.add.collider(self.player, self.backGroundLayer);
+        self.physics.add.collider(self.player, self.streetLayer);
+        self.physics.add.collider(self.player, self.volcanoAndTreeLayer);
+        self.physics.add.collider(self.player, self.optionGameFishingLayer);
+        self.physics.add.collider(self.player, self.optionArenaLayer);
+        self.physics.add.collider(self.player, self.optionShopLayer);
+        self.physics.add.collider(self.player, self.optionGameQuizLayer);
+        self.cameras.main.startFollow(self.player);
+       
     }
 
-    addOtherPlayers(self, data) {
+    addOtherPlayer(self, data) {
         const otherPlayer = self.add.sprite(data.x, data.y, 'player');
-        self.add.text(data.x, data.y - 50, data.name, { fontSize: 20, color: "#000" });
-        otherPlayer.playerId = data.playersID;
+        const player_name=self.add.text(data.x, data.y - 50, data.name, { fontSize: 20, color: "#000" });
+        otherPlayer.playersID = data.playersID;
         self.otherPlayers.add(otherPlayer);
+        self.otherPlayers_name.add(player_name);
     }
 }

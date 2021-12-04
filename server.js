@@ -26,6 +26,7 @@ io.on('connection', function(socket) {
         x: Math.floor(Math.random() * 700) + 50,
         y: Math.floor(Math.random() * 500) + 50,
         name: '',
+        status:'turn'
 
     }
 
@@ -45,8 +46,22 @@ io.on('connection', function(socket) {
         socket.emit('currentPlayersMain', players);
         // update all other players of the new player
         socket.broadcast.emit('newPlayerMain', players[socket.id]);
-    });
 
+        socket.on('movement_player',function(data){
+            players[socket.id].x=data.x;
+            players[socket.id].y=data.y;
+            players[socket.id].status=data.status;
+            socket.broadcast.emit("player_moved",players[socket.id]);
+        });
+
+        socket.on("not_change",function(data){
+            players[socket.id].status=data.status;
+            socket.broadcast.emit("player_not_change",players[socket.id]);
+        });
+
+    });
+     
+    
     ///////////////////////////////////////////////////////////////////////////////
 
     socket.on('disconnect', function() {
