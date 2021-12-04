@@ -3,32 +3,37 @@ class man_khoi_tao extends Phaser.Scene {
     constructor() {
         super("man_khoi_tao");
     }
-
-    preload() {}
+    preload() {
+        this.load.html('nameForm', 'assets/nameForm/nameForm.html');
+        this.load.css('answerCss', 'assets/nameForm/nameForm.css');
+        this.load.image("ship", "assets/Ship.png");
+        this.load.image("tiles", "assets/tiles.png");
+        this.load.tilemapTiledJSON("SeaMapDemo23114", "assets/SeaMapDemo23114.json");
+        this.load.image("back_ground","assets/back_gound_gamemain.jpg")
+        this.load.image("start","assets/start.png");
+    }
     create() {
+
+
         
-        this.socket=io();
-        var textEntry = this.add.text(210, 230, 'aaa', { font: '32px Courier', fill: '#FFFFFF' }).setVisible(false);
-        this.input.keyboard.on('keydown', function(event) {
-            if (event.keyCode === 8 && textEntry.text.length > 0) {
-                textEntry.text = textEntry.text.substr(0, textEntry.text.length - 1);
-            } else if (event.keyCode === 32 || (event.keyCode >= 48 && event.keyCode < 90)) {
-                textEntry.text += event.key;
+        this.add.image(400,300,"back_ground").setScale(0.42,0.5);
+        this.text = this.add.image(600,300,"start").setScale(0.8);
+        
+        this.text.setInteractive();
+        this.elementName = this.add.dom(400, 300).createFromCache('nameForm');
+        this.text.on("pointerdown", () => {
+            if ((this.elementName.getChildByName('nameField').value).trim().length > 0) {
+                this.cameras.main.fade(250);
+                this.time.delayedCall(250, function() {
+                    // this.button_sound.play();
+                    this.scene.start('game_main', { name: this.elementName.getChildByName('nameField').value });
+                }, [], this);
             }
         });
-        this.next_text = this.add.text(600, 50, "NEXT", {
-            fontSize: 54,
-            color: "#FFFFFF",
-        });
-        this.next_text.setInteractive();
-        this.next_text.on("pointerdown", () => {
-            this.scene.start("game_main",{socket:this.socket});
-        });
-        this.next_text1 = this.add.text(50, 50, "NEXT", {
-            fontSize: 54,
-            color: "#FFFFFF",
-        });
-       
     }
-    update() {}
+
+    update() {
+
+    }
+
 }

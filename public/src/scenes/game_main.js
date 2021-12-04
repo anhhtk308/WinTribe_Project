@@ -3,8 +3,7 @@ class game_main extends Phaser.Scene {
         super("game_main");
     }
     init(data){
-        //this.socket_init=io();
-        this.socket=data.socket;
+        this.name=data.name;
     }
 
     preload() {
@@ -28,20 +27,35 @@ class game_main extends Phaser.Scene {
         this.load.image('sea_tiles','assets/sea_tiles.png');
         this.load.image('treasure','assets/treasure.png');
         this.load.image('ground','assets/ground.png');
+        //add chat
+        this.load.html('chatForm', 'assets/chatForm/chatForm.html');
+
+
     }
     create() {
 
         var self = this;
+        this.socket=io();
         this.otherPlayers = this.physics.add.group();
         this.bullets = this.physics.add.group();
-        
         this.texts=this.add.group();
         this.health_ships= this.add.group();
-        //this.utext
-        //this.socket=io();
-        this.socket.emit("play");
+        // solve chat event
+        this.elementChat = this.add.dom(-470, 2210).createFromCache('chatForm').setScrollFactor(0).setScale(5);
+        this.socket.on('addToChat', function (data) {
+            self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
+        });
 
-        this.socket.on('currentPlayers', function (player) {
+        this.elementChat.getChildByID("chat-form").onsubmit = function (e) {
+            e.preventDefault();
+            self.socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
+            self.elementChat.getChildByID("chat-input").value = '';
+        }
+        //end chat
+
+        //start game main
+        this.socket.emit("startGameMain",{name:this.name});
+        this.socket.on('currentPlayersGameMain', function (player) {
             Object.keys(player).forEach(function (id) {
                 if (player[id].playersID === self.socket.id) { 
                     addPlayer(self, player[id]);
@@ -51,7 +65,7 @@ class game_main extends Phaser.Scene {
 
             });
         });
-        this.socket.on('newPlayer', function (playerInfo) {
+        this.socket.on('newPlayerGameMain', function (playerInfo) {
             
             addOtherPlayer(self, playerInfo);
         })
@@ -63,7 +77,7 @@ class game_main extends Phaser.Scene {
             self.physics.add.collider(self.ship, self.IslandLayer);
             self.physics.add.collider(self.ship,self.bullets,self.attack_ship
             ,null,self);
-            self.text_ship=self.add.text(playerInfo.x+30,playerInfo.y-50,self.name,{fontSize:10, color:"#FFFFFF"});
+            self.text_ship=self.add.text(playerInfo.x+30,playerInfo.y-50,playerInfo.name,{fontSize:10, color:"#FFFFFF"});
             self.health_ship=self.add.image(playerInfo.x+30,playerInfo.y-50,"health").setScale(playerInfo.health/100,1/2);
             self.cameras.main.startFollow(self.ship);
             
@@ -73,7 +87,7 @@ class game_main extends Phaser.Scene {
             const other = self.otherPlayers.create(playerInfo.x,playerInfo.y,"ship").setImmovable().setScale(0.2);
             other.playersID = playerInfo.playersID;
            
-            const text_ship = self.add.text(playerInfo.x+30,playerInfo.y-70,self.name,{fontSize:10, color:"#FFFFFF"});
+            const text_ship = self.add.text(playerInfo.x+30,playerInfo.y-70,playerInfo.name,{fontSize:10, color:"#FFFFFF"});
             text_ship.playersID = playerInfo.playersID;
             self.texts.add(text_ship);
             const health_ship = self.add.image(playerInfo.x+30,playerInfo.y-50,"health").setScale(playerInfo.health/100,1/2);
@@ -131,7 +145,7 @@ class game_main extends Phaser.Scene {
             const bullet = self.bullets.create(data.x,data.y,'bullet').setScale(0.03);
             bullet.bulletID=data.bulletID;
            
-            self.physics.velocityFromRotation(data.rotation+1.5,200,bullet.body.velocity);
+            self.physics.velocityFromRotation(data.rotation+1.5,500,bullet.body.velocity);
             self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
         })
         
@@ -167,7 +181,8 @@ class game_main extends Phaser.Scene {
         
 
         
-        //this.physics.add.collider(this.otherPlayers,this.bullets);
+        // add map
+
         const map = this.add.tilemap("seaMap");
         const natural_tile = map.addTilesetImage("sea_tiles");
         const island1=map.addTilesetImage("island1")
@@ -187,8 +202,6 @@ class game_main extends Phaser.Scene {
         this.IslandLayer.setCollisionBetween(0, 20000);
        
         this.fireButtton = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.status = 1;
-        this.status1 = 1;
         this.anims.create({
             key: "explo",
             frames: this.anims.generateFrameNumbers("explo_anims", { start: 0, end: 34 }),
@@ -204,12 +217,14 @@ class game_main extends Phaser.Scene {
         this.minimap=this.cameras.add(50,10,200,100).setZoom(0.2).setName("mini");
         this.minimap.scrollX = 1600;
         this.minimap.scrollY = 300;
-        this.r3 = this.add.rectangle(100,200, 200, 100);
-        this.r3.setStrokeStyle(2, 0x1a65ac);
+        this.status = 1;
+        this.status1 = 1;
+         this.r3 = this.add.rectangle(100,200, 200, 100);
+         this.r3.setStrokeStyle(5, 0x1a65ac);
     }
 
     update() {
-        
+        // ignore other player in minimap
         this.cursors = this.input.keyboard.createCursorKeys();
         this.otherPlayers.children.iterate(function(child){
             this.minimap.ignore(child);
@@ -220,6 +235,10 @@ class game_main extends Phaser.Scene {
         this.health_ships.children.iterate(function(child){
             this.minimap.ignore(child);
         },this)
+        this.bullets.children.iterate(function(child){
+           this.minimap.ignore(child);
+        },this)
+        //solve event ship
         if (this.ship&&this.text_ship&&this.health_ship) {
 
 
@@ -227,23 +246,24 @@ class game_main extends Phaser.Scene {
                 this.destroyShip(this.ship);
             }
             
-            if (this.cursors.left.isDown) {
+            if (this.cursors.left.isDown&&this.status1==1) {
                 this.ship.setAngularVelocity(-100);
                 
-            } else if (this.cursors.right.isDown) {
+            } else if (this.cursors.right.isDown&&this.status1==1) {
                 this.ship.setAngularVelocity(100);
 
             } else {
                 this.ship.setAngularVelocity(0);
             }
-            if (this.cursors.up.isDown) {
-                this.physics.velocityFromRotation(this.ship.rotation + 1.5, 500, this.ship.body.velocity);
+            if (this.cursors.up.isDown&&this.status1==1) {
+                this.physics.velocityFromRotation(this.ship.rotation + 1.5, 200, this.ship.body.velocity);
             
             } else {
                 this.ship.setVelocityX(0);
                 this.ship.setVelocityY(0);
             }
             
+            // make name and health follow ship
             this.text_ship.x=this.ship.x-20;
             this.text_ship.y=this.ship.y-70;
             this.health_ship.x=this.ship.x-50;
@@ -252,12 +272,13 @@ class game_main extends Phaser.Scene {
             this.r3.x=this.minimap.scrollX-250;
             this.minimap.scrollY=Phaser.Math.Clamp(this.ship.y,0,10000);
             this.r3.y=this.minimap.scrollY-240;
-             
+
+             //fire button
             if (Phaser.Input.Keyboard.JustDown(this.fireButtton)&&this.status==1) {
                 console.log("enter");
                 this.socket.emit("fire",{x: this.ship.x, y: this.ship.y, z: this.ship.rotation});
                 this.status=0;
-
+                this.status1=0;
                 this.time.addEvent({
 
                     callback: function () {
@@ -268,8 +289,20 @@ class game_main extends Phaser.Scene {
                     repeat: 0
                 });
 
-            }
+                this.time.addEvent({
 
+                    callback: function () {
+                        this.status1 = 1;
+                    },
+                    callbackScope: this,
+                    delay: 300,
+                    repeat: 0
+                });
+
+
+            }
+            
+            //check movement of player
             var x = this.ship.x;
             var y = this.ship.y;
             var z = this.ship.rotation;
@@ -281,6 +314,8 @@ class game_main extends Phaser.Scene {
                 y: this.ship.y,
                 z: this.ship.rotation
             }
+
+            // solve event of bullet
             if(this.bullet){
                 var x_bullet = this.bullet.x;
                 var y_bullet = this.bullet.y;
@@ -299,6 +334,8 @@ class game_main extends Phaser.Scene {
         }
 
     }
+
+    //collision  with bullet and map
     collision(bullet, map) {
         bullet.disableBody(true, true);
         bullet.destroy();
@@ -316,7 +353,8 @@ class game_main extends Phaser.Scene {
         });
 
     }
-
+    
+    //event attack ship between main ship and bullet
     attack_ship(ship,bullet){
     
         bullet.disableBody(true, true);
@@ -345,9 +383,10 @@ class game_main extends Phaser.Scene {
         this.socket.emit('dame');
     }
 
+
+    // event attack between other ship and bullet
     attackship(ship,bullet){
-        //ship.blocked(true)
-        //ship.disableBody(true, true);;
+        
         bullet.disableBody(true, true);
         bullet.destroy();
         var explo = this.physics.add.sprite(bullet.x, bullet.y, "explo_anims").setScale(0.4);
@@ -364,10 +403,9 @@ class game_main extends Phaser.Scene {
         });
 
         
-        //ship.destroy();
-        
-        //this.socket.emit('dame');
     }
+
+    // destroy main ship
     destroyShip(ship){
 
         
@@ -383,13 +421,13 @@ class game_main extends Phaser.Scene {
             delay: 1000,
             repeat: 0
         });
-        //this.socket.emit('dame');
-        //ship.disableBody(true,true);
-        // this.socket.emit('destroy');
+       
          this.socket.emit('forceDisconnect');
          this.scene.start("Preload");
         
     }
+
+    //destroy other ship
     destroy_ship(ship,bullet){
         bullet.disableBody(true, true);
         bullet.destroy();
