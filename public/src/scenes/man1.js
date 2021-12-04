@@ -4,6 +4,7 @@ class man1 extends Phaser.Scene {
     }
     init(data) {
         this.name = data.name;
+        this.socket = data.socket;
     }
     preload() {
         this.load.html('chatForm', 'assets/chatForm/chatForm.html');
@@ -19,8 +20,9 @@ class man1 extends Phaser.Scene {
         this.load.audio("button_sound", "assets/matchingGame/audio-button.mp3");
     }
     create() {
-
-        //alert(this.socket.id);
+        if (typeof this.socket !== 'undefined') {
+            alert(this.socket.id + " " + this.name);
+        }
         const map = this.add.tilemap("SeaMapDemo23114");
         const natural_tile = map.addTilesetImage("tiles");
         const SeaLayer = map.createLayer("sea_bg", [natural_tile]);
@@ -44,32 +46,64 @@ class man1 extends Phaser.Scene {
         //alert(this.name);
         this.elementChat = this.add.dom(175, 542).createFromCache('chatForm');
         //test
-        var socket = io();
         var self = this;
-        socket.emit('startMan1', { name: self.name });
-        socket.on('addToChat', function(data) {
-            self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
-        });
+        if (typeof this.socket === 'undefined') {
+            //alert(this.socket_1.id + " " + this.name);
+            this.socket = io();
+            //this.socket.emit('startMan1', { name: self.name });
+            this.socket.on('addToChat', function(data) {
+                self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
+            });
+        }
+        //var socket = io();
+        // var self = this;
+        this.socket.emit('startMan1', { name: self.name });
+
 
         this.elementChat.getChildByID("chat-form").onsubmit = function(e) {
             e.preventDefault();
-            socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
+            self.socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
             self.elementChat.getChildByID("chat-input").value = '';
         }
 
         this.otherPlayers = this.physics.add.group();
-        socket.on('currentPlayers', function(players) {
+        this.socket.on('currentPlayers', function(players) {
             Object.keys(players).forEach(function(id) {
-                if (players[id].playersID === socket.id) {
+                if (players[id].playersID === self.socket.id) {
                     self.addPlayer(self, players[id]);
                 } else {
                     self.addOtherPlayers(self, players[id]);
                 }
             });
         });
-        socket.on('newPlayer', function(playerInfo) {
+        this.socket.on('newPlayer', function(playerInfo) {
             self.addOtherPlayers(self, playerInfo);
         });
+        //--------------------------------
+        // socket.emit('startMan1', { name: self.name });
+        // socket.on('addToChat', function(data) {
+        //     self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
+        // });
+
+        // this.elementChat.getChildByID("chat-form").onsubmit = function(e) {
+        //     e.preventDefault();
+        //     socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
+        //     self.elementChat.getChildByID("chat-input").value = '';
+        // }
+
+        // this.otherPlayers = this.physics.add.group();
+        // socket.on('currentPlayers', function(players) {
+        //     Object.keys(players).forEach(function(id) {
+        //         if (players[id].playersID === socket.id) {
+        //             self.addPlayer(self, players[id]);
+        //         } else {
+        //             self.addOtherPlayers(self, players[id]);
+        //         }
+        //     });
+        // });
+        // socket.on('newPlayer', function(playerInfo) {
+        //     self.addOtherPlayers(self, playerInfo);
+        // });
 
         //
         //btn
@@ -80,7 +114,7 @@ class man1 extends Phaser.Scene {
             // this.cameras.main.flash();
             this.time.delayedCall(250, function() {
                 this.button_sound.play();
-                this.scene.start('test', { socket: socket });
+                this.scene.start('test', { socket: self.socket, name: self.name });
             }, [], this);
         }, this);
 

@@ -46,9 +46,9 @@ io.on('connection', function(socket) {
         for (var i in socketLst) {
             //socketLst[i].emit('addToChat', (socket.id + '').slice(2, 7) + ': ' + data);
             socketLst[i].emit('addToChat', data.name + ': ' + data.text);
+            console.log(data.name + ": " + (socketLst[i]).id + "\n");
         }
     });
-
 });
 
 server.listen(2000, function() {

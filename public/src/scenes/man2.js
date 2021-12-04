@@ -5,6 +5,19 @@ class man2 extends Phaser.Scene {
     }
 
     preload() {
+        //preload
+        // var progress = this.add.graphics();
+        // this.load.on('progress', function(value) {
+        //     progress.clear();
+        //     progress.fillStyle(0xffde00, 1);
+        //     //progress.fillRect(0, 270, 800 * value, 60);
+        //     progress.fillRect(0, 270, 800 * value, 25);
+
+        // });
+        // this.load.on('complete', function() {
+        //     progress.destroy();
+        // });
+
         //load form input
         this.load.html('answerform', 'assets/matchingGame/answerForm/answerForm.html');
         this.load.css('answerCss', 'assets/matchingGame/answerForm/answerForm.css');
@@ -88,6 +101,50 @@ class man2 extends Phaser.Scene {
                 id: 10,
                 question: "c/C/y/a/a/h/u",
                 answer: "Chua cay"
+            }, {
+                id: 11,
+                question: "g/ò/v/ồ/n/r/i",
+                answer: "Vòi rồng"
+            }, {
+                id: 12,
+                question: "ư/i/b/ớ/m/b/ơ",
+                answer: "Bơi bướm"
+            }, {
+                id: 13,
+                question: "n/ệ/đ/i/t/ộ/c",
+                answer: "Cột điện"
+            }, {
+                id: 14,
+                question: "t/h/à/b/ờ/n",
+                answer: "Bàn thờ"
+            }, {
+                id: 15,
+                question: "x/ồ/g/à",
+                answer: "Xà gồ"
+            }, {
+                id: 16,
+                question: "g/a/n/n/o",
+                answer: "Ngoan"
+            }, {
+                id: 17,
+                question: "c/i/a/n/t/o/r",
+                answer: "Con trai"
+            }, {
+                id: 18,
+                question: "c/ù/b/ọ/đ/m",
+                answer: "Đùm bọc"
+            }, {
+                id: 19,
+                question: "g/ạ/đ/i/i/a",
+                answer: "Đại gia"
+            }, {
+                id: 20,
+                question: "m/ó/n/g/à/h/x",
+                answer: "Hàng xóm"
+            }, {
+                id: 21,
+                question: "n/g/a/ự/ô",
+                answer: "Ngựa ô"
             }
         ];
 
@@ -214,8 +271,8 @@ class man2 extends Phaser.Scene {
         }
         const elapsed = this.timeEvent.getElapsed();
         const remaining = this.duration - elapsed;
-        const minutes = remaining / 60000;
-        this.textTime.text = "Time: " + minutes.toFixed(2) + "m";
+        const minutes = remaining / 1000;
+        this.textTime.text = "Time: " + minutes.toFixed(2) + "s";
     }
     typewriteText(text) {
         const length = text.length
@@ -365,7 +422,7 @@ class man2 extends Phaser.Scene {
             return currentQuestion;
         } else {
             this.false_sound.play();
-            alert('fail: ' + currentQuestion.answer + " " + this.ele.getChildByName('nameField').value)
+            //alert('fail: ' + currentQuestion.answer + " " + this.ele.getChildByName('nameField').value)
             this.ele.getChildByName('nameField').style.border = '2px solid red';
         }
         return currentQuestion;
@@ -397,7 +454,7 @@ class man2 extends Phaser.Scene {
             this.tweens.add({ targets: this.logo, angle: this.logo.angle + 4, duration: 2000, ease: 'Sine.easeInOut', yoyo: 1, loop: -1, delay: 1000 });
 
             //time
-            this.timeStart(this.handleTimeFinished.bind(this), 60000 * 2);
+            this.timeStart(this.handleTimeFinished.bind(this), 60000);
 
             //question
             this.questionDisplay = this.add.text(330, 200, currentQuestion.question, { font: '30px Helvetica', color: "#fff" });

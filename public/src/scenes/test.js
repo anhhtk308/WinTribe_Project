@@ -4,6 +4,7 @@ class test extends Phaser.Scene {
     }
     init(data) {
         this.socket = data.socket;
+        this.name = data.name;
     }
     preload() {}
     create() {
@@ -23,7 +24,7 @@ class test extends Phaser.Scene {
     fadeOutScene() {
         this.cameras.main.fade(250);
         this.time.delayedCall(250, function() {
-            this.scene.start('man1');
+            this.scene.start('man1', { socket: this.socket, name: this.name });
         }, [], this);
     }
 }
