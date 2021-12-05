@@ -8,6 +8,7 @@ class shopScene extends Phaser.Scene {
 
     preload() {
         this.load.image("background", "assets/shop/shop_background.jpg");
+        this.load.image("closeIcon", "assets/shop/closeIcon.png");
         this.load.image("speedImg", "assets/shop/speed.png");
         this.load.image("tripleBullets", "assets/shop/tripleBullets.png");
         this.load.image("hp", "assets/shop/hp.png");
@@ -19,9 +20,12 @@ class shopScene extends Phaser.Scene {
         this.load.image("fireBom", "assets/shop/fireBom.png");
         this.load.image("speedBullet", "assets/shop/speedBullet.png");
     }
+
     create() {
         //background
         this.background = this.add.image(400, 300, "background").setScale(1);
+        //close icon
+        this.closeIcon = this.add.image(765, 32, "closeIcon");
         //item skill's image
         this.speedImg = "speedImg";
         this.tripleBullets = "tripleBullets";
@@ -35,11 +39,11 @@ class shopScene extends Phaser.Scene {
         this.speedBullet = "speedBullet";
         //golds
         this.numberOfGolds = 2000;
-        this.textOfGolds = this.add.text(229, 112, this.numberOfGolds, { fontSize: 25, color: '#fff' });
+        this.textOfGolds = this.add.text(150, 103, this.numberOfGolds, { fontSize: 30, color: '#fff' });
         //number of item at begin
         this.speedNum = 0;
         this.tripleBulletsNum = 0;
-        this.hpNum = 2;
+        this.hpNum = 0;
         this.iceBomNum = 0;
         this.dameNum = 0;
         this.strongNum = 0;
@@ -62,12 +66,12 @@ class shopScene extends Phaser.Scene {
         this.chooseItem(this.fireBom, this.fireBomNum, 470, 350, 586, 501);
         this.chooseItem(this.speedBullet, this.speedBulletNum, 601, 360, 696, 496);
     }
-
+    
     update() {
-
+        
 
     }
-
+    
     chooseItem(item, itemNum, X_min, Y_min, X_max, Y_max) {
         this.background.on("pointerdown", () => {
             this.po_x = this.game.input.mousePointer.x;
@@ -77,18 +81,18 @@ class shopScene extends Phaser.Scene {
                 this.po_y >= Y_min &&
                 this.po_y <= Y_max
             ) {
-                this.animationAddItem(itemNum);
+                this.animationAddItem(item);
                 this.updateGolds();
-                this.updateNumberOfItem(itemNum, '#ffde00')
+                this.updateNumberOfItem(itemNum)
             }
         })
     }
 
-    animationAddItem(item, color) {
+    animationAddItem(item) {
         var randX = Phaser.Math.Between(200, 600);
         var randY = Phaser.Math.Between(200, 400);
-        // var pointsAdded = this.add.image(randX, randY, item);
-        var pointsAdded = this.add.text(randX, randY, '+' + item, { font: '30px ', fill: color, stroke: '#fff', strokeThickness: 10 });
+        var pointsAdded = this.add.image(randX, randY, item);
+        // var pointsAdded = this.add.text(randX, randY, '+' + item, { font: '30px ', fill: color, stroke: '#fff', strokeThickness: 10 });
         pointsAdded.setOrigin(0.3, 0.3);
         this.tweens.add({ targets: pointsAdded, alpha: 0, y: randY - 50, duration: 1000, ease: 'Linear' });
     }
@@ -96,11 +100,11 @@ class shopScene extends Phaser.Scene {
     updateGolds() {
         this.numberOfGolds -= 10;
         this.textOfGolds.setText(this.numberOfGolds);
-        console.log(this.speedBulletNum);
     }
-
+    
     updateNumberOfItem(item) {
         item += 1;
+        console.log(item);
     }
 
 }
