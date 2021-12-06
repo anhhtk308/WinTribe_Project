@@ -3,11 +3,13 @@ class game_main extends Phaser.Scene {
         super("game_main");
     }
     init(data){
+        
+        this.type=data.type;
         this.name=data.name;
     }
 
     preload() {
-        this.load.image("ship", "assets/Ship.png");
+        //this.load.image("ship", "assets/Ship.png");
         this.load.image("tiles", "assets/tiles.png");
         this.load.tilemapTiledJSON("seaMap", "assets/seaMap3011.json");
         this.load.image("bullet", "assets/bullet.png");
@@ -27,6 +29,15 @@ class game_main extends Phaser.Scene {
         this.load.image('sea_tiles','assets/sea_tiles.png');
         this.load.image('treasure','assets/treasure.png');
         this.load.image('ground','assets/ground.png');
+        this.load.image("Ship","assets/Ship.png");
+        this.load.image("ship1","assets/ship1.png");
+        this.load.image("ship2","assets/ship2.png");
+        this.load.image("ship3","assets/ship3.png");
+        this.load.image("ship4","assets/ship4.png");
+        this.load.image("ship5","assets/ship5.png");
+        this.load.image("ship6","assets/ship6.png");
+        this.load.image("ship7","assets/ship7.png");
+
         //add chat
         this.load.html('chatForm', 'assets/chatForm/chatForm.html');
 
@@ -54,7 +65,7 @@ class game_main extends Phaser.Scene {
         //end chat
 
         //start game main
-        this.socket.emit("startGameMain",{name:this.name});
+        this.socket.emit("startGameMain",{name:this.name,type:this.type});
         this.socket.on('currentPlayersGameMain', function (player) {
             Object.keys(player).forEach(function (id) {
                 if (player[id].playersID === self.socket.id) { 
@@ -71,22 +82,21 @@ class game_main extends Phaser.Scene {
         })
        
         function addPlayer(self, playerInfo) {
-            self.ship = self.physics.add.image(playerInfo.x, playerInfo.y, 'ship').setScale(0.2);
+            self.ship = self.physics.add.image(playerInfo.x, playerInfo.y, self.type).setScale(0.2);
             self.ship.setDrag(100);
             self.ship.setAngularDrag(100);
             self.physics.add.collider(self.ship, self.IslandLayer);
             self.physics.add.collider(self.ship,self.bullets,self.attack_ship
             ,null,self);
-            self.text_ship=self.add.text(playerInfo.x+30,playerInfo.y-50,playerInfo.name,{fontSize:10, color:"#FFFFFF"});
+            self.text_ship=self.add.text(playerInfo.x+30,playerInfo.y-50,self.name,{fontSize:10, color:"#FFFFFF"});
             self.health_ship=self.add.image(playerInfo.x+30,playerInfo.y-50,"health").setScale(playerInfo.health/100,1/2);
             self.cameras.main.startFollow(self.ship);
             
         }
        
         function addOtherPlayer(self, playerInfo) {
-            const other = self.otherPlayers.create(playerInfo.x,playerInfo.y,"ship").setImmovable().setScale(0.2);
+            const other = self.otherPlayers.create(playerInfo.x,playerInfo.y,playerInfo.type).setImmovable().setScale(0.2);
             other.playersID = playerInfo.playersID;
-           
             const text_ship = self.add.text(playerInfo.x+30,playerInfo.y-70,playerInfo.name,{fontSize:10, color:"#FFFFFF"});
             text_ship.playersID = playerInfo.playersID;
             self.texts.add(text_ship);
@@ -142,11 +152,26 @@ class game_main extends Phaser.Scene {
         });
 
         this.socket.on('fired',function(data){
-            const bullet = self.bullets.create(data.x,data.y,'bullet').setScale(0.03);
-            bullet.bulletID=data.bulletID;
+            // const bullet = self.bullets.create(data.x,data.y,'bullet').setScale(0.03);
+            // bullet.bulletID=data.bulletID;
            
-            self.physics.velocityFromRotation(data.rotation+1.5,500,bullet.body.velocity);
+            // self.physics.velocityFromRotation(data.rotation+1.5,500,bullet.body.velocity);
+            // self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
+            const bullet1 = self.bullets.create(data.x,data.y,'bullet').setScale(0.03);
+            bullet1.bulletID=data.bulletID;
+            self.physics.velocityFromRotation(data.rotation+1.5,500,bullet1.body.velocity);
+            //self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
+            
+            const bullet2 = self.bullets.create(data.x,data.y,'bullet').setScale(0.03);
+            bullet2.bulletID=data.bulletID;
+            self.physics.velocityFromRotation(data.rotation+800,500,bullet2.body.velocity);
+            //self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
+
+            const bullet3 = self.bullets.create(data.x,data.y,'bullet').setScale(0.03);
+            bullet3.bulletID=data.bulletID;
+            self.physics.velocityFromRotation(data.rotation-200,500,bullet3.body.velocity);
             self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
+
         })
         
         this.socket.on('bullet_moved',function(data){

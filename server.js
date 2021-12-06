@@ -33,7 +33,8 @@ io.on('connection', function (socket) {
         y: Math.floor(Math.random() * 4700) + 50,
         rotation: 0,
         health: 100,
-        name:""
+        name:"aaa",
+        type:""
 
     }
     //create bullet
@@ -54,10 +55,10 @@ io.on('connection', function (socket) {
     // if we start gamemain it will do all funcion in gamemain
     socket.on("startGameMain", function (data) {
 
-        players[socket.id].name=data.name;
+        //players[socket.id].name=data.name;
+        players[socket.id].type=data.type;
         socket.emit('currentPlayersGameMain', players);
         socket.broadcast.emit('newPlayerGameMain', players[socket.id]);
-
         socket.on('forceDisconnect', function () {
             console.log('user disconnected: ', socket.id);
 
