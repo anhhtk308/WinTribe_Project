@@ -45,18 +45,19 @@ class man_khoi_tao extends Phaser.Scene {
             }
             
             this.ship[this.i]=this.ships.create(ship_x+count*150,ship_y,this.type_ship[this.i]).setScale(0.3);
-            this.ship[this.i].setTint();
+            this.ship[this.i].alpha=0.5;
             count++;
             this.i++;
         }
+
         
         this.ship[0].setInteractive();
             this.ship[0].on("pointerdown",()=>{
                 this.type=this.type_ship[0];
-                this.ship[0].setTint("#808080");
+                this.ship[0].alpha=1;
                 for(var j=0;j<8;j++){
                     if(j!=0){
-                        this.ship[j].clearTint();
+                        this.ship[j].alpha=0.5;
                     }
                 }
             })
@@ -64,10 +65,10 @@ class man_khoi_tao extends Phaser.Scene {
             this.ship[1].on("pointerdown",()=>{
                
                 this.type=this.type_ship[1]
-                this.ship[1].setTint("#808080");
+                this.ship[1].alpha=1;
                 for(var j=0;j<8;j++){
                     if(j!=1){
-                        this.ship[j].clearTint();
+                        this.ship[j].alpha=0.5;
                     }
                 }
             })
@@ -75,10 +76,10 @@ class man_khoi_tao extends Phaser.Scene {
             this.ship[2].on("pointerdown",()=>{
                
                 this.type=this.type_ship[2]
-                this.ship[2].setTint("#808080");
+                this.ship[2].alpha=1;
                 for(var j=0;j<8;j++){
                     if(j!=2){
-                        this.ship[j].clearTint();
+                        this.ship[j].alpha=0.5;
                     }
                 }
             })
@@ -86,10 +87,10 @@ class man_khoi_tao extends Phaser.Scene {
             this.ship[3].on("pointerdown",()=>{
                
                 this.type=this.type_ship[3]
-                this.ship[3].setTint("#808080");
+                this.ship[3].alpha=1;
                 for(var j=0;j<8;j++){
                     if(j!=3){
-                        this.ship[j].clearTint();
+                        this.ship[j].alpha=0.5
                     }
                 }
             })
@@ -97,10 +98,10 @@ class man_khoi_tao extends Phaser.Scene {
             this.ship[4].on("pointerdown",()=>{
                
                 this.type=this.type_ship[4]
-                this.ship[4].setTint("#808080");
+                this.ship[4].alpha=1;
                 for(var j=0;j<8;j++){
                     if(j!=4){
-                        this.ship[j].clearTint();
+                        this.ship[j].alpha=0.5;
                     }
                 }
             })
@@ -108,10 +109,10 @@ class man_khoi_tao extends Phaser.Scene {
             this.ship[5].on("pointerdown",()=>{
                
                 this.type=this.type_ship[5]
-                this.ship[5].setTint("#808080");
+                this.ship[5].alpha=1;
                 for(var j=0;j<8;j++){
                     if(j!=5){
-                        this.ship[j].clearTint();
+                        this.ship[j].alpha=0.5;
                     }
                 }
             })
@@ -119,10 +120,10 @@ class man_khoi_tao extends Phaser.Scene {
             this.ship[6].on("pointerdown",()=>{
                
                 this.type=this.type_ship[6]
-                this.ship[6].setTint("#808080");
+                this.ship[6].alpha=1;
                 for(var j=0;j<8;j++){
                     if(j!=6){
-                        this.ship[j].clearTint();
+                        this.ship[j].alpha=0.5;
                     }
                 }
             })
@@ -130,10 +131,10 @@ class man_khoi_tao extends Phaser.Scene {
             this.ship[7].on("pointerdown",()=>{
                
                 this.type=this.type_ship[7]
-                this.ship[7].setTint("#808080");
+                this.ship[7].alpha=1;
                 for(var j=0;j<8;j++){
                     if(j!=7){
-                        this.ship[j].clearTint();
+                        this.ship[j].alpha=0.5;
                     }
                 }
             })
