@@ -340,6 +340,7 @@ class man2 extends Phaser.Scene {
                 this.gameOverScoreTween();
             });
         } else {
+            this.result.setText('Gold: 0');
             this.close_gift.y = 300;
             this.close_gift.setVisible(true);
         }

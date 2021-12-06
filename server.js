@@ -21,13 +21,38 @@ io.on('connection', function(socket) {
         x: Math.floor(Math.random() * 700) + 50,
         y: Math.floor(Math.random() * 500) + 50,
         name: '',
+        status: 'turn'
     }
-    socket.on('startMan1', function(data) {
+    socket.on('startMainHall', function(data) {
         players[socket.id].name = data.name;
         // send the players object to the new players
-        socket.emit('currentPlayers', players);
+        socket.emit('currentPlayersMain', players);
         // update all other players of the new player
-        socket.broadcast.emit('newPlayer', players[socket.id]);
+        socket.broadcast.emit('newPlayerMain', players[socket.id]);
+
+        // socket.on('movement_player', function(data) {
+        //     players[socket.id].x = data.x;
+        //     players[socket.id].y = data.y;
+        //     players[socket.id].status = data.status;
+        //     socket.broadcast.emit("player_moved", players[socket.id]);
+        // });
+
+        // socket.on("not_change", function(data) {
+        //     players[socket.id].status = data.status;
+        //     socket.broadcast.emit("player_not_change", players[socket.id]);
+        // });
+    });
+
+    socket.on('movement_player', function(data) {
+        players[socket.id].x = data.x;
+        players[socket.id].y = data.y;
+        players[socket.id].status = data.status;
+        socket.broadcast.emit("player_moved", players[socket.id]);
+    });
+
+    socket.on("not_change", function(data) {
+        players[socket.id].status = data.status;
+        socket.broadcast.emit("player_not_change", players[socket.id]);
     });
 
     socket.on('startTest', function(data) {
@@ -39,8 +64,9 @@ io.on('connection', function(socket) {
         delete players[socket.id];
         delete socketLst[socket.id];
         // emit a message to all players to remove this player
-        //socket.emit('disconnect', socket.id);
+        socket.emit('disconnected', socket.id);
     });
+    //chatting
     socketLst[socket.id] = socket;
     socket.on('sendMsgToServer', function(data) {
         for (var i in socketLst) {
