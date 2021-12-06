@@ -4,6 +4,10 @@ class man2 extends Phaser.Scene {
         super("man2");
     }
 
+    init(data) {
+        this.itemSkill = data;
+    }
+
     preload() {}
     create() {
         //var socket=io();
@@ -33,6 +37,8 @@ class man2 extends Phaser.Scene {
            // socket.emit('inputed',textEntry.text);
         });
         //var input= document.createElement("<input type='text'>");
+        // alert('speed: ' + this.itemSkill.speed+' hp: ' + this.itemSkill.hp + ' iceBom: ' + this.itemSkill.iceBom + ' speedBullet: ' + this.itemSkill.speedBullet + ' strong: ' + this.itemSkill.strong + ' shipRotationSpeed: ' + this.itemSkill.shipRotationSpeed);
+
     }
     update() {}
 }

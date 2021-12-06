@@ -7,104 +7,169 @@ class shopScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image("background", "assets/shop/shop_background.jpg");
+        this.load.image("background", "assets/shop/shop_background1.jpg");
         this.load.image("closeIcon", "assets/shop/closeIcon.png");
         this.load.image("speedImg", "assets/shop/speed.png");
-        this.load.image("tripleBullets", "assets/shop/tripleBullets.png");
         this.load.image("hp", "assets/shop/hp.png");
         this.load.image("iceBom", "assets/shop/iceBom.png");
-        this.load.image("dame", "assets/shop/dame.png");
         this.load.image("strong", "assets/shop/strong.png");
-        this.load.image("doubleBullets", "assets/shop/doubleBullets.png");
         this.load.image("shipRotationSpeed", "assets/shop/shipRotationSpeed.png");
-        this.load.image("fireBom", "assets/shop/fireBom.png");
         this.load.image("speedBullet", "assets/shop/speedBullet.png");
     }
 
     create() {
         //background
-        this.background = this.add.image(400, 300, "background").setScale(1);
-        //close icon
-        this.closeIcon = this.add.image(765, 32, "closeIcon");
-        //item skill's image
-        this.speedImg = "speedImg";
-        this.tripleBullets = "tripleBullets";
-        this.hp = "hp";
-        this.iceBom = "iceBom";
-        this.dame = "dame";
-        this.strong = "strong";
-        this.doubleBullets = "doubleBullets";
-        this.shipRotationSpeed = "shipRotationSpeed";
-        this.fireBom = "fireBom";
-        this.speedBullet = "speedBullet";
+        this.background = this.add.image(400, 300, "background");
+
         //golds
         this.numberOfGolds = 2000;
-        this.textOfGolds = this.add.text(150, 103, this.numberOfGolds, { fontSize: 30, color: '#fff' });
-        //number of item at begin
-        this.speedNum = 0;
-        this.tripleBulletsNum = 0;
-        this.hpNum = 0;
-        this.iceBomNum = 0;
-        this.dameNum = 0;
-        this.strongNum = 0;
-        this.doubleBulletsNum = 0;
-        this.shipRotationSpeedNum = 0;
-        this.fireBomNum = 0;
-        this.speedBulletNum = 0;
-        //define location of item 
-        this.background.setInteractive();
-        this.po_x = 0;
-        this.po_y = 0;
-        this.chooseItem(this.speedImg, this.speedNum, 120, 210, 200, 320);
-        this.chooseItem(this.tripleBullets, this.tripleBulletsNum, 220, 210, 340, 333);
-        this.chooseItem(this.hp, this.hpNum, 360, 200, 460, 326);
-        this.chooseItem(this.iceBom, this.iceBomNum, 480, 190, 580, 330);
-        this.chooseItem(this.dame, this.dameNum, 590, 190, 704, 320);
-        this.chooseItem(this.strong, this.strongNum, 100, 350, 222, 480);
-        this.chooseItem(this.doubleBullets, this.doubleBulletsNum, 233, 350, 340, 488);
-        this.chooseItem(this.shipRotationSpeed, this.shipRotationSpeedNum, 350, 350, 464, 506);
-        this.chooseItem(this.fireBom, this.fireBomNum, 470, 350, 586, 501);
-        this.chooseItem(this.speedBullet, this.speedBulletNum, 601, 360, 696, 496);
-    }
-    
-    update() {
-        
+        this.textOfGolds = this.add.text(150, 116, this.numberOfGolds, { fontSize: 30, color: '#fff' });
+        //item skill's image
+        this.speedImg = this.add.image(285, 255, 'speedImg');
+        this.hp = this.add.image(410, 255, 'hp');
+        this.iceBom = this.add.image(540, 255, 'iceBom');
+        this.speedBullet = this.add.image(280, 430, 'speedBullet');
+        this.strong = this.add.image(415, 420, 'strong');
+        this.shipRotationSpeed = this.add.image(540, 420, 'shipRotationSpeed');
+
+        //bag's item
+        this.speedSmall = this.add.image(435, 127, 'speedImg').setScale(0.4);
+        this.hpSmall = this.add.image(475, 127, 'hp').setScale(0.5);
+        this.iceBomSmall = this.add.image(525, 125, 'iceBom').setScale(0.45);
+        this.speedBulletSmall = this.add.image(565, 127, 'speedBullet').setScale(0.5);
+        this.strongSmall = this.add.image(615, 127, 'strong').setScale(0.4);
+        this.shipRotationSpeedSmall = this.add.image(660, 127, 'shipRotationSpeed').setScale(0.4);
+
+        this.skillSmall = this.physics.add.group();
+
+        (this.speedSmall).name = 'speedImg';
+        this.skillSmall.add(this.speedSmall);
+        (this.hpSmall).name = 'hp';
+        this.skillSmall.add(this.hpSmall);
+        (this.iceBomSmall).name = 'iceBom';
+        this.skillSmall.add(this.iceBomSmall);
+        (this.speedBulletSmall).name = 'speedBullet';
+        this.skillSmall.add(this.speedBulletSmall);
+        (this.strongSmall).name = 'strong';
+        this.skillSmall.add(this.strongSmall);
+        (this.shipRotationSpeedSmall).name = 'shipRotationSpeed';
+        this.skillSmall.add(this.shipRotationSpeedSmall);
+
+        this.skillSmall.getChildren().forEach(function (other) {
+            other.imgObj = other;
+            (other.imgObj).alpha = 0.3;
+        });
+
+        //skill object
+        this.skills = this.physics.add.group();
+
+        (this.speedImg).name = 'speedImg';
+        (this.speedImg).golds = 5;
+        this.skills.add(this.speedImg);
+
+        (this.hp).name = 'hp';
+        (this.hp).golds = 10;
+        this.skills.add(this.hp);
+
+        (this.iceBom).name = 'iceBom';
+        (this.iceBom).golds = 20;
+        this.skills.add(this.iceBom);
+
+        (this.speedBullet).name = 'speedBullet';
+        (this.speedBullet).golds = 35;
+        this.skills.add(this.speedBullet);
+
+        (this.strong).name = 'strong';
+        (this.strong).golds = 40;
+        this.skills.add(this.strong);
+
+        (this.shipRotationSpeed).name = 'shipRotationSpeed';
+        (this.shipRotationSpeed).golds = 15;
+        this.skills.add(this.shipRotationSpeed);
+
+        this.skills.getChildren().forEach(function (other) {
+            other.imgObj = other;
+            (other.imgObj).setInteractive();
+        });
+
+        //export object
+        this.exportObj = {
+            speed: false,
+            hp: false,
+            iceBom: false,
+            speedBullet: false,
+            strong: false,
+            shipRotationSpeed: false,
+        }
+
+        var self = this;
+
+        this.skills.getChildren().forEach(function (other) {
+            (other.imgObj).on("pointerdown", () => {
+                (other.imgObj).alpha = 0.5;
+                self.animationAddItem(other.name);
+                self.updateGolds(other.golds);
+                var option = other.name;
+                switch (option) {
+                    case 'speedImg': {
+                        self.exportObj.speed = true;
+                        break;
+                    };
+                    case 'hp': {
+                        self.exportObj.hp = true;
+                        break;
+                    };
+                    case 'iceBom': {
+                        self.exportObj.iceBom = true;
+                        break;
+                    };
+                    case 'speedBullet': {
+                        self.exportObj.speedBullet = true;
+                        break;
+                    };
+                    case 'strong': {
+                        self.exportObj.strong = true;
+                        break;
+                    };
+                    case 'shipRotationSpeed': {
+                        self.exportObj.shipRotationSpeed = true;
+                        break;
+                    };
+                }
+                self.skillSmall.getChildren().forEach(function (itemSmall) {
+                    if (itemSmall.name === other.name) {
+                        (itemSmall.imgObj).alpha = 1;
+                    }
+                });
+                (other.imgObj).removeListener("pointerdown");
+            })
+        });
+
+        //close icon
+        this.closeIcon = this.add.image(765, 32, "closeIcon");
+        this.closeIcon.setInteractive();
+        this.closeIcon.on("pointerdown", () => {
+            this.scene.start('man2', this.exportObj);
+        })
 
     }
-    
-    chooseItem(item, itemNum, X_min, Y_min, X_max, Y_max) {
-        this.background.on("pointerdown", () => {
-            this.po_x = this.game.input.mousePointer.x;
-            this.po_y = this.game.input.mousePointer.y;
-            if (this.po_x >= X_min &&
-                this.po_x <= X_max &&
-                this.po_y >= Y_min &&
-                this.po_y <= Y_max
-            ) {
-                this.animationAddItem(item);
-                this.updateGolds();
-                this.updateNumberOfItem(itemNum)
-            }
-        })
+
+    update() {
+
+
     }
 
     animationAddItem(item) {
-        var randX = Phaser.Math.Between(200, 600);
+        var randX = Phaser.Math.Between(300, 400);
         var randY = Phaser.Math.Between(200, 400);
-        var pointsAdded = this.add.image(randX, randY, item);
-        // var pointsAdded = this.add.text(randX, randY, '+' + item, { font: '30px ', fill: color, stroke: '#fff', strokeThickness: 10 });
+        var pointsAdded = this.add.image(randX, randY, item).setScale(0.7);
         pointsAdded.setOrigin(0.3, 0.3);
         this.tweens.add({ targets: pointsAdded, alpha: 0, y: randY - 50, duration: 1000, ease: 'Linear' });
     }
 
-    updateGolds() {
-        this.numberOfGolds -= 10;
+    updateGolds(golds) {
+        this.numberOfGolds -= golds;
         this.textOfGolds.setText(this.numberOfGolds);
-    }
-    
-    updateNumberOfItem(item) {
-        item += 1;
-        console.log(item);
     }
 
 }
