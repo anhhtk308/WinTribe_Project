@@ -141,7 +141,7 @@ class man_khoi_tao extends Phaser.Scene {
         this.text.setInteractive();
         this.elementName = this.add.dom(400, 300).createFromCache('nameForm');
         this.text.on("pointerdown", () => {
-            if ((this.elementName.getChildByName('nameField').value).trim().length > 0) {
+            if ((this.elementName.getChildByName('nameField').value).trim().length > 0&&this.type!="") {
                 this.cameras.main.fade(250);
                 this.time.delayedCall(250, function() {
                     this.scene.start('game_main', { name: this.elementName.getChildByName('nameField').value,type:this.type });

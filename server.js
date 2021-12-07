@@ -22,6 +22,7 @@ app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
+var num_player=0;
 //socket connect
 io.on('connection', function (socket) {
     console.log('a user connected: ', socket.id);
@@ -34,7 +35,8 @@ io.on('connection', function (socket) {
         rotation: 0,
         health: 100,
         name:"aaa",
-        type:""
+        type:"",
+        score:0
 
     }
     //create bullet
@@ -44,7 +46,7 @@ io.on('connection', function (socket) {
         y: 0,
         rotation: 0
     };
-
+    
     socketLst[socket.id] = socket;
     socket.on('sendMsgToServer', function(data) {
         for (var i in socketLst) {
@@ -54,9 +56,12 @@ io.on('connection', function (socket) {
     });
     // if we start gamemain it will do all funcion in gamemain
     socket.on("startGameMain", function (data) {
-
+        num_player++;
         //players[socket.id].name=data.name;
         players[socket.id].type=data.type;
+    
+        socket.emit("current_on",{num:num_player});
+        socket.broadcast.emit("add_player",{num:num_player})
         socket.emit('currentPlayersGameMain', players);
         socket.broadcast.emit('newPlayerGameMain', players[socket.id]);
         socket.on('forceDisconnect', function () {
@@ -64,10 +69,13 @@ io.on('connection', function (socket) {
 
             delete players[socket.id];
             io.emit('disconnected', socket.id);
+            // num_player--;
+            // socket.broadcast.emit("add_player",{num:num_player})
             socket.disconnect();
         });
-        socket.on('destroy', function () {
+        socket.on('destroy', function (data) {
             socket.broadcast.emit('destroy_ship', players[socket.id]);
+            socket.broadcast.emit('up_score',data)
         })
         socket.on('movement', function (data) {
             players[socket.id].x = data.x;
@@ -92,11 +100,17 @@ io.on('connection', function (socket) {
         socket.on("dame", function () {
             players[socket.id].health -= 10;
             socket.broadcast.emit('damed', players[socket.id]);
+        });
+        socket.on("scored",function(data){
+            players[socket.id].score=data.score;
+            socket.emit("print_score",players[socket.id]);
         })
     });
     socket.on('disconnect', function () {
         console.log('user disconnected: ', socket.id);
         delete players[socket.id];
+        num_player--;
+        socket.broadcast.emit("add_player",{num:num_player})
         io.emit('disconnected', socket.id);
     });
 

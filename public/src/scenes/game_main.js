@@ -11,7 +11,7 @@ class game_main extends Phaser.Scene {
     preload() {
         //this.load.image("ship", "assets/Ship.png");
         this.load.image("tiles", "assets/tiles.png");
-        this.load.tilemapTiledJSON("seaMap", "assets/seaMap3011.json");
+        this.load.tilemapTiledJSON("seaMap", "assets/SeaMapDemo0512.json");
         this.load.image("bullet", "assets/bullet.png");
         this.load.spritesheet("explo_anims", "assets/explo_anims.png", { frameWidth: 269 / 4, frameHeight: 64.5 });
         this.load.image("health","assets/health_bar.png");
@@ -37,6 +37,7 @@ class game_main extends Phaser.Scene {
         this.load.image("ship5","assets/ship5.png");
         this.load.image("ship6","assets/ship6.png");
         this.load.image("ship7","assets/ship7.png");
+        this.load.image("stone2",'assets/stone2.png');
 
         //add chat
         this.load.html('chatForm', 'assets/chatForm/chatForm.html');
@@ -51,6 +52,7 @@ class game_main extends Phaser.Scene {
         this.bullets = this.physics.add.group();
         this.texts=this.add.group();
         this.health_ships= this.add.group();
+        this.score=0;
         // solve chat event
         this.elementChat = this.add.dom(-470, 2210).createFromCache('chatForm').setScrollFactor(0).setScale(5);
         this.socket.on('addToChat', function (data) {
@@ -152,11 +154,7 @@ class game_main extends Phaser.Scene {
         });
 
         this.socket.on('fired',function(data){
-            // const bullet = self.bullets.create(data.x,data.y,'bullet').setScale(0.03);
-            // bullet.bulletID=data.bulletID;
-           
-            // self.physics.velocityFromRotation(data.rotation+1.5,500,bullet.body.velocity);
-            // self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
+            
             const bullet1 = self.bullets.create(data.x,data.y,'bullet').setScale(0.03);
             bullet1.bulletID=data.bulletID;
             self.physics.velocityFromRotation(data.rotation+1.5,500,bullet1.body.velocity);
@@ -203,7 +201,30 @@ class game_main extends Phaser.Scene {
             });
             
         });
-        
+        this.player_left=0;
+        // this.text_number = this.add.text(-470, 2210,data.num,{fontSize:32,color:"#FFFFFFF"});
+        // this.text_number.setStyle()
+        this.socket.on("current_on",function(data){
+            self.text_number = self.add.text(300, 300,"PLayer left: "+data.num,{fontSize:32,color:"#FFFFFFF"});
+            self.player_left=data.num
+         })
+
+         this.socket.on("add_player",function(data){
+            self.text_number.setText("PLayer left: "+data.num);
+            self.text_number.setStyle({fontSize:32,color:"#FFFFFFF"})
+            self.player_left=data.num
+         })
+
+         this.socket.on("up_score",function(data){
+             if(self.socket.id==data.id){
+                 self.score+=100;
+                 self.socket.emit("scored",{score:self.score});
+             }
+         })
+        this.socket.on("print_score",function(data){
+            self.score=data.score;
+
+        })
 
         
         // add map
@@ -221,9 +242,10 @@ class game_main extends Phaser.Scene {
         const island9=map.addTilesetImage("island9")
         const island10=map.addTilesetImage("island10")
         const stone=map.addTilesetImage("stone")
+        const stone2=map.addTilesetImage("stone2");
         const ground=map.addTilesetImage('ground');
         this.SeaLayer = map.createLayer("sea_background", [natural_tile]);
-        this.IslandLayer = map.createLayer("island", [natural_tile,island1,island2,island3,island4,island5,island6,island7,island8,island9,island10,stone,ground]);
+        this.IslandLayer = map.createLayer("island", [natural_tile,island1,island2,island3,island4,island5,island6,island7,island8,island9,island10,stone,ground,stone2]);
         this.IslandLayer.setCollisionBetween(0, 20000);
        
         this.fireButtton = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -246,10 +268,15 @@ class game_main extends Phaser.Scene {
         this.status1 = 1;
          this.r3 = this.add.rectangle(100,200, 200, 100);
          this.r3.setStrokeStyle(5, 0x1a65ac);
+         this.score_text=this.add.text(200,200,"SCORE: "+this.score,{font:48,color:"#FFFFFF"});
+        
+         
+        
     }
 
     update() {
-        // ignore other player in minimap
+        
+        this.score_text.setText("SCORE: "+this.score);
         this.cursors = this.input.keyboard.createCursorKeys();
         this.otherPlayers.children.iterate(function(child){
             this.minimap.ignore(child);
@@ -264,13 +291,16 @@ class game_main extends Phaser.Scene {
            this.minimap.ignore(child);
         },this)
         //solve event ship
-        if (this.ship&&this.text_ship&&this.health_ship) {
+        if (this.ship&&this.text_ship&&this.health_ship&&this.text_number) {
 
-
+            
             if(this.health<=0){
                 this.destroyShip(this.ship);
             }
-            
+            if(this.score>=100&&this.player_left==1){
+                this.socket.emit('forceDisconnect');
+                this.scene.start("man_khoi_tao");
+            }
             if (this.cursors.left.isDown&&this.status1==1) {
                 this.ship.setAngularVelocity(-100);
                 
@@ -297,6 +327,10 @@ class game_main extends Phaser.Scene {
             this.r3.x=this.minimap.scrollX-250;
             this.minimap.scrollY=Phaser.Math.Clamp(this.ship.y,0,10000);
             this.r3.y=this.minimap.scrollY-240;
+            this.text_number.x=this.ship.x+100;
+            this.text_number.y=this.ship.y-250;
+            this.score_text.x=this.ship.x;
+            this.score_text.y=this.ship.y-250;
 
              //fire button
             if (Phaser.Input.Keyboard.JustDown(this.fireButtton)&&this.status==1) {
@@ -362,27 +396,32 @@ class game_main extends Phaser.Scene {
 
     //collision  with bullet and map
     collision(bullet, map) {
-        bullet.disableBody(true, true);
+        //bullet.disableBody(true, true);
         bullet.destroy();
         var explo = this.physics.add.sprite(bullet.x, bullet.y, "explo_anims").setScale(0.4);
         explo.anims.play("explo", true);
-        this.time.addEvent({
+        try {
+            this.time.addEvent({
 
-            callback: function () {
-                explo.anims.stop("explo");
-                explo.disableBody(true, true);
-            },
-            callbackScope: this,
-            delay: 1000,
-            repeat: 0
-        });
+                callback: function () {
+                    explo.anims.stop("explo");
+                    explo.disableBody(true, true);
+                },
+                callbackScope: this,
+                delay: 1000,
+                repeat: 0
+            });
+        } catch (error) {
+            
+        }
+        
 
     }
     
     //event attack ship between main ship and bullet
     attack_ship(ship,bullet){
     
-        bullet.disableBody(true, true);
+        //bullet.disableBody(true, true);
         bullet.destroy();
         var explo = this.physics.add.sprite(bullet.x, bullet.y, "explo_anims").setScale(0.4);
         explo.anims.play("explo", true);
@@ -401,7 +440,7 @@ class game_main extends Phaser.Scene {
             if(this.health>0){
                 this.health_ship.setScale(this.health,1/2);
             } else {
-                this.socket.emit('destroy');
+                this.socket.emit('destroy',{id:bullet.bulletID});
             }
             
         }
