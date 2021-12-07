@@ -5,6 +5,8 @@ class mainHall extends Phaser.Scene {
     }
     init(data) {
         this.name = data.name;
+        this.socket = data.socket;
+        this.player = undefined;
     }
     preload() {
         //chatting
@@ -34,12 +36,31 @@ class mainHall extends Phaser.Scene {
         this.otherPlayers = this.physics.add.group();
         this.otherPlayers_name = this.physics.add.group();
         var self = this;
-        this.socket = io();
+        if (typeof this.socket === 'undefined') {
+            this.socket = io();
+            this.socket.on('addToChat', function(data) {
+                self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
+            });
+            this.socket.on('currentPlayersMain', function(players) {
+                Object.keys(players).forEach(function(id) {
+                    if (players[id].playersID === self.socket.id) {
+                        self.addPlayer(self, players[id]);
+                    } else {
+                        self.addOtherPlayer(self, players[id]);
+                    }
+                });
+            });
+
+
+            this.socket.on('newPlayerMain', function(playerInfo) {
+                self.addOtherPlayer(self, playerInfo);
+            });
+        }
 
         this.socket.emit('startMainHall', { name: self.name });
-        this.socket.on('addToChat', function(data) {
-            self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
-        });
+        // this.socket.on('addToChat', function(data) {
+        //     self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
+        // });
 
         this.elementChat.getChildByID("chat-form").onsubmit = function(e) {
             e.preventDefault();
@@ -48,20 +69,20 @@ class mainHall extends Phaser.Scene {
         }
 
         //add multi
-        this.socket.on('currentPlayersMain', function(players) {
-            Object.keys(players).forEach(function(id) {
-                if (players[id].playersID === self.socket.id) {
-                    self.addPlayer(self, players[id]);
-                } else {
-                    self.addOtherPlayer(self, players[id]);
-                }
-            });
-        });
+        // this.socket.on('currentPlayersMain', function(players) {
+        //     Object.keys(players).forEach(function(id) {
+        //         if (players[id].playersID === self.socket.id) {
+        //             self.addPlayer(self, players[id]);
+        //         } else {
+        //             self.addOtherPlayer(self, players[id]);
+        //         }
+        //     });
+        // });
 
 
-        this.socket.on('newPlayerMain', function(playerInfo) {
-            self.addOtherPlayer(self, playerInfo);
-        });
+        // this.socket.on('newPlayerMain', function(playerInfo) {
+        //     self.addOtherPlayer(self, playerInfo);
+        // });
 
         //map
 
@@ -259,6 +280,10 @@ class mainHall extends Phaser.Scene {
     }
     enter_quiz(player, optionGameQuizLayer) {
         this.socket.emit('destroy');
-        this.scene.start("matchingGame", { socket: this.socket });
+        // this.player.destroy();
+        // this.player_name.destroy();
+        // this.player = undefined;
+        // this.player_name = undefined;
+        this.scene.start("matchingGame", { socket: this.socket, name: this.name });
     }
 }

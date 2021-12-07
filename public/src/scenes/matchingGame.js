@@ -5,6 +5,7 @@ class matchingGame extends Phaser.Scene {
 
     init(data) {
         this.socket = data.socket;
+        this.name = data.name;
     }
 
     preload() {
@@ -157,6 +158,10 @@ class matchingGame extends Phaser.Scene {
                 id: 21,
                 question: "n/g/a/ự/ô",
                 answer: "Ngựa ô"
+            }, {
+                id: 22,
+                question: "ă/n/p/ú/m/b/g",
+                answer: "Búp măng"
             }
         ];
 
@@ -415,7 +420,7 @@ class matchingGame extends Phaser.Scene {
         this.cameras.main.fade(250);
         this.time.delayedCall(250, function() {
             this.button_sound.play();
-            this.scene.start('mainHall');
+            this.scene.start('mainHall', { socket: this.socket, name: this.name });
         }, [], this);
     }
 
