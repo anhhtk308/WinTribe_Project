@@ -29,9 +29,9 @@ window.addEventListener('load', function() {
     game.scene.add("Preload", Preload);
     game.scene.add("Level", Level);
     game.scene.add("Boot", Boot);
-    game.scene.add("startScene", startScene);
+    game.scene.add("startScene", startScene, true);
     game.scene.add("mainHall", mainHall);
-    game.scene.add("shopScene", shopScene, true);
+    game.scene.add("shopScene", shopScene);
     game.scene.add("man1", man1);
     game.scene.add("man2", man2);
     game.scene.add("test", test);

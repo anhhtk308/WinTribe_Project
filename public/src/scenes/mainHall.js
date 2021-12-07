@@ -125,10 +125,10 @@ class mainHall extends Phaser.Scene {
                 }
             });
         });
+
+        //map
         ////////////////-----------------------------------------
         const map = this.add.tilemap("MainHallMap");
-
-
         const waterfall_tile = map.addTilesetImage("waterfall");
         const base_out_atlas_tile = map.addTilesetImage("base_out_atlas");
         const fishing_tile = map.addTilesetImage("fishing");
@@ -137,39 +137,28 @@ class mainHall extends Phaser.Scene {
         const optionGameQuiz_tile = map.addTilesetImage("optionGameQuiz");
         const shop_tile = map.addTilesetImage("Shop");
         const textOption_tile = map.addTilesetImage("textOption");
-        //const menu = map.addTilesetImage("waterfall");
 
+        //--------------------------------------------
+        this.backGroundLayer = map.createLayer("background", [map_tree_tile]);
+        this.streetLayer = map.createLayer("street", [base_out_atlas_tile, waterfall_tile, map_tree_tile]);
+        this.volcanoAndTreeLayer = map.createLayer("volcanoAndTree", [base_out_atlas_tile, map_tree_tile]);
+        this.pedestal = map.createLayer("pedestal", [map_tree_tile]);
+        this.optionGameFishingLayer = map.createLayer("optionGameFishing", [fishing_tile, textOption_tile]);
+        this.optionArenaLayer = map.createLayer("optionArena", [gemChinh_tile, textOption_tile]);
+        this.optionShopLayer = map.createLayer("optionShop", [shop_tile, textOption_tile]);
+        this.optionGameQuizLayer = map.createLayer("optionGameQuiz", [optionGameQuiz_tile, textOption_tile]);
+        this.roadLayer = map.createLayer("road", [base_out_atlas_tile]);
+        this.wall = map.createLayer("wall", [base_out_atlas_tile]);
 
-        //
-        this.backGroundLayer = map.createLayer("background", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.streetLayer = map.createLayer("street", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.volcanoAndTreeLayer = map.createLayer("volcanoAndTree", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.pedestal = map.createLayer("pedestal", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.optionGameFishingLayer = map.createLayer("optionGameFishing", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.optionArenaLayer = map.createLayer("optionArena", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.optionShopLayer = map.createLayer("optionShop", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        //this.optionShopLayer = map.createLayer("optionShop", shop_tile, 0, 0);
-
-        this.optionGameQuizLayer = map.createLayer("optionGameQuiz", [base_out_atlas_tile, waterfall_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.roadLayer = map.createLayer("road", base_out_atlas_tile, 0, 0);
-
-
-        this.add.image(0, 0, 'roadLayer').setOrigin(0);
-        this.add.image(1922, 0, 'roadLayer').setOrigin(0).setFlipX(true);
-        this.add.image(0, 1200, 'roadLayer').setOrigin(0).setFlipY(true);
-        this.add.image(1922, 1200, 'roadLayer').setOrigin(0).setFlipX(true).setFlipY(true);
-
-        //map
-
-
-
-        this.backGroundLayer.setCollisionBetween(0, 10000);
-        this.volcanoAndTreeLayer.setCollisionBetween(0, 10000);
-        this.optionGameFishingLayer.setCollisionBetween(0, 10000);
-        this.optionArenaLayer.setCollisionBetween(0, 10000);
-        this.optionShopLayer.setCollisionBetween(0, 10000);
-        this.optionGameQuizLayer.setCollisionBetween(0, 10000);
-        this.streetLayer.setCollisionBetween(0, 10000);
+        //map collision
+        this.backGroundLayer.setCollisionBetween(0, 20000);
+        this.wall.setCollisionBetween(0, 20000);
+        this.volcanoAndTreeLayer.setCollisionBetween(0, 20000);
+        this.optionGameFishingLayer.setCollisionBetween(0, 20000);
+        this.optionArenaLayer.setCollisionBetween(0, 20000);
+        this.optionShopLayer.setCollisionBetween(0, 20000);
+        this.optionGameQuizLayer.setCollisionBetween(0, 20000);
+        this.streetLayer.setCollisionBetween(0, 20000);
 
         //hide or show chat
         this.hide = this.add.text(350, 573, '<<', { color: '#000', fontSize: '30px' }).setScrollFactor(0);
@@ -247,13 +236,14 @@ class mainHall extends Phaser.Scene {
     addPlayer(self, data) {
         self.player = self.physics.add.sprite(data.x, data.y, 'player');
         self.player_name = self.add.text(data.x - 20, data.y - 50, data.name, { fontSize: 20, color: "#800000" });
+        self.physics.add.collider(self.player, self.wall);
         self.physics.add.collider(self.player, self.backGroundLayer);
         self.physics.add.collider(self.player, self.streetLayer);
         self.physics.add.collider(self.player, self.volcanoAndTreeLayer);
-        self.physics.add.collider(self.player, self.optionGameFishingLayer);
-        self.physics.add.collider(self.player, self.optionArenaLayer);
-        self.physics.add.collider(self.player, self.optionShopLayer);
-        self.physics.add.collider(self.player, self.optionGameQuizLayer);
+        self.physics.add.collider(self.player, self.optionGameFishingLayer, self.enter_quiz, null, self);
+        self.physics.add.collider(self.player, self.optionArenaLayer, self.enter_quiz, null, self);
+        self.physics.add.collider(self.player, self.optionShopLayer, self.enter_quiz, null, self);
+        self.physics.add.collider(self.player, self.optionGameQuizLayer, self.enter_quiz, null, self);
         self.cameras.main.startFollow(self.player);
 
     }
@@ -265,5 +255,8 @@ class mainHall extends Phaser.Scene {
         player_name.playersID = data.playersID;
         self.otherPlayers.add(otherPlayer);
         self.otherPlayers_name.add(player_name);
+    }
+    enter_quiz(player, optionGameQuizLayer) {
+        this.scene.start("Preload");
     }
 }
