@@ -9,6 +9,7 @@ class mainHall extends Phaser.Scene {
     preload() {
         //chatting
         this.load.html('chatForm', 'assets/chatForm/chatForm.html');
+        //this.load.css('chatFormCss', 'assets/chatForm/chatForm.css');
 
         this.load.image("testBg", "assets/mainHall/testBg.png");
         this.load.image("waterfall", "assets/mainHall/waterfall.jpg");
@@ -30,11 +31,14 @@ class mainHall extends Phaser.Scene {
 
         //chatting
         this.elementChat = this.add.dom(175, 546).createFromCache('chatForm').setScrollFactor(0);
+        this.otherPlayers = this.physics.add.group();
+        this.otherPlayers_name = this.physics.add.group();
         var self = this;
         this.socket = io();
 
-        this.otherPlayers = this.physics.add.group();
-        this.otherPlayers_name = this.physics.add.group();
+        // this.elementChat = this.add.dom(175, 546).createFromCache('chatForm').setScrollFactor(0);
+        // this.otherPlayers = this.physics.add.group();
+        // this.otherPlayers_name = this.physics.add.group();
         this.socket.emit('startMainHall', { name: self.name });
         this.socket.on('addToChat', function(data) {
             self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
@@ -88,12 +92,12 @@ class mainHall extends Phaser.Scene {
             self.otherPlayers.getChildren().forEach(function(other) {
                 if (playerInfo.playersID === other.playersID) {
                     other.setPosition(playerInfo.x, playerInfo.y);
-                    //other.anims.play(playerInfo.status, true);
+                    other.anims.play(playerInfo.status, true);
                 }
             });
             self.otherPlayers_name.getChildren().forEach(function(other) {
                 if (playerInfo.playersID === other.playersID) {
-                    other.setPosition(playerInfo.x, playerInfo.y - 50);
+                    other.setPosition(playerInfo.x - 20, playerInfo.y - 50);
                 }
             });
         })
@@ -152,14 +156,30 @@ class mainHall extends Phaser.Scene {
         this.optionShopLayer.setCollisionBetween(0, 10000);
         this.optionGameQuizLayer.setCollisionBetween(0, 10000);
         this.streetLayer.setCollisionBetween(0, 10000);
-        this.cursors = this.input.keyboard.createCursorKeys();
 
-
-
+        //hide or show chat
+        this.hide = this.add.text(350, 573, '<<', { color: '#000', fontSize: '30px' }).setScrollFactor(0);
+        this.hide.setInteractive();
+        this.hide.on("pointerdown", () => {
+            if (this.hide.text === '<<') {
+                this.tweens.add({ targets: self.elementChat, x: -200, duration: 500, ease: 'Back' });
+                this.tweens.add({ targets: self.hide, x: 0, duration: 500, ease: 'Back' });
+                this.hide.setText('>>');
+            } else {
+                this.tweens.add({ targets: self.elementChat, x: 175, duration: 500, ease: 'Back' });
+                this.tweens.add({ targets: self.hide, x: 350, duration: 500, ease: 'Back' });
+                this.hide.setText('<<');
+            }
+        });
     }
 
     update() {
-
+        this.cursors = this.input.keyboard.addKeys({
+            up: 'up',
+            down: 'down',
+            left: 'left',
+            right: 'right'
+        }); // keys.up, keys.down, keys.left, keys.right
         if (this.player && this.player_name) {
             var status;
             if (this.cursors.left.isDown) {
@@ -178,20 +198,20 @@ class mainHall extends Phaser.Scene {
                 status = "turn";
             } else if (this.cursors.down.isDown) {
                 this.player.setVelocityY(150);
+                status = "turn";
             } else {
                 this.player.setVelocityY(0);
                 this.player.setVelocityX(0);
                 this.player.anims.play("turn", true);
                 status = "turn";
             }
-            this.player_name.x = this.player.x;
+            this.player_name.x = this.player.x - 20;
             this.player_name.y = this.player.y - 50;
 
             var x = this.player.x;
             var y = this.player.y;
 
             if (this.player.oldPosition && (x !== this.player.oldPosition.x || y !== this.player.oldPosition.y)) {
-                //var z = this.ship.rotation;
                 this.socket.emit("movement_player", { x: this.player.x, y: this.player.y, status: status });
             }
             this.player.oldPosition = {
@@ -205,7 +225,7 @@ class mainHall extends Phaser.Scene {
 
     addPlayer(self, data) {
         self.player = self.physics.add.sprite(data.x, data.y, 'player');
-        self.player_name = self.add.text(data.x, data.y - 50, data.name, { fontSize: 20, color: "#800000" });
+        self.player_name = self.add.text(data.x - 20, data.y - 50, data.name, { fontSize: 20, color: "#800000" });
         self.physics.add.collider(self.player, self.backGroundLayer);
         self.physics.add.collider(self.player, self.streetLayer);
         self.physics.add.collider(self.player, self.volcanoAndTreeLayer);
@@ -219,7 +239,7 @@ class mainHall extends Phaser.Scene {
 
     addOtherPlayer(self, data) {
         const otherPlayer = self.physics.add.sprite(data.x, data.y, 'player');
-        const player_name = self.add.text(data.x, data.y - 50, data.name, { fontSize: 20, color: "#000" });
+        const player_name = self.add.text(data.x - 20, data.y - 50, data.name, { fontSize: 20, color: "#000" });
         otherPlayer.playersID = data.playersID;
         player_name.playersID = data.playersID;
         self.otherPlayers.add(otherPlayer);

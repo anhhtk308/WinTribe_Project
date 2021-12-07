@@ -30,29 +30,17 @@ io.on('connection', function(socket) {
         // update all other players of the new player
         socket.broadcast.emit('newPlayerMain', players[socket.id]);
 
-        // socket.on('movement_player', function(data) {
-        //     players[socket.id].x = data.x;
-        //     players[socket.id].y = data.y;
-        //     players[socket.id].status = data.status;
-        //     socket.broadcast.emit("player_moved", players[socket.id]);
-        // });
+        socket.on('movement_player', function(data) {
+            players[socket.id].x = data.x;
+            players[socket.id].y = data.y;
+            players[socket.id].status = data.status;
+            socket.broadcast.emit("player_moved", players[socket.id]);
+        });
 
-        // socket.on("not_change", function(data) {
-        //     players[socket.id].status = data.status;
-        //     socket.broadcast.emit("player_not_change", players[socket.id]);
-        // });
-    });
-
-    socket.on('movement_player', function(data) {
-        players[socket.id].x = data.x;
-        players[socket.id].y = data.y;
-        players[socket.id].status = data.status;
-        socket.broadcast.emit("player_moved", players[socket.id]);
-    });
-
-    socket.on("not_change", function(data) {
-        players[socket.id].status = data.status;
-        socket.broadcast.emit("player_not_change", players[socket.id]);
+        socket.on("not_change", function(data) {
+            players[socket.id].status = data.status;
+            socket.broadcast.emit("player_not_change", players[socket.id]);
+        });
     });
 
     socket.on('startTest', function(data) {
@@ -64,7 +52,7 @@ io.on('connection', function(socket) {
         delete players[socket.id];
         delete socketLst[socket.id];
         // emit a message to all players to remove this player
-        socket.emit('disconnected', socket.id);
+        io.emit('disconnected', socket.id);
     });
     //chatting
     socketLst[socket.id] = socket;
@@ -72,7 +60,7 @@ io.on('connection', function(socket) {
         for (var i in socketLst) {
             //socketLst[i].emit('addToChat', (socket.id + '').slice(2, 7) + ': ' + data);
             socketLst[i].emit('addToChat', data.name + ': ' + data.text);
-            console.log(data.name + ": " + (socketLst[i]).id + "\n");
+            //console.log(data.name + ": " + (socketLst[i]).id + "\n");
         }
     });
 });
