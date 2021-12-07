@@ -11,42 +11,38 @@ var players = {};
 var bullet = {
 
 };
-var socketLst={};
-var scores = {
-    blue: 0,
-    red: 0
-};
-var player_name = '';
+var socketLst = {};
+
 app.use(express.static(__dirname + '/public'));
 
-app.get('/', function (req, res) {
+app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
-var num_player=0;
+var num_player = 0;
 //socket connect
-io.on('connection', function (socket) {
+io.on('connection', function(socket) {
     console.log('a user connected: ', socket.id);
 
     //create player
     players[socket.id] = {
-        playersID: socket.id,
-        x: Math.floor(Math.random() * 4700) + 50,
-        y: Math.floor(Math.random() * 4700) + 50,
-        rotation: 0,
-        health: 100,
-        name:"aaa",
-        type:"",
-        score:0
+            playersID: socket.id,
+            x: Math.floor(Math.random() * 4700) + 50,
+            y: Math.floor(Math.random() * 4700) + 50,
+            rotation: 0,
+            health: 100,
+            name: "aaa",
+            type: "",
+            score: 0,
 
-    }
-    //create bullet
+        }
+        //create bullet
     bullet[socket.id] = {
         bulletID: socket.id,
         x: 0,
         y: 0,
         rotation: 0
     };
-    
+
     socketLst[socket.id] = socket;
     socket.on('sendMsgToServer', function(data) {
         for (var i in socketLst) {
@@ -55,16 +51,16 @@ io.on('connection', function (socket) {
         }
     });
     // if we start gamemain it will do all funcion in gamemain
-    socket.on("startGameMain", function (data) {
+    socket.on("startGameMain", function(data) {
         num_player++;
         //players[socket.id].name=data.name;
-        players[socket.id].type=data.type;
-    
-        socket.emit("current_on",{num:num_player});
-        socket.broadcast.emit("add_player",{num:num_player})
+        players[socket.id].type = data.type;
+
+        socket.emit("current_on", { num: num_player });
+        socket.broadcast.emit("add_player", { num: num_player })
         socket.emit('currentPlayersGameMain', players);
         socket.broadcast.emit('newPlayerGameMain', players[socket.id]);
-        socket.on('forceDisconnect', function () {
+        socket.on('forceDisconnect', function() {
             console.log('user disconnected: ', socket.id);
 
             delete players[socket.id];
@@ -73,47 +69,86 @@ io.on('connection', function (socket) {
             // socket.broadcast.emit("add_player",{num:num_player})
             socket.disconnect();
         });
-        socket.on('destroy', function (data) {
+        socket.on('destroy', function(data) {
             socket.broadcast.emit('destroy_ship', players[socket.id]);
-            socket.broadcast.emit('up_score',data)
+            socket.broadcast.emit('up_score', data)
         })
-        socket.on('movement', function (data) {
+        socket.on('movement', function(data) {
             players[socket.id].x = data.x;
             players[socket.id].y = data.y;
             players[socket.id].rotation = data.z;
             socket.broadcast.emit('moved', players[socket.id]);
-            
+
         });
-        
-        socket.on('fire', function (data) {
+
+        socket.on('fire', function(data) {
             bullet[socket.id].x = data.x;
             bullet[socket.id].y = data.y;
             bullet[socket.id].rotation = data.z;
             io.emit('fired', bullet[socket.id]);
         });
-        socket.on('movement_bullet', function (data) {
+        socket.on('movement_bullet', function(data) {
             bullet[socket.id].x = data.x;
             bullet[socket.id].y = data.y;
             bullet[socket.id].rotation = data.z
             socket.broadcast.emit('bullet_moved', bullet[socket.id]);
         });
-        socket.on("dame", function () {
+        socket.on("dame", function() {
             players[socket.id].health -= 10;
             socket.broadcast.emit('damed', players[socket.id]);
         });
-        socket.on("scored",function(data){
-            players[socket.id].score=data.score;
-            socket.emit("print_score",players[socket.id]);
+        socket.on("scored", function(data) {
+            players[socket.id].score = data.score;
+            socket.emit("print_score", players[socket.id]);
         })
     });
-    socket.on('disconnect', function () {
+    socket.on('disconnect', function() {
         console.log('user disconnected: ', socket.id);
         delete players[socket.id];
         num_player--;
-        socket.broadcast.emit("add_player",{num:num_player})
+        socket.broadcast.emit("add_player", { num: num_player })
         io.emit('disconnected', socket.id);
     });
 
+    socket.on('startMainHall', function(data) {
+        players[socket.id].name = data.name;
+        // send the players object to the new players
+        socket.emit('currentPlayersMain', players);
+        // update all other players of the new player
+        socket.broadcast.emit('newPlayerMain', players[socket.id]);
+
+        socket.on('movement_player', function(data) {
+            players[socket.id].x = data.x;
+            players[socket.id].y = data.y;
+            players[socket.id].status = data.status;
+            socket.broadcast.emit("player_moved", players[socket.id]);
+        });
+
+        socket.on('destroy', function() {
+            socket.broadcast.emit('destroy_player_main', players[socket.id]);
+        });
+    });
+
+    socket.on('startMatchingGame', function(data) {
+        socket.emit('getPlayer', players[data]);
+    });
+
+    // socket.on('disconnect', function() {
+    //     console.log('user disconnected: ', socket.id);
+    //     delete players[socket.id];
+    //     delete socketLst[socket.id];
+    //     // emit a message to all players to remove this player
+    //     io.emit('disconnected', socket.id);
+    // });
+    //chatting
+    // socketLst[socket.id] = socket;
+    // socket.on('sendMsgToServer', function(data) {
+    //     for (var i in socketLst) {
+    //         //socketLst[i].emit('addToChat', (socket.id + '').slice(2, 7) + ': ' + data);
+    //         socketLst[i].emit('addToChat', data.name + ': ' + data.text);
+    //         //console.log(data.name + ": " + (socketLst[i]).id + "\n");
+    //     }
+    // });
 });
 
 server.listen(port, function() {
