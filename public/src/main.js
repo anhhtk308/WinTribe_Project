@@ -33,7 +33,7 @@ window.addEventListener('load', function() {
     game.scene.add("mainHall", mainHall);
     game.scene.add("shopScene", shopScene);
     game.scene.add("man1", man1);
-    game.scene.add("man2", man2);
+    game.scene.add("matchingGame", matchingGame);
     game.scene.add("test", test);
 
 });

@@ -44,9 +44,13 @@ io.on('connection', function(socket) {
         });
     });
 
-    socket.on('startTest', function(data) {
+    socket.on('startMatchingGame', function(data) {
         socket.emit('getPlayer', players[data]);
     });
+
+    // socket.on('startTest', function(data) {
+    //     socket.emit('getPlayer', players[data]);
+    // });
 
     socket.on('disconnect', function() {
         console.log('user disconnected: ', socket.id);

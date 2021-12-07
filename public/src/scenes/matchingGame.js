@@ -1,7 +1,10 @@
-// import man1 from './man1';
-class man2 extends Phaser.Scene {
+class matchingGame extends Phaser.Scene {
     constructor() {
-        super("man2");
+        super("matchingGame");
+    }
+
+    init(data) {
+        this.socket = data.socket;
     }
 
     preload() {
@@ -23,11 +26,11 @@ class man2 extends Phaser.Scene {
         this.load.css('answerCss', 'assets/matchingGame/answerForm/answerForm.css');
 
         //image
-        this.load.image("bg", "assets/matchingGame/background_start_quiz.jpg");
+        this.load.image("background", "assets/matchingGame/background_start_quiz.jpg");
         this.load.image("frame_question", "assets/matchingGame/1.png");
         this.load.image("check_btn", "assets/matchingGame/check_btn.png");
         this.load.image("skip_btn", "assets/matchingGame/skip_btn.png");
-        this.load.image("start_btn", "assets/matchingGame/start_btn.png");
+        this.load.image("start_button", "assets/matchingGame/start_btn.png");
         this.load.image("quit_btn", "assets/matchingGame/quit_btn.png");
         this.load.image("message", "assets/matchingGame/frame2.png");
         this.load.image("logo", "assets/matchingGame/logo_quiz.png");
@@ -46,6 +49,15 @@ class man2 extends Phaser.Scene {
 
     }
     create() {
+        //alert(this.socket.id);
+        var self = this;
+        this.score = 0;
+        this.socket.emit('startMatchingGame', this.socket.id);
+        this.socket.on('getPlayer', function(data) {
+            self.score = data.gold;
+        });
+
+        //--------------------------------------------------------------
         var element = this.add.dom(400, 340).createFromCache('answerform').setVisible(false);
         this.ele = element;
         element.addListener('keydown');
@@ -54,7 +66,7 @@ class man2 extends Phaser.Scene {
         });
         // this.socket = io();
         // console.log(this.socket);
-        this.background = this.add.image(0, 0, "bg").setOrigin(0, 0).setScale(1);
+        this.background = this.add.image(0, 0, "background").setOrigin(0, 0).setScale(1);
         //sound
         this.true_sound = this.sound.add("true_sound", { loop: false });
         this.false_sound = this.sound.add("false_sound", { loop: false });
@@ -151,9 +163,9 @@ class man2 extends Phaser.Scene {
         //time and score
         this.frame_question = this.add.image(400, 300, 'frame_question').setVisible(false);
         this.textTime = this.add.text(100, 73, 'Time: 45s', { fontSize: 25, color: '#fff' }).setVisible(false);
-        this.score = 5;
-        this.scoreText = this.add.text(540, 73, 'Gold: ' + this.score, { fontSize: 25, color: '#fff' }).setVisible(false);
+        ///
 
+        this.scoreText = this.add.text(540, 73, 'Gold: ' + this.score, { fontSize: 25, color: '#fff' }).setVisible(false);
 
         //frameresult, gift
         this.frame_result = this.add.image(400, 300, 'frame_result').setVisible(false);
@@ -173,7 +185,7 @@ class man2 extends Phaser.Scene {
         this.skipBtn = this.add.sprite(800, 418, 'skip_btn').setScale(0.5).setVisible(false);
         this.checkBtn = this.add.sprite(0, 418, 'check_btn').setScale(0.5).setVisible(false);
         //quit,start
-        this.startBtn = this.add.sprite(675, 600, 'start_btn').setScale(0.8);
+        this.startBtn = this.add.sprite(675, 600, 'start_button').setScale(0.8);
         this.tweens.add({ targets: this.startBtn, y: 500, duration: 500, ease: 'Back' });
         this.quitBtn = this.add.sprite(485, 600, 'quit_btn').setScale(0.8);
         this.tweens.add({ targets: this.quitBtn, y: 500, duration: 500, ease: 'Back' });
@@ -185,7 +197,7 @@ class man2 extends Phaser.Scene {
 
         //guide
         this.textPopup = this.add.text(415, 220, '').setWordWrapWidth(350).setVisible(false);
-        this.typewriteTextWrapped('Hello, Chào mừng bạn đã đến với trò chơi ghép chữ, phí là 5 đồng, bạn có thời gian là 5ph để trả lời các câu hỏi, mỗi câu đúng sẽ được 4 đồng, bấm nút start để bắt đầu chơi nào!');
+        this.typewriteTextWrapped('Hello, Chào mừng bạn đã đến với trò chơi ghép chữ, phí là 5$, bạn có thời gian là 60s để trả lời các câu hỏi, mỗi câu đúng sẽ được 4$, phí skip là 2$, bấm nút start để bắt đầu chơi nào!');
         this.textPopup.setVisible(true);
 
         //clone list
@@ -262,9 +274,11 @@ class man2 extends Phaser.Scene {
                 currentQuestion = this.checkBtnHandle(currentQuestion);
             }, this);
         });
+
     }
 
     update() {
+        //this.scoreText.setText('Gold: ' + this.score);
         //time
         if (!this.timeEvent || this.duration <= 0) {
             return
@@ -401,7 +415,7 @@ class man2 extends Phaser.Scene {
         this.cameras.main.fade(250);
         this.time.delayedCall(250, function() {
             this.button_sound.play();
-            this.scene.start('man1');
+            this.scene.start('mainHall');
         }, [], this);
     }
 

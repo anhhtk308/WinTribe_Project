@@ -176,11 +176,12 @@ class mainHall extends Phaser.Scene {
         });
 
         //test
-        this.textToMan2 = this.add.text(400, 300, 'Man 2', { font: '32px Courier', color: 'red' }).setScrollFactor(0);
-        this.textToMan2.setInteractive();
-        this.textToMan2.on('pointerdown', function() {
-            self.socket.emit('destroy');
-        });
+        // this.textToMan2 = this.add.text(400, 300, 'Man 2', { font: '32px Courier', color: 'red' }).setScrollFactor(0);
+        // this.textToMan2.setInteractive();
+        // this.textToMan2.on('pointerdown', function() {
+        //     self.socket.emit('destroy');
+        //     self.scene.start('matchingGame');
+        // });
     }
 
     update() {
@@ -257,6 +258,7 @@ class mainHall extends Phaser.Scene {
         self.otherPlayers_name.add(player_name);
     }
     enter_quiz(player, optionGameQuizLayer) {
-        this.scene.start("Preload");
+        this.socket.emit('destroy');
+        this.scene.start("matchingGame", { socket: this.socket });
     }
 }
