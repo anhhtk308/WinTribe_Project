@@ -139,23 +139,23 @@ class mainHall extends Phaser.Scene {
 
 
         //
-        this.backGroundLayer = map.createLayer("background", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.streetLayer = map.createLayer("street", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.volcanoAndTreeLayer = map.createLayer("volcanoAndTree", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.pedestal = map.createLayer("pedestal", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.optionGameFishingLayer = map.createLayer("optionGameFishing", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.optionArenaLayer = map.createLayer("optionArena", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.optionShopLayer = map.createLayer("optionShop", [base_out_atlas_tile, waterfall_tile, map_tree_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
+        this.backGroundLayer = map.createLayer("background", [map_tree_tile]);
+        this.streetLayer = map.createLayer("street", [base_out_atlas_tile,waterfall_tile, map_tree_tile]);
+        this.volcanoAndTreeLayer = map.createLayer("volcanoAndTree", [base_out_atlas_tile, map_tree_tile]);
+        this.pedestal = map.createLayer("pedestal", [ map_tree_tile]);
+        this.optionGameFishingLayer = map.createLayer("optionGameFishing", [ fishing_tile, textOption_tile]);
+        this.optionArenaLayer = map.createLayer("optionArena", [ gemChinh_tile, textOption_tile]);
+        this.optionShopLayer = map.createLayer("optionShop", [ shop_tile, textOption_tile]);
         //this.optionShopLayer = map.createLayer("optionShop", shop_tile, 0, 0);
 
-        this.optionGameQuizLayer = map.createLayer("optionGameQuiz", [base_out_atlas_tile, waterfall_tile, map_tree_tile, fishing_tile, gemChinh_tile, shop_tile, optionGameQuiz_tile, textOption_tile]);
-        this.roadLayer = map.createLayer("road", base_out_atlas_tile, 0, 0);
+        this.optionGameQuizLayer = map.createLayer("optionGameQuiz", [optionGameQuiz_tile, textOption_tile]);
+        this.roadLayer = map.createLayer("road", [base_out_atlas_tile]);
 
 
-        this.add.image(0, 0, 'roadLayer').setOrigin(0);
-        this.add.image(1922, 0, 'roadLayer').setOrigin(0).setFlipX(true);
-        this.add.image(0, 1200, 'roadLayer').setOrigin(0).setFlipY(true);
-        this.add.image(1922, 1200, 'roadLayer').setOrigin(0).setFlipX(true).setFlipY(true);
+        // this.add.image(0, 0, 'roadLayer').setOrigin(0);
+        // this.add.image(1922, 0, 'roadLayer').setOrigin(0).setFlipX(true);
+        // this.add.image(0, 1200, 'roadLayer').setOrigin(0).setFlipY(true);
+        // this.add.image(1922, 1200, 'roadLayer').setOrigin(0).setFlipX(true).setFlipY(true);
 
         //map
 

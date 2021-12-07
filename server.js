@@ -23,8 +23,8 @@ io.on('connection', function(socket) {
     players[socket.id] = {
         playersID: socket.id,
         gold: 10,
-        x: Math.floor(Math.random() * 700) + 50,
-        y: Math.floor(Math.random() * 500) + 50,
+        x: 931,
+        y: 735,
         name: '',
         status:'turn'
 

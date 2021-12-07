@@ -13,7 +13,7 @@ window.addEventListener('load', function() {
             default: 'arcade',
             arcade: {
                 gravity: {},
-                debug: false
+                debug: true
             }
         },
         scale: {
