@@ -114,14 +114,7 @@ class mainHall extends Phaser.Scene {
             });
         })
 
-        // this.socket.on("player_not_change",function(playerInfo){
-        //     self.otherPlayers.getChildren().forEach(function (other) {
-        //         if (playerInfo.playersID == other.playersID) {
-        //             other.anims.play(playerInfo.status);
-        //         }
-        //     });
-        // })
-
+        
        
 
         const map = this.add.tilemap("MainHallMap");
