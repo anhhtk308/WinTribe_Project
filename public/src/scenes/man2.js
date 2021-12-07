@@ -30,6 +30,8 @@ class man2 extends Phaser.Scene {
         this.load.image("net", "assets/net.png");
         this.load.image("bomb", "assets/bomb.png");
         this.load.image("bomb_bum", "assets/bomBum.png");
+        this.load.image("clock", "assets/clock.png");
+        this.load.image("coin", "assets/coin.png");
         this.load.spritesheet("bomb_animation", "assets/bomb_animation.png", {
             frameWidth: 687 / 4,
             frameHeight: 191 / 4,
@@ -37,14 +39,15 @@ class man2 extends Phaser.Scene {
     }
     create() {
         this.add.image(400, 300, "background");
-
+        this.add.image(60, 30, "clock").setScale(0.6);
+        this.add.image(700, 30, "coin").setScale(0.35);
         // create ship
         this.ship = this.physics.add.sprite(400, 100, "ship").setScale(0.8);
         // this.ship.body.velocity.x = 10;
         // create time
         this.isTimeOver = false;
-        this.textTime = this.add.text(80, 550, 'Time: 45s', { fontSize: 25, color: '#fff' }).setVisible(true);
-        this.timeStart(this.handleTimeFinished.bind(this), 60000 / 20);
+        this.textTime = this.add.text(80, 20, 'Time: 45s', { fontSize: 25, color: '#fff', fill: "#FF9900", stroke: '#fff' }).setVisible(true);
+        this.timeStart(this.handleTimeFinished.bind(this), 60000 / 2);
         // Random fish and bomb
         this.timedEvent_fish = this.time.addEvent({ delay: 800, callback: this.createFish, callbackScope: this, repeat: 1000 });
         this.timedEvent_bomb = this.time.addEvent({ delay: 3500, callback: this.createBomb, callbackScope: this, repeat: 1000 });
@@ -52,7 +55,7 @@ class man2 extends Phaser.Scene {
         // create cannon
         cannon = this.physics.add.sprite(400, 130, 'cannon').setScale(0.21);
         // create coin 
-        coin = this.add.text(270, 550, ('Coin: ' + coin_value), { fontSize: 25, color: '#fff' }).setVisible(true);
+        coin = this.add.text(730, 20, ('' + coin_value), { fontSize: 25, color: '#fff', fill: "#FF9900", stroke: '#fff' }).setVisible(true);
         // create net
         net = this.physics.add.sprite(400, 130, "net").setScale(0.03).setVisible(false);
         // mouse click event
@@ -100,7 +103,7 @@ class man2 extends Phaser.Scene {
         const elapsed = this.timeEvent.getElapsed();
         const remaining = this.duration - elapsed;
         const minutes = remaining / 60000;
-        this.textTime.text = "Time: " + minutes.toFixed(2) + "m";
+        this.textTime.text = minutes.toFixed(2) + "m";
         if (remaining <= 0) {
             this.scene.start('pregame');
         }
@@ -114,7 +117,7 @@ class man2 extends Phaser.Scene {
         if (coin_value < 0) {
             this.scene.start('pregame');
         }
-        coin.text = "Coin: " + coin_value;
+        coin.text = coin_value;
 
     }
     stopBomb() {
@@ -205,7 +208,7 @@ class man2 extends Phaser.Scene {
         this.animationAddItem(pirateship.x, pirateship.y);
         control = false;
         coin_value++;
-        coin.text = "Coin: " + coin_value;
+        coin.text = coin_value;
     }
     animationAddItem(randX, randY) {
         var pointsAdded = this.add.text(randX, randY, "+1 Coin", { font: '30px ', fill: "#FF9900", stroke: '#fff', strokeThickness: 10 });
