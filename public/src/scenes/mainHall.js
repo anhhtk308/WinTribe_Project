@@ -135,6 +135,7 @@ class mainHall extends Phaser.Scene {
         const optionGameQuiz_tile = map.addTilesetImage("optionGameQuiz");
         const shop_tile = map.addTilesetImage("Shop");
         const textOption_tile = map.addTilesetImage("textOption");
+        
         //const menu = map.addTilesetImage("waterfall");
 
 
@@ -150,6 +151,7 @@ class mainHall extends Phaser.Scene {
 
         this.optionGameQuizLayer = map.createLayer("optionGameQuiz", [optionGameQuiz_tile, textOption_tile]);
         this.roadLayer = map.createLayer("road", [base_out_atlas_tile]);
+        this.wall =map.createLayer("wall",[base_out_atlas_tile]);
 
 
         // this.add.image(0, 0, 'roadLayer').setOrigin(0);
@@ -161,13 +163,15 @@ class mainHall extends Phaser.Scene {
 
 
         
-        this.backGroundLayer.setCollisionBetween(0, 10000);
-        this.volcanoAndTreeLayer.setCollisionBetween(0, 10000);
-        this.optionGameFishingLayer.setCollisionBetween(0, 10000);
-        this.optionArenaLayer.setCollisionBetween(0, 10000);
-        this.optionShopLayer.setCollisionBetween(0, 10000);
-        this.optionGameQuizLayer.setCollisionBetween(0, 10000);
-        this.streetLayer.setCollisionBetween(0, 10000);
+        this.backGroundLayer.setCollisionBetween(0, 20000);
+        //this.wall.setCollisionByProperty({ collides: true });
+        this.wall.setCollisionBetween(0,20000);
+        this.volcanoAndTreeLayer.setCollisionBetween(0, 20000);
+        this.optionGameFishingLayer.setCollisionBetween(0, 20000);
+        this.optionArenaLayer.setCollisionBetween(0, 20000);
+        this.optionShopLayer.setCollisionBetween(0, 20000);
+        this.optionGameQuizLayer.setCollisionBetween(0, 20000);
+        this.streetLayer.setCollisionBetween(0, 20000);
         this.cursors = this.input.keyboard.createCursorKeys();
         
        
@@ -221,13 +225,15 @@ class mainHall extends Phaser.Scene {
     addPlayer(self, data) {
         self.player = self.physics.add.sprite(data.x, data.y, 'player');
         self.player_name = self.add.text(data.x, data.y - 50, data.name, { fontSize: 20, color: "#800000" });
+        self.physics.add.collider(self.player, self.wall);
         self.physics.add.collider(self.player, self.backGroundLayer);
         self.physics.add.collider(self.player, self.streetLayer);
         self.physics.add.collider(self.player, self.volcanoAndTreeLayer);
-        self.physics.add.collider(self.player, self.optionGameFishingLayer);
-        self.physics.add.collider(self.player, self.optionArenaLayer);
-        self.physics.add.collider(self.player, self.optionShopLayer);
-        self.physics.add.collider(self.player, self.optionGameQuizLayer);
+        self.physics.add.collider(self.player, self.optionGameFishingLayer,self.enter_quiz,null,self);
+        self.physics.add.collider(self.player, self.optionArenaLayer,self.enter_quiz,null,self);
+        self.physics.add.collider(self.player, self.optionShopLayer,self.enter_quiz,null,self);
+        self.physics.add.collider(self.player, self.optionGameQuizLayer,self.enter_quiz,null,self);
+        
         self.cameras.main.startFollow(self.player);
        
     }
@@ -238,5 +244,8 @@ class mainHall extends Phaser.Scene {
         otherPlayer.playersID = data.playersID;
         self.otherPlayers.add(otherPlayer);
         self.otherPlayers_name.add(player_name);
+    }
+    enter_quiz(player,optionGameQuizLayer){
+        this.scene.start("Preload");
     }
 }
