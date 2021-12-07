@@ -7,14 +7,27 @@ class shopScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image("background", "assets/shop/shop_background1.jpg");
+        this.load.image("background", "assets/shop/shop_background.jpg");
         this.load.image("closeIcon", "assets/shop/closeIcon.png");
-        this.load.image("speedImg", "assets/shop/speed.png");
-        this.load.image("hp", "assets/shop/hp.png");
-        this.load.image("iceBom", "assets/shop/iceBom.png");
-        this.load.image("strong", "assets/shop/strong.png");
-        this.load.image("shipRotationSpeed", "assets/shop/shipRotationSpeed.png");
-        this.load.image("speedBullet", "assets/shop/speedBullet.png");
+        this.load.image("notifyMoney", "assets/shop/notifyMoney.png");
+        this.load.image("blurBg", "assets/shop/blurBg.png");
+        this.load.image("okIcon", "assets/shop/okIcon.png");
+        
+        //small icon skill
+        this.load.image("speed", "assets/shop/iconSmall/speed.png");
+        this.load.image("hp", "assets/shop/iconSmall/hp.png");
+        this.load.image("iceBom", "assets/shop/iconSmall/iceBom.png");
+        this.load.image("strong", "assets/shop/iconSmall/strong.png");
+        this.load.image("shipRotationSpeed", "assets/shop/iconSmall/shipRotationSpeed.png");
+        this.load.image("speedBullet", "assets/shop/iconSmall/speedBullet.png");
+
+        //big icon skill
+        this.load.image("speedItem", "assets/shop/iconBig/speedItem.png");
+        this.load.image("hpItem", "assets/shop/iconBig/hpItem.png");
+        this.load.image("iceBomItem", "assets/shop/iconBig/iceBomItem.png");
+        this.load.image("strongItem", "assets/shop/iconBig/strongItem.png");
+        this.load.image("shipRotationSpeedItem", "assets/shop/iconBig/shipRotationSpeedItem.png");
+        this.load.image("speedBulletItem", "assets/shop/iconBig/speedBulletItem.png");
     }
 
     create() {
@@ -22,27 +35,38 @@ class shopScene extends Phaser.Scene {
         this.background = this.add.image(400, 300, "background");
 
         //golds
-        this.numberOfGolds = 2000;
+        this.numberOfGolds = 200;
         this.textOfGolds = this.add.text(150, 116, this.numberOfGolds, { fontSize: 30, color: '#fff' });
-        //item skill's image
-        this.speedImg = this.add.image(285, 255, 'speedImg');
-        this.hp = this.add.image(410, 255, 'hp');
-        this.iceBom = this.add.image(540, 255, 'iceBom');
-        this.speedBullet = this.add.image(280, 430, 'speedBullet');
-        this.strong = this.add.image(415, 420, 'strong');
-        this.shipRotationSpeed = this.add.image(540, 420, 'shipRotationSpeed');
 
-        //bag's item
-        this.speedSmall = this.add.image(435, 127, 'speedImg').setScale(0.4);
+        //image skill's item
+        this.speed = this.add.image(285, 265, 'speedItem');
+        this.hp = this.add.image(410, 265, 'hpItem');
+        this.iceBom = this.add.image(540, 265, 'iceBomItem');
+        this.speedBullet = this.add.image(280, 440, 'speedBulletItem');
+        this.strong = this.add.image(410, 440, 'strongItem');
+        this.shipRotationSpeed = this.add.image(540, 440, 'shipRotationSpeedItem');
+
+        //icon bag's item
+        this.speedSmall = this.add.image(435, 127, 'speed').setScale(0.4);
         this.hpSmall = this.add.image(475, 127, 'hp').setScale(0.5);
         this.iceBomSmall = this.add.image(525, 125, 'iceBom').setScale(0.45);
         this.speedBulletSmall = this.add.image(565, 127, 'speedBullet').setScale(0.5);
         this.strongSmall = this.add.image(615, 127, 'strong').setScale(0.4);
         this.shipRotationSpeedSmall = this.add.image(660, 127, 'shipRotationSpeed').setScale(0.4);
+        
+        //notify out of money
+        this.blurBg = this.add.image(400, 300, "blurBg").setVisible(false);
+        this.notifyMoney = this.add.image(400, 300, 'notifyMoney').setScale(1.3).setVisible(false);
+        this.okIcon = this.add.image(425, 400, "okIcon").setVisible(false);
+        this.okIcon.setInteractive();
 
+        //close icon
+        this.closeIcon = this.add.image(765, 32, "closeIcon");
+        this.closeIcon.setInteractive();
+    
         this.skillSmall = this.physics.add.group();
 
-        (this.speedSmall).name = 'speedImg';
+        (this.speedSmall).name = 'speed';
         this.skillSmall.add(this.speedSmall);
         (this.hpSmall).name = 'hp';
         this.skillSmall.add(this.hpSmall);
@@ -56,40 +80,38 @@ class shopScene extends Phaser.Scene {
         this.skillSmall.add(this.shipRotationSpeedSmall);
 
         this.skillSmall.getChildren().forEach(function (other) {
-            other.imgObj = other;
-            (other.imgObj).alpha = 0.3;
+            other.alpha = 0.3;
         });
 
         //skill object
         this.skills = this.physics.add.group();
 
-        (this.speedImg).name = 'speedImg';
-        (this.speedImg).golds = 5;
-        this.skills.add(this.speedImg);
+        (this.speed).name = 'speed';
+        (this.speed).golds = 50;
+        this.skills.add(this.speed);
 
         (this.hp).name = 'hp';
-        (this.hp).golds = 10;
+        (this.hp).golds = 50;
         this.skills.add(this.hp);
 
         (this.iceBom).name = 'iceBom';
-        (this.iceBom).golds = 20;
+        (this.iceBom).golds = 150;
         this.skills.add(this.iceBom);
 
         (this.speedBullet).name = 'speedBullet';
-        (this.speedBullet).golds = 35;
+        (this.speedBullet).golds = 150;
         this.skills.add(this.speedBullet);
 
         (this.strong).name = 'strong';
-        (this.strong).golds = 40;
+        (this.strong).golds = 100;
         this.skills.add(this.strong);
 
         (this.shipRotationSpeed).name = 'shipRotationSpeed';
-        (this.shipRotationSpeed).golds = 15;
+        (this.shipRotationSpeed).golds = 70;
         this.skills.add(this.shipRotationSpeed);
 
         this.skills.getChildren().forEach(function (other) {
-            other.imgObj = other;
-            (other.imgObj).setInteractive();
+            other.setInteractive();
         });
 
         //export object
@@ -105,58 +127,79 @@ class shopScene extends Phaser.Scene {
         var self = this;
 
         this.skills.getChildren().forEach(function (other) {
-            (other.imgObj).on("pointerdown", () => {
-                (other.imgObj).alpha = 0.5;
-                self.animationAddItem(other.name);
-                self.updateGolds(other.golds);
-                var option = other.name;
-                switch (option) {
-                    case 'speedImg': {
-                        self.exportObj.speed = true;
-                        break;
-                    };
-                    case 'hp': {
-                        self.exportObj.hp = true;
-                        break;
-                    };
-                    case 'iceBom': {
-                        self.exportObj.iceBom = true;
-                        break;
-                    };
-                    case 'speedBullet': {
-                        self.exportObj.speedBullet = true;
-                        break;
-                    };
-                    case 'strong': {
-                        self.exportObj.strong = true;
-                        break;
-                    };
-                    case 'shipRotationSpeed': {
-                        self.exportObj.shipRotationSpeed = true;
-                        break;
-                    };
-                }
-                self.skillSmall.getChildren().forEach(function (itemSmall) {
-                    if (itemSmall.name === other.name) {
-                        (itemSmall.imgObj).alpha = 1;
+            other.on("pointerdown", () => {
+                if (self.numberOfGolds >= other.golds) {
+                    other.alpha = 0.5;
+                    self.animationAddItem(other.name);
+                    self.updateGolds(other.golds);
+                    var option = other.name;
+                    switch (option) {
+                        case 'speed':
+                            {
+                                self.exportObj.speed = true;
+                                break;
+                            };
+                        case 'hp':
+                            {
+                                self.exportObj.hp = true;
+                                break;
+                            };
+                        case 'iceBom':
+                            {
+                                self.exportObj.iceBom = true;
+                                break;
+                            };
+                        case 'speedBullet':
+                            {
+                                self.exportObj.speedBullet = true;
+                                break;
+                            };
+                        case 'strong':
+                            {
+                                self.exportObj.strong = true;
+                                break;
+                            };
+                        case 'shipRotationSpeed':
+                            {
+                                self.exportObj.shipRotationSpeed = true;
+                                break;
+                            };
                     }
-                });
-                (other.imgObj).removeListener("pointerdown");
+                    self.skillSmall.getChildren().forEach(function (itemSmall) {
+                        if (itemSmall.name === other.name) {
+                            itemSmall.alpha = 1;
+                        }
+                    });
+                    other.removeListener("pointerdown");
+                } else {
+                    self.blurBg.setVisible(true);
+                    self.notifyMoney.setVisible(true);
+                    self.okIcon.setVisible(true);
+                }
             })
         });
 
-        //close icon
-        this.closeIcon = this.add.image(765, 32, "closeIcon");
-        this.closeIcon.setInteractive();
-        this.closeIcon.on("pointerdown", () => {
-            this.scene.start('man2', this.exportObj);
-        })
-
+        this.closeNotifyMoney();
+        this.changeScene();
     }
 
     update() {
 
 
+    }
+
+    changeScene() {
+        this.closeIcon.on("pointerdown", () => {
+            this.scene.start('mainHall1', this.exportObj);
+        })
+    }
+
+    closeNotifyMoney() {
+        this.okIcon.on("pointerdown", () => {
+            this.blurBg.setVisible(false);
+            this.notifyMoney.setVisible(false);
+            this.okIcon.setVisible(false);
+        })
     }
 
     animationAddItem(item) {
