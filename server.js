@@ -26,16 +26,26 @@ io.on('connection', function(socket) {
     //create player
     players[socket.id] = {
             playersID: socket.id,
-            x: Math.floor(Math.random() * 4700) + 50,
-            y: Math.floor(Math.random() * 4700) + 50,
-            rotation: 0,
-            health: 100,
-            name: "aaa",
-            type: "",
-            score: 0,
-
+            gold: 10,
+            x: 931,
+            y: 735,
+            // x: Math.floor(Math.random() * 700) + 50,
+            // y: Math.floor(Math.random() * 500) + 50,
+            name: '',
+            status: 'turn'
         }
-        //create bullet
+        // players[socket.id] = {
+        //         playersID: socket.id,
+        //         x: Math.floor(Math.random() * 4700) + 50,
+        //         y: Math.floor(Math.random() * 4700) + 50,
+        //         rotation: 0,
+        //         health: 100,
+        //         name: "aaa",
+        //         type: "",
+        //         score: 0,
+
+    //     }
+    //create bullet
     bullet[socket.id] = {
         bulletID: socket.id,
         x: 0,
