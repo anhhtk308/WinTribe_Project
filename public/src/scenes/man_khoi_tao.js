@@ -6,19 +6,19 @@ class man_khoi_tao extends Phaser.Scene {
     preload() {
         this.load.html('nameForm', 'assets/nameForm/nameForm.html');
         this.load.css('answerCss', 'assets/nameForm/nameForm.css');
-        this.load.image("ship", "assets/Ship.png");
-        this.load.image("tiles", "assets/tiles.png");
-        this.load.tilemapTiledJSON("SeaMapDemo23114", "assets/SeaMapDemo23114.json");
-        this.load.image("back_ground","assets/back_gound_gamemain.jpg")
-        this.load.image("start","assets/start.png");
-        this.load.image("Ship","assets/Ship.png");
-        this.load.image("ship1","assets/ship1.png");
-        this.load.image("ship2","assets/ship2.png");
-        this.load.image("ship3","assets/ship3.png");
-        this.load.image("ship4","assets/ship4.png");
-        this.load.image("ship5","assets/ship5.png");
-        this.load.image("ship6","assets/ship6.png");
-        this.load.image("ship7","assets/ship7.png");
+        this.load.image("ship", "assets/GameMain/Ship.png");
+        this.load.image("tiles", "assets/GameMain/tiles.png");
+        this.load.tilemapTiledJSON("SeaMapDemo23114", "assets/GameMain/SeaMapDemo23114.json");
+        this.load.image("back_ground","assets/GameMain/back_gound_gamemain.jpg")
+        this.load.image("start","assets/GameMain/start.png");
+        this.load.image("Ship","assets/GameMain/Ship.png");
+        this.load.image("ship1","assets/GameMain/ship1.png");
+        this.load.image("ship2","assets/GameMain/ship2.png");
+        this.load.image("ship3","assets/GameMain/ship3.png");
+        this.load.image("ship4","assets/GameMain/ship4.png");
+        this.load.image("ship5","assets/GameMain/ship5.png");
+        this.load.image("ship6","assets/GameMain/ship6.png");
+        this.load.image("ship7","assets/GameMain/ship7.png");
 
     }
     create() {

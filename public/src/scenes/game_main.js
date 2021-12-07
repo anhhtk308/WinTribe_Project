@@ -9,35 +9,35 @@ class game_main extends Phaser.Scene {
     }
 
     preload() {
-        //this.load.image("ship", "assets/Ship.png");
-        this.load.image("tiles", "assets/tiles.png");
-        this.load.tilemapTiledJSON("seaMap", "assets/SeaMapDemo0512.json");
-        this.load.image("bullet", "assets/bullet.png");
-        this.load.spritesheet("explo_anims", "assets/explo_anims.png", { frameWidth: 269 / 4, frameHeight: 64.5 });
-        this.load.image("health","assets/health_bar.png");
-        this.load.image('island1',"assets/island1.png");
-        this.load.image('island2',"assets/island2.png");
-        this.load.image('island3',"assets/island3.png");
-        this.load.image('island4',"assets/island4.png");
-        this.load.image('island5',"assets/island5.png");
-        this.load.image('island6',"assets/island6.png");
-        this.load.image('island7',"assets/island7.png");
-        this.load.image('island8',"assets/island8.png");
-        this.load.image('island9',"assets/island9.png");
-        this.load.image('island10',"assets/island10.png");
-        this.load.image('stone','assets/stone1.png');
-        this.load.image('sea_tiles','assets/sea_tiles.png');
-        this.load.image('treasure','assets/treasure.png');
-        this.load.image('ground','assets/ground.png');
-        this.load.image("Ship","assets/Ship.png");
-        this.load.image("ship1","assets/ship1.png");
-        this.load.image("ship2","assets/ship2.png");
-        this.load.image("ship3","assets/ship3.png");
-        this.load.image("ship4","assets/ship4.png");
-        this.load.image("ship5","assets/ship5.png");
-        this.load.image("ship6","assets/ship6.png");
-        this.load.image("ship7","assets/ship7.png");
-        this.load.image("stone2",'assets/stone2.png');
+        //this.load.image("ship", "assets/GameMain/Ship.png");
+        this.load.image("tiles", "assets/GameMain/tiles.png");
+        this.load.tilemapTiledJSON("seaMap", "assets/GameMain/SeaMapDemo0512.json");
+        this.load.image("bullet", "assets/GameMain/bullet.png");
+        this.load.spritesheet("explo_anims", "assets/GameMain/explo_anims.png", { frameWidth: 269 / 4, frameHeight: 64.5 });
+        this.load.image("health","assets/GameMain/health_bar.png");
+        this.load.image('island1',"assets/GameMain/island1.png");
+        this.load.image('island2',"assets/GameMain/island2.png");
+        this.load.image('island3',"assets/GameMain/island3.png");
+        this.load.image('island4',"assets/GameMain/island4.png");
+        this.load.image('island5',"assets/GameMain/island5.png");
+        this.load.image('island6',"assets/GameMain/island6.png");
+        this.load.image('island7',"assets/GameMain/island7.png");
+        this.load.image('island8',"assets/GameMain/island8.png");
+        this.load.image('island9',"assets/GameMain/island9.png");
+        this.load.image('island10',"assets/GameMain/island10.png");
+        this.load.image('stone','assets/GameMain/stone1.png');
+        this.load.image('sea_tiles','assets/GameMain/sea_tiles.png');
+        this.load.image('treasure','assets/GameMain/treasure.png');
+        this.load.image('ground','assets/GameMain/ground.png');
+        this.load.image("Ship","assets/GameMain/Ship.png");
+        this.load.image("ship1","assets/GameMain/ship1.png");
+        this.load.image("ship2","assets/GameMain/ship2.png");
+        this.load.image("ship3","assets/GameMain/ship3.png");
+        this.load.image("ship4","assets/GameMain/ship4.png");
+        this.load.image("ship5","assets/GameMain/ship5.png");
+        this.load.image("ship6","assets/GameMain/ship6.png");
+        this.load.image("ship7","assets/GameMain/ship7.png");
+        this.load.image("stone2",'assets/GameMain/stone2.png');
 
         //add chat
         this.load.html('chatForm', 'assets/chatForm/chatForm.html');
