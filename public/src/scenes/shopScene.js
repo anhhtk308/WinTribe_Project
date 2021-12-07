@@ -60,27 +60,27 @@ class shopScene extends Phaser.Scene {
         this.skills = this.physics.add.group();
 
         (this.speedImg).name = 'speedImg';
-        (this.speedImg).golds = 5;
+        (this.speedImg).golds = 50;
         this.skills.add(this.speedImg);
 
         (this.hp).name = 'hp';
-        (this.hp).golds = 10;
+        (this.hp).golds = 50;
         this.skills.add(this.hp);
 
         (this.iceBom).name = 'iceBom';
-        (this.iceBom).golds = 20;
+        (this.iceBom).golds = 150;
         this.skills.add(this.iceBom);
 
         (this.speedBullet).name = 'speedBullet';
-        (this.speedBullet).golds = 35;
+        (this.speedBullet).golds = 150;
         this.skills.add(this.speedBullet);
 
         (this.strong).name = 'strong';
-        (this.strong).golds = 40;
+        (this.strong).golds = 100;
         this.skills.add(this.strong);
 
         (this.shipRotationSpeed).name = 'shipRotationSpeed';
-        (this.shipRotationSpeed).golds = 15;
+        (this.shipRotationSpeed).golds = 70;
         this.skills.add(this.shipRotationSpeed);
 
         this.skills.getChildren().forEach(function(other) {

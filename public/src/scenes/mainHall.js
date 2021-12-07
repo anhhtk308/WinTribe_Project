@@ -9,7 +9,7 @@ class mainHall extends Phaser.Scene {
     preload() {
         //chatting
         this.load.html('chatForm', 'assets/chatForm/chatForm.html');
-        //this.load.css('chatFormCss', 'assets/chatForm/chatForm.css');
+        this.load.css('chatFormCss', 'assets/chatForm/chatForm.css');
 
         this.load.image("testBg", "assets/mainHall/testBg.png");
         this.load.image("waterfall", "assets/mainHall/waterfall.jpg");
@@ -30,15 +30,12 @@ class mainHall extends Phaser.Scene {
     create() {
 
         //chatting
-        this.elementChat = this.add.dom(175, 546).createFromCache('chatForm').setScrollFactor(0);
+        this.elementChat = this.add.dom(175, 543).createFromCache('chatForm').setScrollFactor(0);
         this.otherPlayers = this.physics.add.group();
         this.otherPlayers_name = this.physics.add.group();
         var self = this;
         this.socket = io();
 
-        // this.elementChat = this.add.dom(175, 546).createFromCache('chatForm').setScrollFactor(0);
-        // this.otherPlayers = this.physics.add.group();
-        // this.otherPlayers_name = this.physics.add.group();
         this.socket.emit('startMainHall', { name: self.name });
         this.socket.on('addToChat', function(data) {
             self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
@@ -87,7 +84,7 @@ class mainHall extends Phaser.Scene {
             frameRate: 10,
             repeat: -1
         });
-
+        //move
         this.socket.on("player_moved", function(playerInfo) {
             self.otherPlayers.getChildren().forEach(function(other) {
                 if (playerInfo.playersID === other.playersID) {
@@ -100,18 +97,35 @@ class mainHall extends Phaser.Scene {
                     other.setPosition(playerInfo.x - 20, playerInfo.y - 50);
                 }
             });
-        })
+        });
 
-        // this.socket.on("player_not_change",function(playerInfo){
-        //     self.otherPlayers.getChildren().forEach(function (other) {
-        //         if (playerInfo.playersID == other.playersID) {
-        //             other.anims.play(playerInfo.status);
-        //         }
-        //     });
-        // })
+        //destroy
+        this.socket.on('disconnected', function(id) {
+            self.otherPlayers.getChildren().forEach(function(other) {
+                if (id == other.playersID) {
+                    other.destroy();
+                }
+            });
+            self.otherPlayers_name.getChildren().forEach(function(other) {
+                if (id === other.playersID) {
+                    other.destroy();
+                }
+            });
+        });
 
-
-
+        this.socket.on('destroy_player_main', function(data) {
+            self.otherPlayers.getChildren().forEach(function(other) {
+                if (data.playersID == other.playersID) {
+                    other.destroy();
+                }
+            });
+            self.otherPlayers_name.getChildren().forEach(function(other) {
+                if (data.playersID === other.playersID) {
+                    other.destroy();
+                }
+            });
+        });
+        ////////////////-----------------------------------------
         const map = this.add.tilemap("MainHallMap");
 
 
@@ -170,6 +184,13 @@ class mainHall extends Phaser.Scene {
                 this.tweens.add({ targets: self.hide, x: 350, duration: 500, ease: 'Back' });
                 this.hide.setText('<<');
             }
+        });
+
+        //test
+        this.textToMan2 = this.add.text(400, 300, 'Man 2', { font: '32px Courier', color: 'red' }).setScrollFactor(0);
+        this.textToMan2.setInteractive();
+        this.textToMan2.on('pointerdown', function() {
+            self.socket.emit('destroy');
         });
     }
 

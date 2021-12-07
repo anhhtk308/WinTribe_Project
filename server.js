@@ -37,9 +37,8 @@ io.on('connection', function(socket) {
             socket.broadcast.emit("player_moved", players[socket.id]);
         });
 
-        socket.on("not_change", function(data) {
-            players[socket.id].status = data.status;
-            socket.broadcast.emit("player_not_change", players[socket.id]);
+        socket.on('destroy', function() {
+            socket.broadcast.emit('destroy_player_main', players[socket.id]);
         });
     });
 
