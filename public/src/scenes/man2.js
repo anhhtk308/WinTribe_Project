@@ -30,6 +30,10 @@ class man2 extends Phaser.Scene {
         this.load.image("net", "assets/net.png");
         this.load.image("bomb", "assets/bomb.png");
         this.load.image("bomb_bum", "assets/bomBum.png");
+        this.load.spritesheet("bomb_animation", "assets/bomb_animation.png", {
+            frameWidth: 687 / 4,
+            frameHeight: 191 / 4,
+        });
     }
     create() {
         this.add.image(400, 300, "background");
@@ -57,7 +61,12 @@ class man2 extends Phaser.Scene {
         input = this.input;
         //set game bounds
         worldBounds = this.physics.world.bounds;
-
+        this.anims.create({
+            key: "boom",
+            frames: this.anims.generateFrameNumbers("bomb_animation", { start: 0, end: 4 }),
+            frameRate: 10,
+            repeat: -1,
+        });
     }
     update() {
         //angle between mouse and ball
@@ -97,6 +106,7 @@ class man2 extends Phaser.Scene {
         }
     }
     shootBomb(net, bomb) {
+        bomb.anims.play('boom', true);
         bomb.disableBody(true, true);
         net.disableBody(true, true);
         control = false;
@@ -105,6 +115,7 @@ class man2 extends Phaser.Scene {
             this.scene.start('pregame');
         }
         coin.text = "Coin: " + coin_value;
+
     }
     stopBomb() {
         if (bomb.y <= 300) {
@@ -191,8 +202,15 @@ class man2 extends Phaser.Scene {
     destroy(net, pirateship) {
         pirateship.disableBody(true, true);
         net.disableBody(true, true);
+        this.animationAddItem(pirateship.x, pirateship.y);
         control = false;
         coin_value++;
         coin.text = "Coin: " + coin_value;
+    }
+    animationAddItem(randX, randY) {
+        var pointsAdded = this.add.text(randX, randY, "+1 Coin", { font: '30px ', fill: "#FF9900", stroke: '#fff', strokeThickness: 10 });
+        pointsAdded.setOrigin(0.5, 0.5);
+        this.tweens.add({ targets: pointsAdded, alpha: 0, y: randY - 50, duration: 1000, ease: 'Linear' });
+        // this.cameras.main.shake(100, 0.01, true);
     }
 }
