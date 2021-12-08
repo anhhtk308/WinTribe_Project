@@ -47,10 +47,15 @@ class matchingGame extends Phaser.Scene {
         this.load.audio("true_sound", "assets/matchingGame/true_sound.mp3");
         this.load.audio("false_sound", "assets/matchingGame/false_sound.mp3");
         this.load.audio("button_sound", "assets/matchingGame/audio-button.mp3");
+        this.load.audio("nhac_nen", "assets/matchingGame/nhacnen.mp3")
 
     }
     create() {
         //alert(this.socket.id);
+        //nhac nen
+        this.music_bg = this.sound.add("nhac_nen", { loop: true, volume: 0.3 });
+        this.music_bg.play();
+        //
         var self = this;
         this.score = 0;
         this.socket.emit('startMatchingGame', this.socket.id);
@@ -202,7 +207,7 @@ class matchingGame extends Phaser.Scene {
 
         //guide
         this.textPopup = this.add.text(415, 220, '').setWordWrapWidth(350).setVisible(false);
-        this.typewriteTextWrapped('Hello, Chào mừng ' + this.name.toUpperCase() + ' đã đến với trò chơi ghép chữ, phí là 5$, bạn có thời gian là 60s để trả lời các câu hỏi, mỗi câu đúng sẽ được 4$, phí skip là 2$, bấm nút start để bắt đầu chơi nào!');
+        this.typewriteTextWrapped("Hello, Welcome " + this.name.toUpperCase() + " to the word puzzle game, the fee is 5$, you have 60s to answer the questions, each correct answer will be 4$, skip fee is 2$, press the start button to start playing now!");
         this.textPopup.setVisible(true);
 
         //clone list
@@ -422,6 +427,7 @@ class matchingGame extends Phaser.Scene {
         this.cameras.main.fade(250);
         this.time.delayedCall(250, function() {
             this.button_sound.play();
+            this.music_bg.stop();
             this.scene.start('mainHall', { socket: this.socket, name: this.name });
         }, [], this);
     }
