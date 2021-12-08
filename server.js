@@ -25,28 +25,29 @@ io.on('connection', function(socket) {
     console.log('a user connected: ', socket.id);
 
     //create player
-    // players[socket.id] = {
-    //         playersID: socket.id,
-    //         gold: 10,
-    //         x: 931,
-    //         y: 735,
-            
-    //         name: '',
-    //         status: 'turn'
-    //     }
-        players[socket.id] = {
-                playersID: socket.id,
-                x: Math.floor(Math.random() * 700) + 50,
-                y: Math.floor(Math.random() * 500) + 50,
-                // x: Math.floor(Math.random() * 4700) + 50,
-                // y: Math.floor(Math.random() * 4700) + 50,
-                rotation: 0,
-                health: 100,
-                name: "aaa",
-                type: "",
-                score: 0,
-
+    players[socket.id] = {
+            playersID: socket.id,
+            gold: 1000,
+            x: 931,
+            y: 735,
+            // x: Math.floor(Math.random() * 700) + 50,
+            // y: Math.floor(Math.random() * 500) + 50,
+            name: '',
+            status: 'turn',
+            skills: {
+                speed: false,
+                hp: false,
+                iceBom: false,
+                speedBullet: false,
+                strong: false,
+                shipRotationSpeed: false,
+            },
+            rotation: 0,
+            health: 100,
+            type: "",
+            score: 0,
         }
+        
         
     //create bullet
     bullet[socket.id] = {
@@ -164,22 +165,15 @@ io.on('connection', function(socket) {
         });
     });
 
-    // socket.on('disconnect', function() {
-    //     console.log('user disconnected: ', socket.id);
-    //     delete players[socket.id];
-    //     delete socketLst[socket.id];
-    //     // emit a message to all players to remove this player
-    //     io.emit('disconnected', socket.id);
-    // });
-    //chatting
-    // socketLst[socket.id] = socket;
-    // socket.on('sendMsgToServer', function(data) {
-    //     for (var i in socketLst) {
-    //         //socketLst[i].emit('addToChat', (socket.id + '').slice(2, 7) + ': ' + data);
-    //         socketLst[i].emit('addToChat', data.name + ': ' + data.text);
-    //         //console.log(data.name + ": " + (socketLst[i]).id + "\n");
-    //     }
-    // });
+    //start shop
+    socket.on('startShop', function(data) {
+        socket.emit('getPlayerShop', players[data]);
+        socket.on('updateShop', function(data) {
+            players[socket.id].gold = data.gold;
+            players[socket.id].skills = data.skills;
+        });
+    });
+
 });
 
 server.listen(port, function() {
