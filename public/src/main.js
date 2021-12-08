@@ -21,10 +21,8 @@ window.addEventListener('load', function () {
     game.scene.add("Preload", Preload);
     game.scene.add("Level", Level);
     game.scene.add("Boot", Boot);
-    game.scene.add("man1", man1);
-    game.scene.add("man2", man2);
-    game.scene.add("fishing", fishing);
-    game.scene.add("pregame", pregame, true);
+    game.scene.add("goFishing", goFishing);
+    game.scene.add("preGoFishing", preGoFishing, true);
 });
 
 class Boot extends Phaser.Scene {
