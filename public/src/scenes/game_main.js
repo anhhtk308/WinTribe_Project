@@ -6,6 +6,7 @@ class game_main extends Phaser.Scene {
         
         this.type=data.type;
         this.name=data.name;
+        this.socket=data.socket;
     }
 
     preload() {
@@ -47,7 +48,7 @@ class game_main extends Phaser.Scene {
     create() {
 
         var self = this;
-        this.socket=io();
+        //this.socket=io();
         this.otherPlayers = this.physics.add.group();
         this.bullets = this.physics.add.group();
         this.texts=this.add.group();
@@ -242,7 +243,19 @@ class game_main extends Phaser.Scene {
          })
         this.socket.on("print_score",function(data){
             self.score=data.score;
+            for(var i=0;i<self.list_player.length;i++){
+                if(self.list_player[i].playersID==data.playersID){
+                    self.list_player[i].score=data.score;
+                }
+            }
 
+        })
+        this.socket.on("add_score",function(data){
+            for(var i=0;i<self.list_player.length;i++){
+                if(self.list_player[i].playersID==data.playersID){
+                    self.list_player[i].score=data.score;
+                }
+            }
         })
         
        
@@ -297,8 +310,14 @@ class game_main extends Phaser.Scene {
             for(var i=0;i<self.text_rank.length;i++){
                 self.text_rank[i].destroy();
             }
+            var lenght =0;
+            if(self.list_player.length>5){
+                lenght=5;
+            } else {
+                lenght=self.list_player.length;
+            }
             self.text_rank.splice(0,self.text_rank.length);
-            for(var i=0;i<self.list_player.length;i++){
+            for(var i=0;i<lenght;i++){
                self.text_rank[i]=self.add.text(data.x+150,data.y+i*20,self.list_player[i].name+"  "+self.list_player[i].score);
             }
             
@@ -312,7 +331,8 @@ class game_main extends Phaser.Scene {
         this.text_number.setText("PLayer left: "+this.player_left);
         this.score_text.setText("SCORE: "+this.score);
         this.text_number.setStyle({color:"#FFFFFF"});
-        this.list_player.sort((a,b) => (a.score > b.score) ? 1 : ((b.score > a.score) ? -1 : 0));
+        this.list_player.sort((a,b) => (a.score < b.score) ? 1 : ((b.score < a.score) ? -1 : 0));
+        
         try {
             for(var i=0;i<this.text_rank.length;i++){
                 this.text_rank[i].setText((i+1)+" "+this.list_player[i].name+"  "+this.list_player[i].score)
@@ -345,7 +365,7 @@ class game_main extends Phaser.Scene {
             }
             if(this.score>=100&&this.player_left==1){
                 this.socket.emit('forceDisconnect');
-                this.scene.start("man_khoi_tao");
+                this.scene.start("mainHall");
             }
             if (this.cursors.left.isDown&&this.status1==1) {
                 this.ship.setAngularVelocity(-100);
@@ -541,7 +561,7 @@ class game_main extends Phaser.Scene {
         });
        
          this.socket.emit('forceDisconnect');
-         this.scene.start("Preload");
+         this.scene.start("mainHall",{socket:this.socket});
         
     }
 
