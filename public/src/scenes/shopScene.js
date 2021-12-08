@@ -28,6 +28,9 @@ class shopScene extends Phaser.Scene {
         this.load.image("strongItem", "assets/shop/iconBig/strongItem.png");
         this.load.image("shipRotationSpeedItem", "assets/shop/iconBig/shipRotationSpeedItem.png");
         this.load.image("speedBulletItem", "assets/shop/iconBig/speedBulletItem.png");
+
+        //description frame
+        this.load.image("speedDes", "assets/shop/descriptionFrame/speedDes.png");
     }
 
     create() {
@@ -63,6 +66,9 @@ class shopScene extends Phaser.Scene {
         //close icon
         this.closeIcon = this.add.image(765, 32, "closeIcon");
         this.closeIcon.setInteractive();
+
+        //description frame
+        this.speedDes = this.add.image(290, 120, "speedDes");
     
         this.skillSmall = this.physics.add.group();
 
