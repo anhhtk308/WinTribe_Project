@@ -31,6 +31,11 @@ class shopScene extends Phaser.Scene {
 
         //description frame
         this.load.image("speedDes", "assets/shop/descriptionFrame/speedDes.png");
+        this.load.image("hpDes", "assets/shop/descriptionFrame/hpDes.png");
+        this.load.image("tripleBomDes", "assets/shop/descriptionFrame/tripleBomDes.png");
+        this.load.image("speedBulletDes", "assets/shop/descriptionFrame/speedBulletDes.png");
+        this.load.image("strongDes", "assets/shop/descriptionFrame/strongDes.png");
+        this.load.image("shipRotationSpeedDes", "assets/shop/descriptionFrame/shipRotationSpeedDes.png");
     }
 
     create() {
@@ -68,7 +73,12 @@ class shopScene extends Phaser.Scene {
         this.closeIcon.setInteractive();
 
         //description frame
-        this.speedDes = this.add.image(290, 120, "speedDes");
+        this.speedDes = this.add.image(400, 150, "speedDes").setVisible(false);
+        this.hpDes = this.add.image(530, 150, "hpDes").setVisible(false);
+        this.tripleBomDes = this.add.image(660, 150, "tripleBomDes").setVisible(false);
+        this.speedBulletDes = this.add.image(410, 310, "speedBulletDes").setVisible(false);
+        this.strongDes = this.add.image(530, 310, "strongDes").setVisible(false);
+        this.shipRotationSpeedDes = this.add.image(660, 310, "shipRotationSpeedDes").setVisible(false);
     
         this.skillSmall = this.physics.add.group();
 
@@ -183,7 +193,13 @@ class shopScene extends Phaser.Scene {
                     self.notifyMoneyFrame.setVisible(true);
                 }
             })
+
         });
+
+        
+
+        //hover
+        this.hoverItemSkill(self);
 
         this.closeNotifyMoney();
         this.changeScene();
@@ -192,6 +208,83 @@ class shopScene extends Phaser.Scene {
     update() {
 
 
+    }
+
+    hoverItemSkill(self) {
+        this.skills.getChildren().forEach(function (other) {
+            other.on('pointerover', function (event) {
+                var option = other.name;
+                    switch (option) {
+                        case 'speed':
+                            {
+                                self.speedDes.setVisible(true);
+                                break;
+                            };
+                        case 'hp':
+                            {
+                                self.hpDes.setVisible(true);
+                                break;
+                            };
+                        case 'iceBom':
+                            {
+                                self.tripleBomDes.setVisible(true);
+                                break;
+                            };
+                        case 'speedBullet':
+                            {
+                                self.speedBulletDes.setVisible(true);
+                                break;
+                            };
+                        case 'strong':
+                            {
+                                self.strongDes.setVisible(true);
+                                break;
+                            };
+                        case 'shipRotationSpeed':
+                            {
+                                self.shipRotationSpeedDes.setVisible(true);
+                                break;
+                            };
+                    }
+            });
+
+            other.on('pointerout', function (event) {
+                var option = other.name;
+                    switch (option) {
+                        case 'speed':
+                            {
+                                self.speedDes.setVisible(false);
+                                break;
+                            };
+                        case 'hp':
+                            {
+                                self.hpDes.setVisible(false);
+                                break;
+                            };
+                        case 'iceBom':
+                            {
+                                self.tripleBomDes.setVisible(false);
+                                break;
+                            };
+                        case 'speedBullet':
+                            {
+                                self.speedBulletDes.setVisible(false);
+                                break;
+                            };
+                        case 'strong':
+                            {
+                                self.strongDes.setVisible(false);
+                                break;
+                            };
+                        case 'shipRotationSpeed':
+                            {
+                                self.shipRotationSpeedDes.setVisible(false);
+                                break;
+                            };
+                    }
+            });
+        })
+    
     }
 
     changeScene() {
