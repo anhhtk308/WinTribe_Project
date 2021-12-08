@@ -36,8 +36,9 @@ io.on('connection', function(socket) {
     //     }
         players[socket.id] = {
                 playersID: socket.id,
-                x: Math.floor(Math.random() * 700) + 50,
-                y: Math.floor(Math.random() * 500) + 50,
+                x: 931,
+                y: 735,
+                        
                 // x: Math.floor(Math.random() * 4700) + 50,
                 // y: Math.floor(Math.random() * 4700) + 50,
                 rotation: 0,
@@ -85,11 +86,11 @@ io.on('connection', function(socket) {
         socket.on('forceDisconnect', function() {
             console.log('user disconnected: ', socket.id);
 
-            delete players[socket.id];
+            //delete players[socket.id];
             io.emit('disconnected', socket.id);
             // num_player--;
             // socket.broadcast.emit("add_player",{num:num_player})
-            socket.disconnect();
+            //socket.disconnect();
         });
         socket.on('destroy', function(data) {
             socket.broadcast.emit('destroy_ship', players[socket.id]);
@@ -122,6 +123,7 @@ io.on('connection', function(socket) {
         socket.on("scored", function(data) {
             players[socket.id].score = data.score;
             socket.emit("print_score", players[socket.id]);
+            socket.broadcast.emit("add_score",players[socket.id]);
         });
         
        
@@ -129,7 +131,7 @@ io.on('connection', function(socket) {
     //disconnect
     socket.on('disconnect', function() {
         console.log('user disconnected: ', socket.id);
-        delete players[socket.id];
+        //delete players[socket.id];
         num_player--;
         socket.broadcast.emit("add_player", { num: num_player })
         //socket.broadcast.emit("load_rank",players[socket.id]);
