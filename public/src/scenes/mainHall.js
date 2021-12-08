@@ -22,6 +22,8 @@ class mainHall extends Phaser.Scene {
         this.load.image("optionGameQuiz", "assets/mainHall/optionGameQuiz.png");
         this.load.image("Shop", "assets/mainHall/Shop.png");
         this.load.image("textOption", "assets/mainHall/textOption.png");
+        this.load.image("frameGold", "assets/mainHall/111.png");
+        this.load.image("goldImg", "assets/mainHall/333.png");
 
         this.load.spritesheet("player", "assets/mainHall/dude.png", {
             frameWidth: 32,
@@ -50,21 +52,20 @@ class mainHall extends Phaser.Scene {
                 });
             });
 
-
             this.socket.on('newPlayerMain', function(playerInfo) {
                 self.addOtherPlayer(self, playerInfo);
             });
         }
 
         this.socket.emit('startMainHall', { name: self.name });
-        // this.socket.on('addToChat', function(data) {
-        //     self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
-        // });
 
+        //chatting
         this.elementChat.getChildByID("chat-form").onsubmit = function(e) {
             e.preventDefault();
-            self.socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
-            self.elementChat.getChildByID("chat-input").value = '';
+            if ((self.elementChat.getChildByID("chat-input").value).trim() !== '') {
+                self.socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
+                self.elementChat.getChildByID("chat-input").value = '';
+            }
         }
 
         this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
@@ -75,24 +76,7 @@ class mainHall extends Phaser.Scene {
             }
         }, this);
 
-        //add multi
-        // this.socket.on('currentPlayersMain', function(players) {
-        //     Object.keys(players).forEach(function(id) {
-        //         if (players[id].playersID === self.socket.id) {
-        //             self.addPlayer(self, players[id]);
-        //         } else {
-        //             self.addOtherPlayer(self, players[id]);
-        //         }
-        //     });
-        // });
-
-
-        // this.socket.on('newPlayerMain', function(playerInfo) {
-        //     self.addOtherPlayer(self, playerInfo);
-        // });
-
-        //map
-
+        //animation
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
@@ -203,17 +187,13 @@ class mainHall extends Phaser.Scene {
             }
         });
 
-        //test
+        //gold
+        this.frameGold = this.add.image(700, 10, 'frameGold').setScale(0.085).setScrollFactor(0);
+        this.goldImg = this.add.image(680, 40, 'goldImg').setScale(0.03).setScrollFactor(0);
         this.socket.on('getPlayerMain', function(playerInfo) {
             self.gold = playerInfo.gold;
-            self.textGold = self.add.text(645, 10, 'Gold: ' + self.gold, { font: '30px', color: 'red' }).setScrollFactor(0);
+            self.textGold = self.add.text(700, 26, self.gold, { font: '30px', color: 'red' }).setScrollFactor(0);
         });
-
-        // this.textToMan2.setInteractive();
-        // this.textToMan2.on('pointerdown', function() {
-        //     self.socket.emit('destroy');
-        //     self.scene.start('matchingGame');
-        // });
     }
 
     update() {
@@ -291,10 +271,6 @@ class mainHall extends Phaser.Scene {
     }
     enter_quiz(player, optionGameQuizLayer) {
         this.socket.emit('destroy');
-        // this.player.destroy();
-        // this.player_name.destroy();
-        // this.player = undefined;
-        // this.player_name = undefined;
         this.scene.start("matchingGame", { socket: this.socket, name: this.name });
     }
 }
