@@ -40,22 +40,10 @@ class shopScene extends Phaser.Scene {
     }
 
     create() {
-        
+        var self = this;
 
         //background
         this.background = this.add.image(400, 300, "background");
-
-        //export object
-        this.socket.emit('startShop', this.socket.id);
-        this.socket.on('getPlayerShop', function(data) {
-            self.numberOfGolds = data.gold;
-            alert('gold: ' + data.gold)
-            // self.textOfGolds = self.add.text(150, 116, self.numberOfGolds, { fontSize: 30, color: '#fff' });
-        });
-
-        //golds
-        // this.numberOfGolds = 200;
-        // this.textOfGolds = this.add.text(150, 116, this.numberOfGolds, { fontSize: 30, color: '#fff' });
 
         //image skill's item
         this.speed = this.add.image(285, 265, 'speedItem');
@@ -64,6 +52,48 @@ class shopScene extends Phaser.Scene {
         this.speedBullet = this.add.image(280, 440, 'speedBulletItem');
         this.strong = this.add.image(410, 440, 'strongItem');
         this.shipRotationSpeed = this.add.image(540, 440, 'shipRotationSpeedItem');
+
+        this.textOfGolds = self.add.text(150, 116, self.numberOfGolds, { fontSize: 30, color: '#fff' });
+
+        //export object
+        this.socket.emit('startShop', this.socket.id);
+        this.socket.on('getPlayerShop', function(data) {
+            self.numberOfGolds = data.gold;
+            self.textOfGolds.setText(data.gold);
+            // alert('gold: ' + data.gold)
+            self.exportObj = data.skills;
+            if((self.exportObj).speed === true){
+                self.speed.alpha = 0.5;
+                self.speedSmall.alpha = 1;
+            }
+    
+            if(self.exportObj.hp === true){
+                self.hp.alpha = 0.5;
+                self.hpSmall.alpha = 1;
+            }
+    
+            if(self.exportObj.iceBom === true){
+                self.iceBom.alpha = 0.5;
+                self.iceBomSmall.alpha = 1;
+            }
+    
+            if(self.exportObj.speedBullet === true){
+                self.speedBullet.alpha = 0.5;
+                self.speedBulletSmall.alpha = 1;
+            }
+    
+            if(self.exportObj.strong === true){
+                self.strong.alpha = 0.5;
+                self.strongSmall.alpha = 1;
+            }
+    
+            if(self.exportObj.shipRotationSpeed === true){
+                self.shipRotationSpeed.alpha = 0.5;
+                self.shipRotationSpeedSmall.alpha = 1;
+            }
+            // alert('skills: ' + self.exportObj.speed)
+        });
+
 
         //icon bag's item
         this.speedSmall = this.add.image(435, 127, 'speed').setScale(0.4);
@@ -141,18 +171,6 @@ class shopScene extends Phaser.Scene {
             other.setInteractive();
         });
 
-        //export object
-        this.exportObj = {
-            speed: false,
-            hp: false,
-            iceBom: false,
-            speedBullet: false,
-            strong: false,
-            shipRotationSpeed: false,
-        }
-
-        var self = this;
-
         this.skills.getChildren().forEach(function (other) {
             other.on("pointerdown", () => {
                 if (self.numberOfGolds >= other.golds) {
@@ -211,6 +229,7 @@ class shopScene extends Phaser.Scene {
         this.hoverItemSkill(self);
         this.closeNotifyMoney();
         this.changeScene();
+
     }
 
     update() {
@@ -297,6 +316,7 @@ class shopScene extends Phaser.Scene {
 
     changeScene() {
         this.closeIcon.on("pointerdown", () => {
+            this.socket.emit('updateShop', { gold: this.numberOfGolds, skills: this.exportObj });
             this.scene.start('mainHall', { socket: this.socket, name: this.name });
         })
     }

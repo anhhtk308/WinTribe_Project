@@ -26,13 +26,21 @@ io.on('connection', function(socket) {
     //create player
     players[socket.id] = {
             playersID: socket.id,
-            gold: 10,
+            gold: 1000,
             x: 931,
             y: 735,
             // x: Math.floor(Math.random() * 700) + 50,
             // y: Math.floor(Math.random() * 500) + 50,
             name: '',
-            status: 'turn'
+            status: 'turn',
+            skills: {
+                speed: false,
+                hp: false,
+                iceBom: false,
+                speedBullet: false,
+                strong: false,
+                shipRotationSpeed: false,
+            }
         }
         // players[socket.id] = {
         //         playersID: socket.id,
@@ -151,27 +159,12 @@ io.on('connection', function(socket) {
     //start shop
     socket.on('startShop', function(data) {
         socket.emit('getPlayerShop', players[data]);
-        // socket.on('updateGold', function(data) {
-        //     players[socket.id].gold = data.gold;
-        // });
+        socket.on('updateShop', function(data) {
+            players[socket.id].gold = data.gold;
+            players[socket.id].skills = data.skills;
+        });
     });
 
-    // socket.on('disconnect', function() {
-    //     console.log('user disconnected: ', socket.id);
-    //     delete players[socket.id];
-    //     delete socketLst[socket.id];
-    //     // emit a message to all players to remove this player
-    //     io.emit('disconnected', socket.id);
-    // });
-    //chatting
-    // socketLst[socket.id] = socket;
-    // socket.on('sendMsgToServer', function(data) {
-    //     for (var i in socketLst) {
-    //         //socketLst[i].emit('addToChat', (socket.id + '').slice(2, 7) + ': ' + data);
-    //         socketLst[i].emit('addToChat', data.name + ': ' + data.text);
-    //         //console.log(data.name + ": " + (socketLst[i]).id + "\n");
-    //     }
-    // });
 });
 
 server.listen(port, function() {
