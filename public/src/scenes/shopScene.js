@@ -17,7 +17,7 @@ class shopScene extends Phaser.Scene {
         //small icon skill
         this.load.image("speed", "assets/shop/iconSmall/speed.png");
         this.load.image("hp", "assets/shop/iconSmall/hp.png");
-        this.load.image("iceBom", "assets/shop/iconSmall/iceBom.png");
+        this.load.image("tripleBoms", "assets/shop/iconSmall/tripleBoms.png");
         this.load.image("strong", "assets/shop/iconSmall/strong.png");
         this.load.image("shipRotationSpeed", "assets/shop/iconSmall/shipRotationSpeed.png");
         this.load.image("speedBullet", "assets/shop/iconSmall/speedBullet.png");
@@ -25,7 +25,7 @@ class shopScene extends Phaser.Scene {
         //big icon skill
         this.load.image("speedItem", "assets/shop/iconBig/speedItem.png");
         this.load.image("hpItem", "assets/shop/iconBig/hpItem.png");
-        this.load.image("iceBomItem", "assets/shop/iconBig/iceBomItem.png");
+        this.load.image("tripleBomsItem", "assets/shop/iconBig/tripleBomsItem.png");
         this.load.image("strongItem", "assets/shop/iconBig/strongItem.png");
         this.load.image("shipRotationSpeedItem", "assets/shop/iconBig/shipRotationSpeedItem.png");
         this.load.image("speedBulletItem", "assets/shop/iconBig/speedBulletItem.png");
@@ -48,7 +48,7 @@ class shopScene extends Phaser.Scene {
         //image skill's item
         this.speed = this.add.image(285, 265, 'speedItem');
         this.hp = this.add.image(410, 265, 'hpItem');
-        this.iceBom = this.add.image(540, 265, 'iceBomItem');
+        this.tripleBoms = this.add.image(540, 265, 'tripleBomsItem');
         this.speedBullet = this.add.image(280, 440, 'speedBulletItem');
         this.strong = this.add.image(410, 440, 'strongItem');
         this.shipRotationSpeed = this.add.image(540, 440, 'shipRotationSpeedItem');
@@ -72,9 +72,9 @@ class shopScene extends Phaser.Scene {
                 self.hpSmall.alpha = 1;
             }
     
-            if(self.exportObj.iceBom === true){
-                self.iceBom.alpha = 0.5;
-                self.iceBomSmall.alpha = 1;
+            if(self.exportObj.tripleBoms === true){
+                self.tripleBoms.alpha = 0.5;
+                self.tripleBomsSmall.alpha = 1;
             }
     
             if(self.exportObj.speedBullet === true){
@@ -98,7 +98,7 @@ class shopScene extends Phaser.Scene {
         //icon bag's item
         this.speedSmall = this.add.image(435, 127, 'speed').setScale(0.4);
         this.hpSmall = this.add.image(475, 127, 'hp').setScale(0.5);
-        this.iceBomSmall = this.add.image(525, 125, 'iceBom').setScale(0.45);
+        this.tripleBomsSmall = this.add.image(525, 125, 'tripleBoms').setScale(0.45);
         this.speedBulletSmall = this.add.image(565, 127, 'speedBullet').setScale(0.5);
         this.strongSmall = this.add.image(615, 127, 'strong').setScale(0.4);
         this.shipRotationSpeedSmall = this.add.image(660, 127, 'shipRotationSpeed').setScale(0.4);
@@ -127,8 +127,8 @@ class shopScene extends Phaser.Scene {
         this.skillSmall.add(this.speedSmall);
         (this.hpSmall).name = 'hp';
         this.skillSmall.add(this.hpSmall);
-        (this.iceBomSmall).name = 'iceBom';
-        this.skillSmall.add(this.iceBomSmall);
+        (this.tripleBomsSmall).name = 'tripleBoms';
+        this.skillSmall.add(this.tripleBomsSmall);
         (this.speedBulletSmall).name = 'speedBullet';
         this.skillSmall.add(this.speedBulletSmall);
         (this.strongSmall).name = 'strong';
@@ -151,9 +151,9 @@ class shopScene extends Phaser.Scene {
         (this.hp).golds = 50;
         this.skills.add(this.hp);
 
-        (this.iceBom).name = 'iceBom';
-        (this.iceBom).golds = 150;
-        this.skills.add(this.iceBom);
+        (this.tripleBoms).name = 'tripleBoms';
+        (this.tripleBoms).golds = 150;
+        this.skills.add(this.tripleBoms);
 
         (this.speedBullet).name = 'speedBullet';
         (this.speedBullet).golds = 150;
@@ -189,9 +189,9 @@ class shopScene extends Phaser.Scene {
                                 self.exportObj.hp = true;
                                 break;
                             };
-                        case 'iceBom':
+                        case 'tripleBoms':
                             {
-                                self.exportObj.iceBom = true;
+                                self.exportObj.tripleBoms = true;
                                 break;
                             };
                         case 'speedBullet':
@@ -252,7 +252,7 @@ class shopScene extends Phaser.Scene {
                                 self.hpDes.setVisible(true);
                                 break;
                             };
-                        case 'iceBom':
+                        case 'tripleBoms':
                             {
                                 self.tripleBomDes.setVisible(true);
                                 break;
@@ -288,7 +288,7 @@ class shopScene extends Phaser.Scene {
                                 self.hpDes.setVisible(false);
                                 break;
                             };
-                        case 'iceBom':
+                        case 'tripleBoms':
                             {
                                 self.tripleBomDes.setVisible(false);
                                 break;
