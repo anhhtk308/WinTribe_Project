@@ -30,7 +30,6 @@ class mainHall extends Phaser.Scene {
         this.load.tilemapTiledJSON("MainHallMap", "assets/mainHall/MainHall.json");
     }
     create() {
-
         //chatting
         this.elementChat = this.add.dom(175, 543).createFromCache('chatForm').setScrollFactor(0);
         this.otherPlayers = this.physics.add.group();
@@ -67,6 +66,14 @@ class mainHall extends Phaser.Scene {
             self.socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
             self.elementChat.getChildByID("chat-input").value = '';
         }
+
+        this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+        this.keyEnter.on('down', function(key, event) {
+            if ((self.elementChat.getChildByID("chat-input").value).trim() !== '') {
+                self.socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
+                self.elementChat.getChildByID("chat-input").value = '';
+            }
+        }, this);
 
         //add multi
         // this.socket.on('currentPlayersMain', function(players) {
@@ -197,7 +204,11 @@ class mainHall extends Phaser.Scene {
         });
 
         //test
-        // this.textToMan2 = this.add.text(400, 300, 'Man 2', { font: '32px Courier', color: 'red' }).setScrollFactor(0);
+        this.socket.on('getPlayerMain', function(playerInfo) {
+            self.gold = playerInfo.gold;
+            self.textGold = self.add.text(645, 10, 'Gold: ' + self.gold, { font: '30px', color: 'red' }).setScrollFactor(0);
+        });
+
         // this.textToMan2.setInteractive();
         // this.textToMan2.on('pointerdown', function() {
         //     self.socket.emit('destroy');

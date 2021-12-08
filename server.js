@@ -42,10 +42,14 @@ io.on('connection', function(socket) {
         socket.on('destroy', function() {
             socket.broadcast.emit('destroy_player_main', players[socket.id]);
         });
+        socket.emit('getPlayerMain', players[socket.id]);
     });
 
     socket.on('startMatchingGame', function(data) {
         socket.emit('getPlayer', players[data]);
+        socket.on('updateGold', function(data) {
+            players[socket.id].gold = data.gold;
+        });
     });
 
     // socket.on('startTest', function(data) {
