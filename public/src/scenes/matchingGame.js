@@ -5,6 +5,7 @@ class matchingGame extends Phaser.Scene {
 
     init(data) {
         this.socket = data.socket;
+        this.name = data.name;
     }
 
     preload() {
@@ -46,10 +47,15 @@ class matchingGame extends Phaser.Scene {
         this.load.audio("true_sound", "assets/matchingGame/true_sound.mp3");
         this.load.audio("false_sound", "assets/matchingGame/false_sound.mp3");
         this.load.audio("button_sound", "assets/matchingGame/audio-button.mp3");
+        this.load.audio("nhac_nen", "assets/matchingGame/nhacnen.mp3")
 
     }
     create() {
         //alert(this.socket.id);
+        //nhac nen
+        this.music_bg = this.sound.add("nhac_nen", { loop: true, volume: 0.3 });
+        this.music_bg.play();
+        //
         var self = this;
         this.score = 0;
         this.socket.emit('startMatchingGame', this.socket.id);
@@ -157,6 +163,10 @@ class matchingGame extends Phaser.Scene {
                 id: 21,
                 question: "n/g/a/ự/ô",
                 answer: "Ngựa ô"
+            }, {
+                id: 22,
+                question: "ă/n/p/ú/m/b/g",
+                answer: "Búp măng"
             }
         ];
 
@@ -197,7 +207,7 @@ class matchingGame extends Phaser.Scene {
 
         //guide
         this.textPopup = this.add.text(415, 220, '').setWordWrapWidth(350).setVisible(false);
-        this.typewriteTextWrapped('Hello, Chào mừng bạn đã đến với trò chơi ghép chữ, phí là 5$, bạn có thời gian là 60s để trả lời các câu hỏi, mỗi câu đúng sẽ được 4$, phí skip là 2$, bấm nút start để bắt đầu chơi nào!');
+        this.typewriteTextWrapped("Hello, Welcome " + this.name.toUpperCase() + " to the word puzzle game, the fee is 5$, you have 60s to answer the questions, each correct answer will be 4$, skip fee is 2$, press the start button to start playing now!");
         this.textPopup.setVisible(true);
 
         //clone list
@@ -324,6 +334,7 @@ class matchingGame extends Phaser.Scene {
         }
     }
     handleTimeFinished() {
+        this.result.setText('Gold: 0');
         this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         this.showHideResult(true);
         this.showHideQuestion(false);
@@ -346,7 +357,7 @@ class matchingGame extends Phaser.Scene {
         if (this.score > 0) {
             this.tweens.add({ targets: this.close_gift, y: 300, duration: 500, delay: 250, ease: 'Back' });
             this.close_gift.setVisible(true);
-            this.tweens.add({ targets: this.close_gift, angle: this.close_gift.angle - 2, duration: 1000, ease: 'Sine.easeInOut' });
+            this.tweens.add({ targets: this.close_gift, angle: this.close_gift.angle - 4, duration: 1000, ease: 'Sine.easeInOut' });
             this.tweens.add({ targets: this.close_gift, angle: this.close_gift.angle + 4, duration: 2000, ease: 'Sine.easeInOut', yoyo: 1, loop: -1, delay: 1000 });
             this.close_gift.on("pointerdown", () => {
                 this.close_gift.setVisible(false);
@@ -412,10 +423,12 @@ class matchingGame extends Phaser.Scene {
     }
 
     fadeOutScene() {
+        this.socket.emit('updateGold', { gold: this.score });
         this.cameras.main.fade(250);
         this.time.delayedCall(250, function() {
             this.button_sound.play();
-            this.scene.start('mainHall');
+            this.music_bg.stop();
+            this.scene.start('mainHall', { socket: this.socket, name: this.name });
         }, [], this);
     }
 
