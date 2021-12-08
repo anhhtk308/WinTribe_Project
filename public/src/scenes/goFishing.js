@@ -17,37 +17,42 @@ class goFishing extends Phaser.Scene {
         this.center = { x: 400, y: 300 }
         this.rotateSpeed = 0.02
     }
-
+    init(data) {
+        this.name = data.name;
+        this.socket = data.socket;
+    }
     preload() {
-        this.load.image("background_pregame", "assets/background_pregame.png");
-        this.load.image("background", "assets/background_sea.jpg");
-        this.load.image("ship", "assets/ship.png");
-        this.load.image("fish_1", "assets/fish_1.png");
-        this.load.image("fish_2", "assets/fish_2.png");
-        this.load.image("fish_3", "assets/fish_3.png");
-        this.load.image("fish_4", "assets/fish_4.png");
-        this.load.image("cannon", "assets/cannon.png");
-        this.load.image("back_main_hall_icon", "assets/back_main_hall_icon.png");
-        this.load.image("net", "assets/net.png");
-        this.load.image("bomb", "assets/bomb.png");
-        this.load.image("bomb_bum", "assets/bomBum.png");
-        this.load.audio("background_sound", "assets/background_sound.mp3");
-        this.load.audio("catch_sound", "assets/catch_sound.mp3");
-        this.load.audio("gameover_sound", "assets/gameover_sound.mp3");
-        this.load.audio("bomb_sound", "assets/bomb_sound.mp3");
-        this.load.image("replay_icon", "assets/replay_icon.png");
-        this.load.image("gameover_frame", "assets/gameover_frame.png");
-        this.load.image("gold_icon", "assets/gold_icon.png");
-        this.load.spritesheet("bomb_animation", "assets/bomb_animation.png", {
+        this.load.image("background_pregame", "assets/goFishingAssets/background_pregame.png");
+        this.load.image("background", "assets/goFishingAssets/background_sea.jpg");
+        this.load.image("ship", "assets/goFishingAssets/ship.png");
+        this.load.image("fish_1", "assets/goFishingAssets/fish_1.png");
+        this.load.image("fish_2", "assets/goFishingAssets/fish_2.png");
+        this.load.image("fish_3", "assets/goFishingAssets/fish_3.png");
+        this.load.image("fish_4", "assets/goFishingAssets/fish_4.png");
+        this.load.image("cannon", "assets/goFishingAssets/cannon.png");
+        this.load.image("back_main_hall_icon", "assets/goFishingAssets/back_main_hall_icon.png");
+        this.load.image("net", "assets/goFishingAssets/net.png");
+        this.load.image("bomb", "assets/goFishingAssets/bomb.png");
+        this.load.image("bomb_bum", "assets/goFishingAssets/bomBum.png");
+        this.load.audio("background_sound", "assets/goFishingAssets/background_sound.mp3");
+        this.load.audio("catch_sound", "assets/goFishingAssets/catch_sound.mp3");
+        this.load.audio("gameover_sound", "assets/goFishingAssets/gameover_sound.mp3");
+        this.load.audio("bomb_sound", "assets/goFishingAssets/bomb_sound.mp3");
+        this.load.image("replay_icon", "assets/goFishingAssets/replay_icon.png");
+        this.load.image("gameover_frame", "assets/goFishingAssets/gameover_frame.png");
+        this.load.image("gold_icon", "assets/goFishingAssets/gold_icon.png");
+        this.load.spritesheet("bomb_animation", "assets/goFishingAssets/bomb_animation.png", {
             frameWidth: 687 / 4,
             frameHeight: 191,
         });
-        this.load.image("time_icon", "assets/time_icon.png");
-        this.load.image("sound_icon", "assets/sound_icon.png");
-        this.load.image("outgame_icon", "assets/outgame_icon.png");
-        this.load.image("mute_icon", "assets/mute_icon.png");
+        this.load.image("time_icon", "assets/goFishingAssets/time_icon.png");
+        this.load.image("sound_icon", "assets/goFishingAssets/sound_icon.png");
+        this.load.image("outgame_icon", "assets/goFishingAssets/outgame_icon.png");
+        this.load.image("mute_icon", "assets/goFishingAssets/mute_icon.png");
     }
     create() {
+        this.socket.emit('startFishing', this.socket.id);
+        var self = this;
         // create bg sound
         this.background_sound = this.sound.add("background_sound", { loop: true, volume: 0.3 });
         this.catch_sound = this.sound.add("catch_sound", { loop: false, volume: 0.3 });
@@ -84,7 +89,12 @@ class goFishing extends Phaser.Scene {
         this.cannon = this.physics.add.sprite(400, 130, 'cannon').setScale(0.21);
         this.bomb;
         // create coin 
-        this.coin = this.add.text(655, 31, ('' + coin_value), { fontSize: 15, color: '#fff', fill: "black", stroke: '#fff' }).setVisible(true);
+        this.coin = this.add.text(645, 31, coin_value, { fontSize: 15, color: '#fff', fill: "black", stroke: '#fff' }).setVisible(true);
+        this.socket.on('getPlayerFishing', function (data) {
+            coin_value = data.gold;
+            self.coin.setText(coin_value);
+            // alert("lay duoc r " + data.gold);
+        });
         // create net
         this.net = this.physics.add.sprite(400, 130, "net").setScale(0.03).setVisible(false);
         // mouse click event
@@ -251,6 +261,7 @@ class goFishing extends Phaser.Scene {
             this.back_main_hall_icon = this.physics.add.image(300, -300, "back_main_hall_icon").setScale(0.4);
             this.replay_icon = this.physics.add.image(500, -300, "replay_icon").setScale(0.4);
             this.replay_icon.setInteractive();
+            this.back_main_hall_icon.setInteractive();
             this.result = this.add.text(400, -230, coin_value, { font: '50px Maven Pro Bold', color: "#D47ECF" }).setVisible(true);
             this.tweens.add({ targets: this.back_main_hall_icon, y: 410, duration: 1000, ease: 'Back' });
             this.tweens.add({ targets: this.replay_icon, y: 410, duration: 1000, ease: 'Back' });
@@ -259,6 +270,12 @@ class goFishing extends Phaser.Scene {
             // replay
             this.replay_icon.on('pointerup', () => {
                 this.startNewGame();
+            });
+            // out game
+            this.back_main_hall_icon.on('pointerup', () => {
+                this.gameover_sound.stop();
+                this.socket.emit('updateGoldFishing', { gold: coin_value });
+                this.scene.start('mainHall', { socket: this.socket, name: this.name });
             });
         }, [], this);
 
@@ -280,8 +297,7 @@ class goFishing extends Phaser.Scene {
         this.back_main_hall_icon.setVisible(false);
         this.replay_icon.setVisible(false);
         this.result.setVisible(false);
-        coin_value = 0;
-        this.coin.text = coin_value;
+        this.coin.setText(coin_value);
         this.mute_icon.setVisible(false);
         this.sound_icon.setVisible(true);
     }
@@ -305,4 +321,5 @@ class goFishing extends Phaser.Scene {
         pointsAdded.setOrigin(0.5, 0.5);
         this.tweens.add({ targets: pointsAdded, alpha: 0, y: randY - 50, duration: 1000, ease: 'Linear' });
     }
+
 }

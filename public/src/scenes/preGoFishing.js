@@ -2,14 +2,18 @@ class preGoFishing extends Phaser.Scene {
     constructor() {
         super("preGoFishing");
     }
+    init(data) {
+        this.name = data.name;
+        this.socket = data.socket;
+    }
     preload() {
-        this.load.image("background_pregame", "assets/background_pregame.png");
-        this.load.image("title", "assets/game_title.png");
-        this.load.image("guide", "assets/button_guide.png");
-        this.load.image("play", "assets/button_play.png");
-        this.load.image("frame", "assets/frame.png");
-        this.load.image("icon_x", "assets/icon_x.png");
-        this.load.audio("background_sound", "assets/background_sound.mp3");
+        this.load.image("background_pregame", "assets/goFishingAssets/background_pregame.png");
+        this.load.image("title", "assets/goFishingAssets/game_title.png");
+        this.load.image("guide", "assets/goFishingAssets/button_guide.png");
+        this.load.image("play", "assets/goFishingAssets/button_play.png");
+        this.load.image("frame", "assets/goFishingAssets/frame.png");
+        this.load.image("icon_x", "assets/goFishingAssets/icon_x.png");
+        this.load.audio("background_sound", "assets/goFishingAssets/background_sound.mp3");
     }
     create() {
 
@@ -21,8 +25,7 @@ class preGoFishing extends Phaser.Scene {
         this.guide.setInteractive();
         this.play.setInteractive();
         this.play.on('pointerup', () => {
-            this.scene.start('man2');
-
+            this.scene.start('goFishing', { socket: this.socket, name: this.name });
         });
         this.icon_close = this.physics.add.image(400, -280, "icon_x").setScale(0.3);
         this.icon_close.setInteractive();
