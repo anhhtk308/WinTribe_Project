@@ -9,7 +9,7 @@ class shopScene extends Phaser.Scene {
     preload() {
         this.load.image("background", "assets/shop/shop_background.jpg");
         this.load.image("closeIcon", "assets/shop/closeIcon.png");
-        this.load.image("notifyMoney", "assets/shop/notifyMoney.png");
+        this.load.image("notifyMoneyFrame", "assets/shop/notifyMoneyFrame.png");
         this.load.image("blurBg", "assets/shop/blurBg.png");
         this.load.image("okIcon", "assets/shop/okIcon.png");
         
@@ -56,8 +56,8 @@ class shopScene extends Phaser.Scene {
         
         //notify out of money
         this.blurBg = this.add.image(400, 300, "blurBg").setVisible(false);
-        this.notifyMoney = this.add.image(400, 300, 'notifyMoney').setScale(1.3).setVisible(false);
-        this.okIcon = this.add.image(425, 400, "okIcon").setVisible(false);
+        this.notifyMoneyFrame = this.add.image(415, 300, 'notifyMoneyFrame').setVisible(false);
+        this.okIcon = this.add.image(425, 420, "okIcon").setVisible(false);
         this.okIcon.setInteractive();
 
         //close icon
@@ -173,8 +173,8 @@ class shopScene extends Phaser.Scene {
                     other.removeListener("pointerdown");
                 } else {
                     self.blurBg.setVisible(true);
-                    self.notifyMoney.setVisible(true);
                     self.okIcon.setVisible(true);
+                    self.notifyMoneyFrame.setVisible(true);
                 }
             })
         });
@@ -197,7 +197,7 @@ class shopScene extends Phaser.Scene {
     closeNotifyMoney() {
         this.okIcon.on("pointerdown", () => {
             this.blurBg.setVisible(false);
-            this.notifyMoney.setVisible(false);
+            this.notifyMoneyFrame.setVisible(false);
             this.okIcon.setVisible(false);
         })
     }
