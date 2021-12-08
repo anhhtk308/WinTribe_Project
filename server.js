@@ -5,7 +5,7 @@ var server = require('http').Server(app);
 // var io = require('socket.io').listen(server);
 var io = require('socket.io')(server, {});
 //var io1 = require('socket.io')(server, {});
-const port = process.env.PORT || 2003;
+const port = process.env.PORT || 2000;
 
 var players = {};
 var bullet = {
@@ -55,7 +55,7 @@ io.on('connection', function(socket) {
         y: 0,
         rotation: 0
     };
-
+    //chatting
     socketLst[socket.id] = socket;
     socket.on('sendMsgToServer', function(data) {
         for (var i in socketLst) {
@@ -126,6 +126,7 @@ io.on('connection', function(socket) {
         
        
     });
+    //disconnect
     socket.on('disconnect', function() {
         console.log('user disconnected: ', socket.id);
         delete players[socket.id];
@@ -135,7 +136,7 @@ io.on('connection', function(socket) {
         io.emit('disconnected', socket.id);
         
     });
-
+    //start sảnh
     socket.on('startMainHall', function(data) {
         players[socket.id].name = data.name;
         // send the players object to the new players
@@ -153,10 +154,14 @@ io.on('connection', function(socket) {
         socket.on('destroy', function() {
             socket.broadcast.emit('destroy_player_main', players[socket.id]);
         });
+        socket.emit('getPlayerMain', players[socket.id]);
     });
-
+    //start matching game
     socket.on('startMatchingGame', function(data) {
         socket.emit('getPlayer', players[data]);
+        socket.on('updateGold', function(data) {
+            players[socket.id].gold = data.gold;
+        });
     });
 
     // socket.on('disconnect', function() {

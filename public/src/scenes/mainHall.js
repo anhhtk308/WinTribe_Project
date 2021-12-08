@@ -5,6 +5,8 @@ class mainHall extends Phaser.Scene {
     }
     init(data) {
         this.name = data.name;
+        this.socket = data.socket;
+        this.player = undefined;
     }
     preload() {
         //chatting
@@ -20,6 +22,8 @@ class mainHall extends Phaser.Scene {
         this.load.image("optionGameQuiz", "assets/mainHall/optionGameQuiz.png");
         this.load.image("Shop", "assets/mainHall/Shop.png");
         this.load.image("textOption", "assets/mainHall/textOption.png");
+        this.load.image("frameGold", "assets/mainHall/111.png");
+        this.load.image("goldImg", "assets/mainHall/333.png");
 
         this.load.spritesheet("player", "assets/mainHall/dude.png", {
             frameWidth: 32,
@@ -28,43 +32,51 @@ class mainHall extends Phaser.Scene {
         this.load.tilemapTiledJSON("MainHallMap", "assets/mainHall/MainHall.json");
     }
     create() {
-
         //chatting
         this.elementChat = this.add.dom(175, 543).createFromCache('chatForm').setScrollFactor(0);
         this.otherPlayers = this.physics.add.group();
         this.otherPlayers_name = this.physics.add.group();
         var self = this;
-        this.socket = io();
+        if (typeof this.socket === 'undefined') {
+            this.socket = io();
+            this.socket.on('addToChat', function(data) {
+                self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
+            });
+            this.socket.on('currentPlayersMain', function(players) {
+                Object.keys(players).forEach(function(id) {
+                    if (players[id].playersID === self.socket.id) {
+                        self.addPlayer(self, players[id]);
+                    } else {
+                        self.addOtherPlayer(self, players[id]);
+                    }
+                });
+            });
 
-        this.socket.emit('startMainHall', { name: self.name });
-        this.socket.on('addToChat', function(data) {
-            self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
-        });
-
-        this.elementChat.getChildByID("chat-form").onsubmit = function(e) {
-            e.preventDefault();
-            self.socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
-            self.elementChat.getChildByID("chat-input").value = '';
+            this.socket.on('newPlayerMain', function(playerInfo) {
+                self.addOtherPlayer(self, playerInfo);
+            });
         }
 
-        //add multi
-        this.socket.on('currentPlayersMain', function(players) {
-            Object.keys(players).forEach(function(id) {
-                if (players[id].playersID === self.socket.id) {
-                    self.addPlayer(self, players[id]);
-                } else {
-                    self.addOtherPlayer(self, players[id]);
-                }
-            });
-        });
+        this.socket.emit('startMainHall', { name: self.name });
 
+        //chatting
+        this.elementChat.getChildByID("chat-form").onsubmit = function(e) {
+            e.preventDefault();
+            if ((self.elementChat.getChildByID("chat-input").value).trim() !== '') {
+                self.socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
+                self.elementChat.getChildByID("chat-input").value = '';
+            }
+        }
 
-        this.socket.on('newPlayerMain', function(playerInfo) {
-            self.addOtherPlayer(self, playerInfo);
-        });
+        this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+        this.keyEnter.on('down', function(key, event) {
+            if ((self.elementChat.getChildByID("chat-input").value).trim() !== '') {
+                self.socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
+                self.elementChat.getChildByID("chat-input").value = '';
+            }
+        }, this);
 
-        //map
-
+        //animation
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
@@ -175,13 +187,13 @@ class mainHall extends Phaser.Scene {
             }
         });
 
-        //test
-        // this.textToMan2 = this.add.text(400, 300, 'Man 2', { font: '32px Courier', color: 'red' }).setScrollFactor(0);
-        // this.textToMan2.setInteractive();
-        // this.textToMan2.on('pointerdown', function() {
-        //     self.socket.emit('destroy');
-        //     self.scene.start('matchingGame');
-        // });
+        //gold
+        this.frameGold = this.add.image(700, 10, 'frameGold').setScale(0.085).setScrollFactor(0);
+        this.goldImg = this.add.image(680, 40, 'goldImg').setScale(0.03).setScrollFactor(0);
+        this.socket.on('getPlayerMain', function(playerInfo) {
+            self.gold = playerInfo.gold;
+            self.textGold = self.add.text(700, 26, self.gold, { font: '30px', color: 'red' }).setScrollFactor(0);
+        });
     }
 
     update() {
@@ -259,6 +271,6 @@ class mainHall extends Phaser.Scene {
     }
     enter_quiz(player, optionGameQuizLayer) {
         this.socket.emit('destroy');
-        this.scene.start("matchingGame", { socket: this.socket });
+        this.scene.start("matchingGame", { socket: this.socket, name: this.name });
     }
 }
