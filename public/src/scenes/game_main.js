@@ -53,6 +53,8 @@ class game_main extends Phaser.Scene {
         this.texts=this.add.group();
         this.health_ships= this.add.group();
         this.score=0;
+        this.list_player=[];
+        this.text_rank=[];
         // solve chat event
         this.elementChat = this.add.dom(-470, 2210).createFromCache('chatForm').setScrollFactor(0).setScale(5);
         this.socket.on('addToChat', function (data) {
@@ -71,16 +73,25 @@ class game_main extends Phaser.Scene {
         this.socket.on('currentPlayersGameMain', function (player) {
             Object.keys(player).forEach(function (id) {
                 if (player[id].playersID === self.socket.id) { 
+                    self.list_player.push(player[id]);
                     addPlayer(self, player[id]);
+                    //self.socket.emit("need_rank")
+                    
                 } else {
+                    self.list_player.push(player[id]);
                     addOtherPlayer(self, player[id]);
+                    //self.socket.emit("need_rank")
+                    
                 }
 
             });
         });
         this.socket.on('newPlayerGameMain', function (playerInfo) {
-            
+
+            self.list_player.push(playerInfo);
             addOtherPlayer(self, playerInfo);
+            //self.socket.emit("need_rank")
+            
         })
        
         function addPlayer(self, playerInfo) {
@@ -115,6 +126,13 @@ class game_main extends Phaser.Scene {
             });
         });
         this.socket.on("disconnected", function (id) {
+            var check=0;
+            for(var i=0;i<self.list_player.length;i++){
+                if(self.list_player[i].playersID==id){
+                    self.list_player.splice(i,1);
+                }
+            }
+            
             self.otherPlayers.getChildren().forEach(function (other) {
                 if (id == other.playersID) {
                     other.destroy();
@@ -130,6 +148,8 @@ class game_main extends Phaser.Scene {
                     other.destroy();
                 }
             });
+            self.socket.emit("need_load");
+            
         });
         this.socket.on('moved', function (playerInfo) {
             self.otherPlayers.getChildren().forEach(function (other) {
@@ -150,6 +170,7 @@ class game_main extends Phaser.Scene {
                     
                 }
             });
+            
             
         });
 
@@ -204,14 +225,12 @@ class game_main extends Phaser.Scene {
         this.player_left=0;
         // this.text_number = this.add.text(-470, 2210,data.num,{fontSize:32,color:"#FFFFFFF"});
         // this.text_number.setStyle()
+        
         this.socket.on("current_on",function(data){
-            self.text_number = self.add.text(300, 300,"PLayer left: "+data.num,{fontSize:32,color:"#FFFFFFF"});
             self.player_left=data.num
          })
 
          this.socket.on("add_player",function(data){
-            self.text_number.setText("PLayer left: "+data.num);
-            self.text_number.setStyle({fontSize:32,color:"#FFFFFFF"})
             self.player_left=data.num
          })
 
@@ -225,7 +244,8 @@ class game_main extends Phaser.Scene {
             self.score=data.score;
 
         })
-
+        
+       
         
         // add map
 
@@ -269,14 +289,39 @@ class game_main extends Phaser.Scene {
          this.r3 = this.add.rectangle(100,200, 200, 100);
          this.r3.setStrokeStyle(5, 0x1a65ac);
          this.score_text=this.add.text(200,200,"SCORE: "+this.score,{font:48,color:"#FFFFFF"});
+         this.text_number = this.add.text(300, 300,"PLayer left: "+this.player_left,{color:"#FFFFFFF"});
+         this.lenght_text = 0;
+         this.socket.on("load_rank",function(data){
+            //alert(self.list_player.length);
+            
+            for(var i=0;i<self.text_rank.length;i++){
+                self.text_rank[i].destroy();
+            }
+            self.text_rank.splice(0,self.text_rank.length);
+            for(var i=0;i<self.list_player.length;i++){
+               self.text_rank[i]=self.add.text(data.x+150,data.y+i*20,self.list_player[i].name+"  "+self.list_player[i].score);
+            }
+            
+       })
         
-         
         
     }
 
     update() {
         
+        this.text_number.setText("PLayer left: "+this.player_left);
         this.score_text.setText("SCORE: "+this.score);
+        this.text_number.setStyle({color:"#FFFFFF"});
+        this.list_player.sort((a,b) => (a.score > b.score) ? 1 : ((b.score > a.score) ? -1 : 0));
+        try {
+            for(var i=0;i<this.text_rank.length;i++){
+                this.text_rank[i].setText((i+1)+" "+this.list_player[i].name+"  "+this.list_player[i].score)
+            }
+        } catch (error) {
+            
+        }
+        
+        
         this.cursors = this.input.keyboard.createCursorKeys();
         this.otherPlayers.children.iterate(function(child){
             this.minimap.ignore(child);
@@ -290,9 +335,10 @@ class game_main extends Phaser.Scene {
         this.bullets.children.iterate(function(child){
            this.minimap.ignore(child);
         },this)
+        
         //solve event ship
-        if (this.ship&&this.text_ship&&this.health_ship&&this.text_number) {
-
+        if (this.ship&&this.text_ship&&this.health_ship&&this.text_rank) {
+            
             
             if(this.health<=0){
                 this.destroyShip(this.ship);
@@ -317,6 +363,8 @@ class game_main extends Phaser.Scene {
                 this.ship.setVelocityX(0);
                 this.ship.setVelocityY(0);
             }
+
+            //alert(this.list_player.length);
             
             // make name and health follow ship
             this.text_ship.x=this.ship.x-20;
@@ -327,11 +375,17 @@ class game_main extends Phaser.Scene {
             this.r3.x=this.minimap.scrollX-250;
             this.minimap.scrollY=Phaser.Math.Clamp(this.ship.y,0,10000);
             this.r3.y=this.minimap.scrollY-240;
-            this.text_number.x=this.ship.x+100;
+            this.text_number.x=this.ship.x+200;
             this.text_number.y=this.ship.y-250;
-            this.score_text.x=this.ship.x;
+            this.score_text.x=this.ship.x-50;
             this.score_text.y=this.ship.y-250;
-
+            for(var i=0;i<this.list_player.length;i++){
+                if(this.text_rank[i]){
+                    this.text_rank[i].x=this.ship.x+200;
+                    this.text_rank[i].y=this.ship.y-220+i*25;
+                }
+                
+            }
              //fire button
             if (Phaser.Input.Keyboard.JustDown(this.fireButtton)&&this.status==1) {
                 console.log("enter");

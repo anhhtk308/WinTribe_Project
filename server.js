@@ -12,6 +12,7 @@ var bullet = {
 
 };
 var socketLst = {};
+var list_player =[];
 
 app.use(express.static(__dirname + '/public'));
 
@@ -24,27 +25,29 @@ io.on('connection', function(socket) {
     console.log('a user connected: ', socket.id);
 
     //create player
-    players[socket.id] = {
-            playersID: socket.id,
-            gold: 10,
-            x: 931,
-            y: 735,
-            // x: Math.floor(Math.random() * 700) + 50,
-            // y: Math.floor(Math.random() * 500) + 50,
-            name: '',
-            status: 'turn'
-        }
-        // players[socket.id] = {
-        //         playersID: socket.id,
-        //         x: Math.floor(Math.random() * 4700) + 50,
-        //         y: Math.floor(Math.random() * 4700) + 50,
-        //         rotation: 0,
-        //         health: 100,
-        //         name: "aaa",
-        //         type: "",
-        //         score: 0,
-
+    // players[socket.id] = {
+    //         playersID: socket.id,
+    //         gold: 10,
+    //         x: 931,
+    //         y: 735,
+            
+    //         name: '',
+    //         status: 'turn'
     //     }
+        players[socket.id] = {
+                playersID: socket.id,
+                x: Math.floor(Math.random() * 700) + 50,
+                y: Math.floor(Math.random() * 500) + 50,
+                // x: Math.floor(Math.random() * 4700) + 50,
+                // y: Math.floor(Math.random() * 4700) + 50,
+                rotation: 0,
+                health: 100,
+                name: "aaa",
+                type: "",
+                score: 0,
+
+        }
+        
     //create bullet
     bullet[socket.id] = {
         bulletID: socket.id,
@@ -63,13 +66,22 @@ io.on('connection', function(socket) {
     // if we start gamemain it will do all funcion in gamemain
     socket.on("startGameMain", function(data) {
         num_player++;
-        //players[socket.id].name=data.name;
+        players[socket.id].name=data.name;
         players[socket.id].type = data.type;
-
+        players[socket.id].x=Math.floor(Math.random() * 4700) + 50;
+        players[socket.id].y= Math.floor(Math.random() * 4700) + 50;
+        
         socket.emit("current_on", { num: num_player });
         socket.broadcast.emit("add_player", { num: num_player })
         socket.emit('currentPlayersGameMain', players);
         socket.broadcast.emit('newPlayerGameMain', players[socket.id]);
+        socket.emit("load_rank",players[socket.id]);
+        socket.broadcast.emit("load_rank",players[socket.id]);
+        socket.on("need_load",function(){
+            socket.emit("load_rank",players[socket.id]);
+            socket.broadcast.emit("load_rank",players[socket.id]);
+        })
+        
         socket.on('forceDisconnect', function() {
             console.log('user disconnected: ', socket.id);
 
@@ -110,14 +122,18 @@ io.on('connection', function(socket) {
         socket.on("scored", function(data) {
             players[socket.id].score = data.score;
             socket.emit("print_score", players[socket.id]);
-        })
+        });
+        
+       
     });
     socket.on('disconnect', function() {
         console.log('user disconnected: ', socket.id);
         delete players[socket.id];
         num_player--;
         socket.broadcast.emit("add_player", { num: num_player })
+        //socket.broadcast.emit("load_rank",players[socket.id]);
         io.emit('disconnected', socket.id);
+        
     });
 
     socket.on('startMainHall', function(data) {
