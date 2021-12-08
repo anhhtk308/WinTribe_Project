@@ -4,6 +4,7 @@ class shopScene extends Phaser.Scene {
     }
     init(data) {
         this.name = data.name;
+        this.socket = data.socket;
     }
 
     preload() {
@@ -39,12 +40,22 @@ class shopScene extends Phaser.Scene {
     }
 
     create() {
+        
+
         //background
         this.background = this.add.image(400, 300, "background");
 
+        //export object
+        this.socket.emit('startShop', this.socket.id);
+        this.socket.on('getPlayerShop', function(data) {
+            self.numberOfGolds = data.gold;
+            alert('gold: ' + data.gold)
+            // self.textOfGolds = self.add.text(150, 116, self.numberOfGolds, { fontSize: 30, color: '#fff' });
+        });
+
         //golds
-        this.numberOfGolds = 200;
-        this.textOfGolds = this.add.text(150, 116, this.numberOfGolds, { fontSize: 30, color: '#fff' });
+        // this.numberOfGolds = 200;
+        // this.textOfGolds = this.add.text(150, 116, this.numberOfGolds, { fontSize: 30, color: '#fff' });
 
         //image skill's item
         this.speed = this.add.image(285, 265, 'speedItem');
@@ -195,12 +206,9 @@ class shopScene extends Phaser.Scene {
             })
 
         });
-
-        
-
+    
         //hover
         this.hoverItemSkill(self);
-
         this.closeNotifyMoney();
         this.changeScene();
     }
@@ -289,7 +297,7 @@ class shopScene extends Phaser.Scene {
 
     changeScene() {
         this.closeIcon.on("pointerdown", () => {
-            this.scene.start('mainHall1', this.exportObj);
+            this.scene.start('mainHall', { socket: this.socket, name: this.name });
         })
     }
 
