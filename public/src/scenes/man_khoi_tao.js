@@ -23,6 +23,7 @@ class man_khoi_tao extends Phaser.Scene {
         this.load.image("ship5","assets/GameMain/ship5.png");
         this.load.image("ship6","assets/GameMain/ship6.png");
         this.load.image("ship7","assets/GameMain/ship7.png");
+        this.load.audio("button_sound", "assets/matchingGame/audio-button.mp3");
 
     }
     create() {
@@ -40,6 +41,7 @@ class man_khoi_tao extends Phaser.Scene {
         this.check=0;
         this.type="";
         this.i=0;
+        this.button_sound = this.sound.add("button_sound", { loop: false });
         while(this.i<8){
             if(this.i>=4){
                 ship_y=400;
@@ -147,13 +149,13 @@ class man_khoi_tao extends Phaser.Scene {
         this.isDie;
         this.socket.on("getPlayerGameMain",function(data){
             self.isDie=data.die;
-            alert(data.die)
+           
         })
 
         //this.elementName = this.add.dom(400, 300).createFromCache('nameForm');
         this.text.on("pointerdown", () => {
             if (this.type!="") {
-                
+                this.button_sound.play();
                 this.time.delayedCall(250, function() {
                     this.scene.start('game_main', { name: this.name,type:this.type,socket:this.socket,isDie:this.isDie});
                 }, [], this);

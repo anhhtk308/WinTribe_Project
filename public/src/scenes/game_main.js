@@ -41,6 +41,9 @@ class game_main extends Phaser.Scene {
         this.load.image("ship6","assets/GameMain/ship6.png");
         this.load.image("ship7","assets/GameMain/ship7.png");
         this.load.image("stone2",'assets/GameMain/stone2.png');
+        this.load.image("stone3",'assets/GameMain/stone3.png');
+        this.load.audio("main_sound","assets/GameMain/musicArena.mp3");
+         this.load.audio("attack_sound","assets/GameMain/musicSoundGun.mp3");
 
         //add chat
         this.load.html('chatForm', 'assets/chatForm/chatForm.html');
@@ -58,8 +61,56 @@ class game_main extends Phaser.Scene {
         this.score=0;
         this.list_player=[];
         this.text_rank=[];
+        this.health = 1;
+        this.speed = 200;
+        this.speedBullet = 400;
+        this.dame = 10;
+        this.shipRotationSpeed = 100;
+        this.bom = 1;
+        this.skill=[];
+        this.socket.on("load_skill", function (data) {
+            if (data.skills.speed == true) {
+                self.speed = 300;
+                //self.skill.push("speed")
+               
+                self.skill.push("speed");
+
+            }
+            if (data.skills.speedBullet == true) {
+                self.speedBullet = 650;
+                
+                self.skill.push("speedBullet");
+                
+
+            }
+            if (data.skills.strong == true) {
+                self.dame = 20;
+                
+                self.skill.push("strong");
+                
+
+            }
+            if (data.skills.shipRotationSpeed == true) {
+                self.shipRotationSpeed = 200;
+                
+                self.skill.push("shipRotationSpeed");
+
+            }
+            if (data.skills.hp == true) {
+                self.health = 1.5;
+               
+                self.skill.push("hp");
+            }
+            if (data.skills.tripleBoms == true) {
+                self.bom = 3;
+                
+                self.skill.push("tripleBoms");
+            }
+
+
+        })
         // solve chat event
-        this.elementChat = this.add.dom(-470, 2210).createFromCache('chatForm').setScrollFactor(0).setScale(5);
+        this.elementChat = this.add.dom(-470, 2200).createFromCache('chatForm').setScrollFactor(0).setScale(5);
         this.socket.on('addToChat_gameMain', function (data) {
             self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
         });
@@ -132,6 +183,8 @@ class game_main extends Phaser.Scene {
             self.text_ship=self.add.text(playerInfo.x+30,playerInfo.y-50,self.name,{fontSize:10, color:"#FFFFFF"});
             self.health_ship=self.add.image(playerInfo.x+30,playerInfo.y-50,"health").setScale(playerInfo.health/100,1/2);
             self.cameras.main.startFollow(self.ship);
+            self.health = playerInfo.health / 100;
+
             
         }
        
@@ -205,20 +258,67 @@ class game_main extends Phaser.Scene {
 
         this.socket.on('fired',function(data){
             
-            const bullet1 = self.bullets.create(data.x,data.y,'bullet').setScale(0.03);
-            bullet1.bulletID=data.bulletID;
-            self.physics.velocityFromRotation(data.rotation+1.5,500,bullet1.body.velocity);
-            //self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
-            
-            const bullet2 = self.bullets.create(data.x,data.y,'bullet').setScale(0.03);
-            bullet2.bulletID=data.bulletID;
-            self.physics.velocityFromRotation(data.rotation+800,500,bullet2.body.velocity);
-            //self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
+            if (self.bom == 3 && self.dame == 20) {
+                const bullet1 = self.bullets.create(data.x, data.y, 'bullet').setScale(0.03);
+                bullet1.bulletID = data.bulletID;
+                self.physics.velocityFromRotation(data.rotation + 1.5, self.speedBullet, bullet1.body.velocity);
+                //self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
 
-            const bullet3 = self.bullets.create(data.x,data.y,'bullet').setScale(0.03);
-            bullet3.bulletID=data.bulletID;
-            self.physics.velocityFromRotation(data.rotation-200,500,bullet3.body.velocity);
-            self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
+                const bullet2 = self.bullets.create(data.x, data.y, 'bullet').setScale(0.03);
+                bullet2.bulletID = data.bulletID;
+                self.physics.velocityFromRotation(data.rotation + 800, self.speedBullet, bullet2.body.velocity);
+                //self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
+
+                const bullet3 = self.bullets.create(data.x, data.y, 'bullet').setScale(0.03);
+                bullet3.bulletID = data.bulletID;
+                self.physics.velocityFromRotation(data.rotation - 200, self.speedBullet, bullet3.body.velocity);
+                self.physics.add.collider(self.bullets, self.IslandLayer, self.collision, null, self);
+                const bullet4 = self.bullets.create(data.x, data.y, 'bullet').setScale(0.03);
+                bullet4.bulletID = data.bulletID;
+                self.physics.velocityFromRotation(data.rotation + 1.5, self.speedBullet, bullet4.body.velocity);
+                //self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
+
+                const bullet5 = self.bullets.create(data.x, data.y, 'bullet').setScale(0.03);
+                bullet5.bulletID = data.bulletID;
+                self.physics.velocityFromRotation(data.rotation + 800, self.speedBullet, bullet5.body.velocity);
+                // self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
+
+                const bullet6 = self.bullets.create(data.x, data.y, 'bullet').setScale(0.03);
+                bullet3.bulletID = data.bulletID;
+                self.physics.velocityFromRotation(data.rotation - 200, self.speedBullet, bullet6.body.velocity);
+                self.physics.add.collider(self.bullets, self.IslandLayer, self.collision, null, self);
+            }
+            if (self.bom == 3) {
+
+
+                const bullet1 = self.bullets.create(data.x, data.y, 'bullet').setScale(0.03);
+                bullet1.bulletID = data.bulletID;
+                self.physics.velocityFromRotation(data.rotation + 1.5, self.speedBullet, bullet1.body.velocity);
+                //self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
+
+                const bullet2 = self.bullets.create(data.x, data.y, 'bullet').setScale(0.03);
+                bullet2.bulletID = data.bulletID;
+                self.physics.velocityFromRotation(data.rotation + 800, self.speedBullet, bullet2.body.velocity);
+                //self.physics.add.collider(self.bullets,self.IslandLayer,self.collision,null,self);
+
+                const bullet3 = self.bullets.create(data.x, data.y, 'bullet').setScale(0.03);
+                bullet3.bulletID = data.bulletID;
+                self.physics.velocityFromRotation(data.rotation - 200, self.speedBullet, bullet3.body.velocity);
+                self.physics.add.collider(self.bullets, self.IslandLayer, self.collision, null, self);
+            } else if (self.dame == 20) {
+                const bullet2 = self.bullets.create(data.x, data.y, 'bullet').setScale(0.03);
+                bullet2.bulletID = data.bulletID;
+                self.physics.velocityFromRotation(data.rotation + 1.5, self.speedBullet, bullet2.body.velocity);
+                const bullet3 = self.bullets.create(data.x, data.y, 'bullet').setScale(0.03);
+                bullet3.bulletID = data.bulletID;
+                self.physics.velocityFromRotation(data.rotation + 1.5, self.speedBullet, bullet3.body.velocity);
+                self.physics.add.collider(self.bullets, self.IslandLayer, self.collision, null, self);
+            } else {
+                const bullet2 = self.bullets.create(data.x, data.y, 'bullet').setScale(0.03);
+                bullet2.bulletID = data.bulletID;
+                self.physics.velocityFromRotation(data.rotation + 1.5, self.speedBullet, bullet2.body.velocity);
+                self.physics.add.collider(self.bullets, self.IslandLayer, self.collision, null, self);
+            }
 
         })
         
@@ -307,9 +407,13 @@ class game_main extends Phaser.Scene {
         const stone=map.addTilesetImage("stone")
         const stone2=map.addTilesetImage("stone2");
         const ground=map.addTilesetImage('ground');
+        const stone3=map.addTilesetImage("stone3");
         this.SeaLayer = map.createLayer("sea_background", [natural_tile]);
-        this.IslandLayer = map.createLayer("island", [natural_tile,island1,island2,island3,island4,island5,island6,island7,island8,island9,island10,stone,ground,stone2]);
+        this.IslandLayer = map.createLayer("island", [natural_tile,island1,island2,island3,island4,island5,island6,island7,island8,island9,island10,stone,ground,stone2,stone3]);
         this.IslandLayer.setCollisionBetween(0, 20000);
+        this.main_music = this.sound.add("main_sound",{loop:true,volume:0.3});
+        this.attack_music=this.sound.add("attack_sound",{loop:false})
+        this.main_music.play();
        
         this.fireButtton = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TAB);
         this.anims.create({
@@ -334,6 +438,20 @@ class game_main extends Phaser.Scene {
          this.score_text=this.add.text(200,200,"SCORE: "+this.score,{font:48,color:"#FFFFFF"});
          this.text_number = this.add.text(300, 300,"PLayer left: "+this.player_left,{color:"#FFFFFFF"});
          this.lenght_text = 0;
+         //-470, 2210
+        this.hide = this.add.text(360, 573, '<<', { color: '#000', fontSize: '30px' }).setScrollFactor(0);
+        this.hide.setInteractive();
+        this.hide.on("pointerdown", () => {
+            if (this.hide.text === '<<') {
+                this.tweens.add({ targets: self.elementChat, x: -3000, duration: 500, ease: 'Back' });
+                this.tweens.add({ targets: self.hide, x: 0, duration: 500, ease: 'Back' });
+                this.hide.setText('>>');
+            } else {
+                this.tweens.add({ targets: self.elementChat, x: -470, duration: 500, ease: 'Back' });
+                this.tweens.add({ targets: self.hide, x: 350, duration: 500, ease: 'Back' });
+                this.hide.setText('<<');
+            }
+        });
          this.socket.on("load_rank",function(data){
             
             for(var i=0;i<self.text_rank.length;i++){
@@ -394,30 +512,32 @@ class game_main extends Phaser.Scene {
         if (this.ship&&this.text_ship&&this.health_ship&&this.text_rank) {
             
             
-            if(this.health<=0){
+            if (this.health <= 0) {
                 this.destroyShip(this.ship);
             }
-            if(this.score>=100&&this.player_left==1){
+            if (this.score >= 100 && this.player_left == 1) {
                 this.socket.emit('forceDisconnect');
                 //window.location.reload();
-                this.scene.start("mainHall",{name:this.name,socket:this.socket});
+                this.main_music.stop();
+                this.scene.start("win", { name: this.name, socket: this.socket });
             }
-            if (this.cursors.left.isDown&&this.status1==1) {
-                this.ship.setAngularVelocity(-100);
-                
-            } else if (this.cursors.right.isDown&&this.status1==1) {
-                this.ship.setAngularVelocity(100);
+            if (this.cursors.left.isDown && this.status1 == 1) {
+                this.ship.setAngularVelocity(-this.shipRotationSpeed);
+
+            } else if (this.cursors.right.isDown && this.status1 == 1) {
+                this.ship.setAngularVelocity(this.shipRotationSpeed);
 
             } else {
                 this.ship.setAngularVelocity(0);
             }
-            if (this.cursors.up.isDown&&this.status1==1) {
-                this.physics.velocityFromRotation(this.ship.rotation + 1.5, 200, this.ship.body.velocity);
-            
+            if (this.cursors.up.isDown && this.status1 == 1) {
+                this.physics.velocityFromRotation(this.ship.rotation + 1.5, this.speed, this.ship.body.velocity);
+
             } else {
                 this.ship.setVelocityX(0);
                 this.ship.setVelocityY(0);
             }
+
 
             //alert(this.list_player.length);
             
@@ -447,13 +567,17 @@ class game_main extends Phaser.Scene {
                 this.socket.emit("fire",{x: this.ship.x, y: this.ship.y, z: this.ship.rotation});
                 this.status=0;
                 this.status1=0;
+                var time_delay =1000;
+                if(this.speedBullet==650){
+                    time_delay=500
+                }
                 this.time.addEvent({
 
                     callback: function () {
                         this.status = 1;
                     },
                     callbackScope: this,
-                    delay: 1000,
+                    delay: time_delay,
                     repeat: 0
                 });
 
@@ -523,7 +647,7 @@ class game_main extends Phaser.Scene {
         } catch (error) {
             
         }
-        
+        this.attack_music.play();
 
     }
     
@@ -554,6 +678,7 @@ class game_main extends Phaser.Scene {
             
         }
         this.socket.emit('dame');
+        this.attack_music.play();
     }
 
 
@@ -574,6 +699,7 @@ class game_main extends Phaser.Scene {
             delay: 1000,
             repeat: 0
         });
+        this.attack_music.play();
 
         
     }
@@ -597,7 +723,8 @@ class game_main extends Phaser.Scene {
        
          this.socket.emit('forceDisconnect');
          //window.location.reload();
-         this.scene.start("mainHall",{name:this.name,socket:this.socket});
+         this.scene.start("gameOver",{name:this.name,socket:this.socket});
+         this.attack_music.play();
         
     }
 
@@ -617,6 +744,7 @@ class game_main extends Phaser.Scene {
             repeat: 0
         });
         ship.destroy();
+        this.attack_music.play();
         
     }
 }

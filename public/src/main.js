@@ -34,6 +34,8 @@ window.addEventListener('load', function() {
     game.scene.add("goFishing", goFishing);
     game.scene.add("preGoFishing", preGoFishing);
     game.scene.add("test", test);
+    game.scene.add("gameOver",gameOver);
+    game.scene.add("win",win);
 
 });
 

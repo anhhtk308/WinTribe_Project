@@ -5,7 +5,7 @@ var server = require('http').Server(app);
 // var io = require('socket.io').listen(server);
 var io = require('socket.io')(server, {});
 //var io1 = require('socket.io')(server, {});
-const port = process.env.PORT || 2000;
+const port = process.env.PORT || 2003;
 
 var players = {};
 var bullet = {
@@ -83,9 +83,12 @@ io.on('connection', function(socket) {
         players[socket.id].y = Math.floor(Math.random() * 4700) + 50;
 
         players[socket.id].check = 1;
-
+        if(players[socket.id].skills.hp==true){
+            players[socket.id].health=150;
+        }
         socket.emit("current_on", { num: num_player });
-        socket.broadcast.emit("add_player", { num: num_player })
+        socket.broadcast.emit("add_player", { num: num_player });
+        socket.emit("load_skill",players[socket.id]);
         socket.emit('currentPlayersGameMain', players);
         socket.broadcast.emit('newPlayerGameMain', players[socket.id]);
         socket.emit("load_rank", players[socket.id]);
