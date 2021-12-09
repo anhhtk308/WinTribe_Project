@@ -1,6 +1,3 @@
-// var cannon;
-// var net;
-// var mouse;
 var input;
 var control = false;
 var worldBounds;

@@ -43,11 +43,7 @@ class shopScene extends Phaser.Scene {
         var self = this;
 
         //background
-<<<<<<< HEAD
         this.background = this.add.image(400, 300, "backgroundShop");
-=======
-        this.backgroundShop = this.add.image(400, 300, "backgroundShop");
->>>>>>> c76a65f5368cc36c1fc2a738c2725e20968f82e3
 
         //image skill's item
         this.speed = this.add.image(285, 265, 'speedItem');
@@ -77,18 +73,11 @@ class shopScene extends Phaser.Scene {
                 self.hpSmall.alpha = 1;
                 self.hp.removeListener("pointerdown");
             }
-<<<<<<< HEAD
 
             if (self.exportObj.tripleBoms === true) {
                 self.tripleBoms.alpha = 0.5;
                 self.tripleBomsSmall.alpha = 1;
                 self.tripleBoms.removeListener("pointerdown");
-=======
-    
-            if(self.exportObj.tripleBoms === true){
-                self.tripleBoms.alpha = 0.5;
-                self.tripleBomsSmall.alpha = 1;
->>>>>>> c76a65f5368cc36c1fc2a738c2725e20968f82e3
             }
 
             if (self.exportObj.speedBullet === true) {
@@ -258,7 +247,6 @@ class shopScene extends Phaser.Scene {
         this.skills.getChildren().forEach(function(other) {
             other.on('pointerover', function(event) {
                 var option = other.name;
-<<<<<<< HEAD
                 switch (option) {
                     case 'speed':
                         {
@@ -291,45 +279,10 @@ class shopScene extends Phaser.Scene {
                             break;
                         };
                 }
-=======
-                    switch (option) {
-                        case 'speed':
-                            {
-                                self.speedDes.setVisible(true);
-                                break;
-                            };
-                        case 'hp':
-                            {
-                                self.hpDes.setVisible(true);
-                                break;
-                            };
-                        case 'tripleBoms':
-                            {
-                                self.tripleBomDes.setVisible(true);
-                                break;
-                            };
-                        case 'speedBullet':
-                            {
-                                self.speedBulletDes.setVisible(true);
-                                break;
-                            };
-                        case 'strong':
-                            {
-                                self.strongDes.setVisible(true);
-                                break;
-                            };
-                        case 'shipRotationSpeed':
-                            {
-                                self.shipRotationSpeedDes.setVisible(true);
-                                break;
-                            };
-                    }
->>>>>>> c76a65f5368cc36c1fc2a738c2725e20968f82e3
             });
 
             other.on('pointerout', function(event) {
                 var option = other.name;
-<<<<<<< HEAD
                 switch (option) {
                     case 'speed':
                         {
@@ -362,40 +315,6 @@ class shopScene extends Phaser.Scene {
                             break;
                         };
                 }
-=======
-                    switch (option) {
-                        case 'speed':
-                            {
-                                self.speedDes.setVisible(false);
-                                break;
-                            };
-                        case 'hp':
-                            {
-                                self.hpDes.setVisible(false);
-                                break;
-                            };
-                        case 'tripleBoms':
-                            {
-                                self.tripleBomDes.setVisible(false);
-                                break;
-                            };
-                        case 'speedBullet':
-                            {
-                                self.speedBulletDes.setVisible(false);
-                                break;
-                            };
-                        case 'strong':
-                            {
-                                self.strongDes.setVisible(false);
-                                break;
-                            };
-                        case 'shipRotationSpeed':
-                            {
-                                self.shipRotationSpeedDes.setVisible(false);
-                                break;
-                            };
-                    }
->>>>>>> c76a65f5368cc36c1fc2a738c2725e20968f82e3
             });
         })
 
