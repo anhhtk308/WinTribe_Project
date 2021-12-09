@@ -1,6 +1,3 @@
-// var cannon;
-// var net;
-// var mouse;
 var input;
 var control = false;
 var worldBounds;
@@ -23,7 +20,7 @@ class goFishing extends Phaser.Scene {
     }
     preload() {
         this.load.image("background_pregame", "assets/goFishingAssets/background_pregame.png");
-        this.load.image("background", "assets/goFishingAssets/background_sea.jpg");
+        this.load.image("backgroundFishing", "assets/goFishingAssets/background_sea.jpg");
         this.load.image("ship", "assets/goFishingAssets/ship.png");
         this.load.image("fish_1", "assets/goFishingAssets/fish_1.png");
         this.load.image("fish_2", "assets/goFishingAssets/fish_2.png");
@@ -63,7 +60,7 @@ class goFishing extends Phaser.Scene {
         this.isBoom = false;
         this.isGameOver = false;
         // create items
-        this.background = this.add.image(400, 300, "background");
+        this.background = this.add.image(400, 300, "backgroundFishing");
         this.add.image(100, 40, "time_icon").setScale(0.6);
         this.add.image(650, 40, "gold_icon").setScale(0.5);
         this.sound_icon = this.add.image(720, 40, "sound_icon").setScale(0.25);
@@ -90,7 +87,7 @@ class goFishing extends Phaser.Scene {
         this.bomb;
         // create coin 
         this.coin = this.add.text(645, 31, coin_value, { fontSize: 15, color: '#fff', fill: "black", stroke: '#fff' }).setVisible(true);
-        this.socket.on('getPlayerFishing', function (data) {
+        this.socket.on('getPlayerFishing', function(data) {
             coin_value = data.gold;
             self.coin.setText(coin_value);
             // alert("lay duoc r " + data.gold);
@@ -180,7 +177,7 @@ class goFishing extends Phaser.Scene {
         this.bomb_sound.play();
 
         this.cameras.main.shake(100, 0.01, true);
-        this.time.delayedCall(600, function () {
+        this.time.delayedCall(600, function() {
             boom.setVisible(false);
         }, [], this);
         if (coin_value < 0) {
@@ -202,8 +199,7 @@ class goFishing extends Phaser.Scene {
         if (fish_number == 1 || fish_number == 4) {
             this.fish = this.physics.add.sprite(0, y, "fish_" + fish_number).setScale(0.2);
             this.fish.body.velocity.x = Phaser.Math.Between(150, 400);
-        }
-        else {
+        } else {
             this.fish = this.physics.add.sprite(800, y, "fish_" + fish_number).setScale(0.2);
             this.fish.body.velocity.x = Phaser.Math.Between(-400, -150);
         }
@@ -216,7 +212,7 @@ class goFishing extends Phaser.Scene {
         // bomb = this.physics.add.image(x, 610, "bomb").setScale(0.1);
         this.bomb.x = x;
         this.tweens.add({ targets: this.bomb, y: (Phaser.Math.Between(230, 450)), duration: 1000, ease: 'Back' });
-        this.time.delayedCall(1500, function () {
+        this.time.delayedCall(1500, function() {
 
             this.tweens.add({ targets: this.bomb, y: 650, duration: 1000, ease: 'Back' });
         }, [], this);
@@ -248,7 +244,7 @@ class goFishing extends Phaser.Scene {
         }
     }
     handleTimeFinished() {
-        this.time.delayedCall(950, function () {
+        this.time.delayedCall(950, function() {
             this.gameover_sound.play();
             this.sound_icon.setVisible(false);
             this.mute_icon.setVisible(false);
@@ -282,26 +278,26 @@ class goFishing extends Phaser.Scene {
     }
     startNewGame() {
 
-        this.isGameOver = false;
-        this.gameover_sound.stop();
-        this.background_sound.play();
-        this.timeStart(this.handleTimeFinished.bind(this), 30000);
-        this.sound_icon.setVisible(true);
-        this.mute_icon.setVisible(true);
-        this.outgame_icon.setVisible(true);
-        this.timedEvent_fish = this.time.addEvent({ delay: 800, callback: this.createFish, callbackScope: this, repeat: 1000 });
-        this.timedEvent_bomb = this.time.addEvent({ delay: 3500, callback: this.createBomb, callbackScope: this, repeat: 1000 });
-        this.background_sound.setVolume(1);
-        this.gameover_background.setVisible(false);
-        this.gameover_frame.setVisible(false);
-        this.back_main_hall_icon.setVisible(false);
-        this.replay_icon.setVisible(false);
-        this.result.setVisible(false);
-        this.coin.setText(coin_value);
-        this.mute_icon.setVisible(false);
-        this.sound_icon.setVisible(true);
-    }
-    //collide cannonbal and pirateShip
+            this.isGameOver = false;
+            this.gameover_sound.stop();
+            this.background_sound.play();
+            this.timeStart(this.handleTimeFinished.bind(this), 30000);
+            this.sound_icon.setVisible(true);
+            this.mute_icon.setVisible(true);
+            this.outgame_icon.setVisible(true);
+            this.timedEvent_fish = this.time.addEvent({ delay: 800, callback: this.createFish, callbackScope: this, repeat: 1000 });
+            this.timedEvent_bomb = this.time.addEvent({ delay: 3500, callback: this.createBomb, callbackScope: this, repeat: 1000 });
+            this.background_sound.setVolume(1);
+            this.gameover_background.setVisible(false);
+            this.gameover_frame.setVisible(false);
+            this.back_main_hall_icon.setVisible(false);
+            this.replay_icon.setVisible(false);
+            this.result.setVisible(false);
+            this.coin.setText(coin_value);
+            this.mute_icon.setVisible(false);
+            this.sound_icon.setVisible(true);
+        }
+        //collide cannonbal and pirateShip
     destroy(net, pirateship) {
         pirateship.disableBody(true, true);
         net.disableBody(true, true);
