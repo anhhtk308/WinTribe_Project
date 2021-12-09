@@ -30,8 +30,15 @@ class mainHall extends Phaser.Scene {
             frameHeight: 48,
         });
         this.load.tilemapTiledJSON("MainHallMap", "assets/mainHall/MainHall.json");
+
+        this.load.audio("music_bg_main", "assets/mainHall/mainHallBGMusic.mp3");
+
     }
     create() {
+        //music
+        this.music_bg_main = this.sound.add("music_bg_main", { loop: true, volume: 0.3 });
+        this.music_bg_main.play();
+
         //chatting
         this.elementChat = this.add.dom(175, 543).createFromCache('chatForm').setScrollFactor(0);
         this.otherPlayers = this.physics.add.group();
@@ -190,10 +197,10 @@ class mainHall extends Phaser.Scene {
 
         //gold
         this.frameGold = this.add.image(700, 10, 'frameGold').setScale(0.085).setScrollFactor(0);
-        this.goldImg = this.add.image(680, 40, 'goldImg').setScale(0.03).setScrollFactor(0);
+        this.goldImg = this.add.image(665, 40, 'goldImg').setScale(0.03).setScrollFactor(0);
         this.socket.on('getPlayerMain', function(playerInfo) {
             self.gold = playerInfo.gold;
-            self.textGold = self.add.text(700, 26, self.gold, { font: '30px', color: 'red' }).setScrollFactor(0);
+            self.textGold = self.add.text(680, 26, self.gold, { font: '30px', color: 'red' }).setScrollFactor(0);
         });
     }
 
@@ -271,24 +278,25 @@ class mainHall extends Phaser.Scene {
         self.otherPlayers_name.add(player_name);
     }
     enter_quiz(player, optionGameQuizLayer) {
+        this.music_bg_main.stop();
         this.socket.emit('destroy_main');
         this.scene.start("matchingGame", { socket: this.socket, name: this.name });
     }
 
     enter_shop(player, optionGame) {
+        this.music_bg_main.stop();
         this.socket.emit('destroy_main');
-        //this.socket.emit("disconnect")
         this.scene.start("shopScene", { socket: this.socket, name: this.name });
     }
 
     enter_area(player, optionGameQuizLayer) {
+        this.music_bg_main.stop();
         this.socket.emit('destroy_main');
-        //this.socket.emit("force_disconnect_main",{id:this.socket.id})
         this.scene.start("man_khoi_tao", { name: this.name, socket: this.socket });
-
     }
 
     enter_fish(player, optionGameQuizLayer) {
+        this.music_bg_main.stop();
         this.socket.emit('destroy_main');
         this.scene.start("preGoFishing", { socket: this.socket, name: this.name });
     }

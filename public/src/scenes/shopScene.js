@@ -37,11 +37,18 @@ class shopScene extends Phaser.Scene {
         this.load.image("speedBulletDes", "assets/shop/descriptionFrame/speedBulletDes.png");
         this.load.image("strongDes", "assets/shop/descriptionFrame/strongDes.png");
         this.load.image("shipRotationSpeedDes", "assets/shop/descriptionFrame/shipRotationSpeedDes.png");
+        this.load.audio("music_bg_shop", "assets/shop/musicShopinggg.mp3");
+        this.load.audio("music_buy_item", "assets/shop/musicSoundBuyInShop.mp3");
+
     }
 
     create() {
         var self = this;
 
+        //background
+        this.music_bg_shop = this.sound.add("music_bg_shop", { loop: true, volume: 0.3 });
+        this.music_buy_item = this.sound.add("music_buy_item");
+        this.music_bg_shop.play();
         //background
         this.background = this.add.image(400, 300, "backgroundShop");
 
@@ -180,6 +187,7 @@ class shopScene extends Phaser.Scene {
         this.skills.getChildren().forEach(function(other) {
             other.on("pointerdown", () => {
                 if (self.numberOfGolds >= other.golds) {
+                    self.music_buy_item.play();
                     other.alpha = 0.5;
                     self.animationAddItem(other.name);
                     self.updateGolds(other.golds);
@@ -322,6 +330,7 @@ class shopScene extends Phaser.Scene {
 
     changeScene() {
         this.closeIcon.on("pointerdown", () => {
+            this.music_bg_shop.stop();
             this.socket.emit('updateShop', { gold: this.numberOfGolds, skills: this.exportObj });
             this.scene.start('mainHall', { socket: this.socket, name: this.name });
         })

@@ -37,7 +37,7 @@ io.on('connection', function(socket) {
         skills: {
             speed: false,
             hp: false,
-            iceBom: false,
+            tripleBoms: false,
             speedBullet: false,
             strong: false,
             shipRotationSpeed: false,

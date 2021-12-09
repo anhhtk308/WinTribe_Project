@@ -47,13 +47,16 @@ class matchingGame extends Phaser.Scene {
         this.load.audio("true_sound", "assets/matchingGame/true_sound.mp3");
         this.load.audio("false_sound", "assets/matchingGame/false_sound.mp3");
         this.load.audio("button_sound", "assets/matchingGame/audio-button.mp3");
-        this.load.audio("nhac_nen", "assets/matchingGame/nhacnen.mp3")
+        this.load.audio("nhac_nen", "assets/matchingGame/nhacnen.mp3");
+        this.load.audio("phao_hoa", "assets/matchingGame/phao_hoa.mp3");
 
     }
     create() {
         //alert(this.socket.id);
         //nhac nen
         this.music_bg = this.sound.add("nhac_nen", { loop: true, volume: 0.3 });
+        this.phao_hoa = this.sound.add("phao_hoa");
+
         this.music_bg.play();
         //
         var self = this;
@@ -349,6 +352,7 @@ class matchingGame extends Phaser.Scene {
         this.close_gift.setInteractive();
         this.textGameOver.setVisible(true);
         //fade
+        this.music_bg.stop();
         this.cameras.main.fadeIn(250);
         this.time.delayedCall(250, function() {
             this.button_sound.play();
@@ -360,6 +364,7 @@ class matchingGame extends Phaser.Scene {
             this.tweens.add({ targets: this.close_gift, angle: this.close_gift.angle - 4, duration: 1000, ease: 'Sine.easeInOut' });
             this.tweens.add({ targets: this.close_gift, angle: this.close_gift.angle + 4, duration: 2000, ease: 'Sine.easeInOut', yoyo: 1, loop: -1, delay: 1000 });
             this.close_gift.on("pointerdown", () => {
+                this.phao_hoa.play();
                 this.close_gift.setVisible(false);
                 this.open_gift.setVisible(true);
                 this.gameOverScoreTween();
@@ -428,6 +433,7 @@ class matchingGame extends Phaser.Scene {
         this.time.delayedCall(250, function() {
             this.button_sound.play();
             this.music_bg.stop();
+            this.phao_hoa.stop();
             this.scene.start('mainHall', { socket: this.socket, name: this.name });
         }, [], this);
     }
