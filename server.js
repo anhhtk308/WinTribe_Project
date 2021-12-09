@@ -48,6 +48,7 @@ io.on('connection', function (socket) {
         score: 0,
         check: 0,
         die:false
+
     }
 
 
@@ -80,7 +81,9 @@ io.on('connection', function (socket) {
         players[socket.id].type = data.type;
         players[socket.id].x = Math.floor(Math.random() * 4700) + 50;
         players[socket.id].y = Math.floor(Math.random() * 4700) + 50;
+
         players[socket.id].check = 1;
+
         socket.emit("current_on", { num: num_player });
         socket.broadcast.emit("add_player", { num: num_player })
         socket.emit('currentPlayersGameMain', players);
@@ -93,9 +96,9 @@ io.on('connection', function (socket) {
         })
 
         socket.on('forceDisconnect', function () {
-            //console.log('user disconnected: ', socket.id);
 
-            //delete players[socket.id];
+            console.log('user disconnected: ', socket.id);
+
             io.emit('disconnected_gameMain', socket.id);
             players[socket.id].die=true;
             players[socket.id].health=100;
@@ -139,7 +142,7 @@ io.on('connection', function (socket) {
             socket.broadcast.emit("add_score", players[socket.id]);
         });
 
-       
+
 
     });
     //disconnect
@@ -154,9 +157,9 @@ io.on('connection', function (socket) {
         socket.broadcast.emit('disconnected_gameMain', socket.id);
         socket.broadcast.emit('disconnected_Main', socket.id);
         socket.broadcast.emit("add_player", { num: num_player })
+
         socket.broadcast.emit("load_rank", players[socket.id]);
 
-        //socket.disconnect();
 
     });
     socket.on('start_choose',function(){
@@ -183,7 +186,9 @@ io.on('connection', function (socket) {
             socket.broadcast.emit("player_moved", players[socket.id]);
         });
 
+
         socket.on('destroy_main', function () {
+
             socket.broadcast.emit('destroy_player_main', players[socket.id]);
         });
         socket.on('force_disconnect_main', function (data) {
@@ -208,6 +213,14 @@ io.on('connection', function (socket) {
         socket.on('updateShop', function (data) {
             players[socket.id].gold = data.gold;
             players[socket.id].skills = data.skills;
+        });
+    });
+
+    //start fishing
+    socket.on('startFishing', function (data) {
+        socket.emit('getPlayerFishing', players[data]);
+        socket.on('updateGoldFishing', function (data) {
+            players[socket.id].gold = data.gold;
         });
     });
 

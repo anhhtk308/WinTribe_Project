@@ -39,11 +39,11 @@ class mainHall extends Phaser.Scene {
         var self = this;
         if (typeof this.socket === 'undefined') {
             this.socket = io();
-            this.socket.on('addToChat', function(data) {
+            this.socket.on('addToChat', function (data) {
                 self.elementChat.getChildByID("chat-text").innerHTML += '<div>' + data + '</div>';
             });
-            this.socket.on('currentPlayersMain', function(players) {
-                Object.keys(players).forEach(function(id) {
+            this.socket.on('currentPlayersMain', function (players) {
+                Object.keys(players).forEach(function (id) {
                     if (players[id].playersID === self.socket.id) {
                         self.addPlayer(self, players[id]);
                     } else {
@@ -52,7 +52,7 @@ class mainHall extends Phaser.Scene {
                 });
             });
 
-            this.socket.on('newPlayerMain', function(playerInfo) {
+            this.socket.on('newPlayerMain', function (playerInfo) {
                 self.addOtherPlayer(self, playerInfo);
             });
         }
@@ -60,7 +60,7 @@ class mainHall extends Phaser.Scene {
         this.socket.emit('startMainHall', { name: self.name });
 
         //chatting
-        this.elementChat.getChildByID("chat-form").onsubmit = function(e) {
+        this.elementChat.getChildByID("chat-form").onsubmit = function (e) {
             e.preventDefault();
             if ((self.elementChat.getChildByID("chat-input").value).trim() !== '') {
                 self.socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
@@ -69,7 +69,7 @@ class mainHall extends Phaser.Scene {
         }
 
         this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-        this.keyEnter.on('down', function(key, event) {
+        this.keyEnter.on('down', function (key, event) {
             if ((self.elementChat.getChildByID("chat-input").value).trim() !== '') {
                 self.socket.emit('sendMsgToServer', { name: self.name, text: self.elementChat.getChildByID("chat-input").value });
                 self.elementChat.getChildByID("chat-input").value = '';
@@ -97,14 +97,14 @@ class mainHall extends Phaser.Scene {
             repeat: -1
         });
         //move
-        this.socket.on("player_moved", function(playerInfo) {
-            self.otherPlayers.getChildren().forEach(function(other) {
+        this.socket.on("player_moved", function (playerInfo) {
+            self.otherPlayers.getChildren().forEach(function (other) {
                 if (playerInfo.playersID === other.playersID) {
                     other.setPosition(playerInfo.x, playerInfo.y);
                     other.anims.play(playerInfo.status, true);
                 }
             });
-            self.otherPlayers_name.getChildren().forEach(function(other) {
+            self.otherPlayers_name.getChildren().forEach(function (other) {
                 if (playerInfo.playersID === other.playersID) {
                     other.setPosition(playerInfo.x - 20, playerInfo.y - 50);
                 }
@@ -112,26 +112,27 @@ class mainHall extends Phaser.Scene {
         });
 
         //destroy
+
         this.socket.on('disconnected_Main', function(id) {
             self.otherPlayers.getChildren().forEach(function(other) {
                 if (id == other.playersID) {
                     other.destroy();
                 }
             });
-            self.otherPlayers_name.getChildren().forEach(function(other) {
+            self.otherPlayers_name.getChildren().forEach(function (other) {
                 if (id === other.playersID) {
                     other.destroy();
                 }
             });
         });
 
-        this.socket.on('destroy_player_main', function(data) {
-            self.otherPlayers.getChildren().forEach(function(other) {
+        this.socket.on('destroy_player_main', function (data) {
+            self.otherPlayers.getChildren().forEach(function (other) {
                 if (data.playersID == other.playersID) {
                     other.destroy();
                 }
             });
-            self.otherPlayers_name.getChildren().forEach(function(other) {
+            self.otherPlayers_name.getChildren().forEach(function (other) {
                 if (data.playersID === other.playersID) {
                     other.destroy();
                 }
@@ -190,7 +191,7 @@ class mainHall extends Phaser.Scene {
         //gold
         this.frameGold = this.add.image(700, 10, 'frameGold').setScale(0.085).setScrollFactor(0);
         this.goldImg = this.add.image(680, 40, 'goldImg').setScale(0.03).setScrollFactor(0);
-        this.socket.on('getPlayerMain', function(playerInfo) {
+        this.socket.on('getPlayerMain', function (playerInfo) {
             self.gold = playerInfo.gold;
             self.textGold = self.add.text(700, 26, self.gold, { font: '30px', color: 'red' }).setScrollFactor(0);
         });
@@ -253,7 +254,7 @@ class mainHall extends Phaser.Scene {
         self.physics.add.collider(self.player, self.backGroundLayer);
         self.physics.add.collider(self.player, self.streetLayer);
         self.physics.add.collider(self.player, self.volcanoAndTreeLayer);
-        self.physics.add.collider(self.player, self.optionGameFishingLayer, self.enter_quiz, null, self);
+        self.physics.add.collider(self.player, self.optionGameFishingLayer, self.enter_fish, null, self);
         self.physics.add.collider(self.player, self.optionShopLayer, self.enter_shop, null, self);
         self.physics.add.collider(self.player, self.optionArenaLayer, self.enter_area, null, self);
         self.physics.add.collider(self.player, self.optionGameQuizLayer, self.enter_quiz, null, self);
@@ -273,17 +274,22 @@ class mainHall extends Phaser.Scene {
         this.socket.emit('destroy_main');
         this.scene.start("matchingGame", { socket: this.socket, name: this.name });
     }
-    
+
     enter_shop(player, optionGame) {
         this.socket.emit('destroy_main');
         //this.socket.emit("disconnect")
         this.scene.start("shopScene", { socket: this.socket, name: this.name });
     }
-    
+
     enter_area(player, optionGameQuizLayer) {
         this.socket.emit('destroy_main');
         //this.socket.emit("force_disconnect_main",{id:this.socket.id})
         this.scene.start("man_khoi_tao", { name: this.name,socket:this.socket });
         
+    }
+
+    enter_fish(player, optionGameQuizLayer) {
+        this.socket.emit('destroy');
+        this.scene.start("preGoFishing", { socket: this.socket, name: this.name });
     }
 }
