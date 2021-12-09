@@ -253,7 +253,7 @@ class mainHall extends Phaser.Scene {
         self.physics.add.collider(self.player, self.backGroundLayer);
         self.physics.add.collider(self.player, self.streetLayer);
         self.physics.add.collider(self.player, self.volcanoAndTreeLayer);
-        self.physics.add.collider(self.player, self.optionGameFishingLayer, self.enter_quiz, null, self);
+        self.physics.add.collider(self.player, self.optionGameFishingLayer, self.enter_fish, null, self);
         self.physics.add.collider(self.player, self.optionArenaLayer, self.enter_quiz, null, self);
         self.physics.add.collider(self.player, self.optionShopLayer, self.enter_shop, null, self);
         self.physics.add.collider(self.player, self.optionGameQuizLayer, self.enter_quiz, null, self);
@@ -273,9 +273,14 @@ class mainHall extends Phaser.Scene {
         this.socket.emit('destroy');
         this.scene.start("matchingGame", { socket: this.socket, name: this.name });
     }
-    
+
     enter_shop(player, optionGame) {
         this.socket.emit('destroy');
         this.scene.start("shopScene", { socket: this.socket, name: this.name });
+    }
+
+    enter_fish(player, optionGameQuizLayer) {
+        this.socket.emit('destroy');
+        this.scene.start("preGoFishing", { socket: this.socket, name: this.name });
     }
 }

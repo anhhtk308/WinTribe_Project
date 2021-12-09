@@ -165,6 +165,14 @@ io.on('connection', function(socket) {
         });
     });
 
+    //start fishing
+    socket.on('startFishing', function(data) {
+        socket.emit('getPlayerFishing', players[data]);
+        socket.on('updateGoldFishing', function(data) {
+            players[socket.id].gold = data.gold;
+        });
+    });
+
 });
 
 server.listen(port, function() {

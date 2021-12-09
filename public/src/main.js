@@ -31,6 +31,8 @@ window.addEventListener('load', function() {
     game.scene.add("mainHall", mainHall);
     game.scene.add("shopScene", shopScene);
     game.scene.add("matchingGame", matchingGame);
+    game.scene.add("goFishing", goFishing);
+    game.scene.add("preGoFishing", preGoFishing);
     game.scene.add("test", test);
 
 });
