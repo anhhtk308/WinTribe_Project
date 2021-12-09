@@ -3,6 +3,10 @@ class man_khoi_tao extends Phaser.Scene {
     constructor() {
         super("man_khoi_tao");
     }
+    init(data){
+        this.name=data.name;
+        this.socket=data.socket;
+    }
     preload() {
         this.load.html('nameForm', 'assets/nameForm/nameForm.html');
         this.load.css('answerCss', 'assets/nameForm/nameForm.css');
@@ -24,7 +28,7 @@ class man_khoi_tao extends Phaser.Scene {
     create() {
 
 
-        
+        this.socket.emit("start_choose");
         this.add.image(400,300,"back_ground").setScale(0.42,0.5);
         this.text = this.add.image(600,300,"start").setScale(0.8);
         this.ships= this.add.group();
@@ -139,12 +143,19 @@ class man_khoi_tao extends Phaser.Scene {
                 }
             })
         this.text.setInteractive();
-        this.elementName = this.add.dom(400, 300).createFromCache('nameForm');
+        var self=this;
+        this.isDie;
+        this.socket.on("getPlayerGameMain",function(data){
+            self.isDie=data.die;
+            alert(data.die)
+        })
+
+        //this.elementName = this.add.dom(400, 300).createFromCache('nameForm');
         this.text.on("pointerdown", () => {
-            if ((this.elementName.getChildByName('nameField').value).trim().length > 0&&this.type!="") {
-                this.cameras.main.fade(250);
+            if (this.type!="") {
+                
                 this.time.delayedCall(250, function() {
-                    this.scene.start('game_main', { name: this.elementName.getChildByName('nameField').value,type:this.type });
+                    this.scene.start('game_main', { name: this.name,type:this.type,socket:this.socket,isDie:this.isDie});
                 }, [], this);
             }
         });

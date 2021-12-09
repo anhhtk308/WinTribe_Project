@@ -112,7 +112,8 @@ class mainHall extends Phaser.Scene {
         });
 
         //destroy
-        this.socket.on('disconnected', function(id) {
+
+        this.socket.on('disconnected_Main', function(id) {
             self.otherPlayers.getChildren().forEach(function(other) {
                 if (id == other.playersID) {
                     other.destroy();
@@ -254,8 +255,8 @@ class mainHall extends Phaser.Scene {
         self.physics.add.collider(self.player, self.streetLayer);
         self.physics.add.collider(self.player, self.volcanoAndTreeLayer);
         self.physics.add.collider(self.player, self.optionGameFishingLayer, self.enter_fish, null, self);
-        self.physics.add.collider(self.player, self.optionArenaLayer, self.enter_quiz, null, self);
         self.physics.add.collider(self.player, self.optionShopLayer, self.enter_shop, null, self);
+        self.physics.add.collider(self.player, self.optionArenaLayer, self.enter_area, null, self);
         self.physics.add.collider(self.player, self.optionGameQuizLayer, self.enter_quiz, null, self);
         self.cameras.main.startFollow(self.player);
 
@@ -270,17 +271,25 @@ class mainHall extends Phaser.Scene {
         self.otherPlayers_name.add(player_name);
     }
     enter_quiz(player, optionGameQuizLayer) {
-        this.socket.emit('destroy');
+        this.socket.emit('destroy_main');
         this.scene.start("matchingGame", { socket: this.socket, name: this.name });
     }
 
     enter_shop(player, optionGame) {
-        this.socket.emit('destroy');
+        this.socket.emit('destroy_main');
+        //this.socket.emit("disconnect")
         this.scene.start("shopScene", { socket: this.socket, name: this.name });
     }
 
+    enter_area(player, optionGameQuizLayer) {
+        this.socket.emit('destroy_main');
+        //this.socket.emit("force_disconnect_main",{id:this.socket.id})
+        this.scene.start("man_khoi_tao", { name: this.name, socket: this.socket });
+
+    }
+
     enter_fish(player, optionGameQuizLayer) {
-        this.socket.emit('destroy');
+        this.socket.emit('destroy_main');
         this.scene.start("preGoFishing", { socket: this.socket, name: this.name });
     }
 }
